@@ -37,7 +37,7 @@
         android:fontFamily="@font/work_sans"
         android:text="TORONTO ASIAN\nART MUSEUM"
         android:textSize="36sp"
-        android:textStyle="normal"
+        android:textStyle="bold"
         android:textColor="@color/welcome_text"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -73,7 +73,7 @@
         android:id="@+id/SignUpButton"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:text="Log In"
+        android:text="Create Account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/LoginButton"
