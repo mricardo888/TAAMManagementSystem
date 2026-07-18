@@ -2,6 +2,8 @@ package com.golden.geese.model;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.golden.geese.RegularUser;
+import com.golden.geese.User;
 
 public class AuthRepository {
     private final FirebaseAuth mAuth;
@@ -16,7 +18,7 @@ public class AuthRepository {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         if (firebaseUser != null) {
-                            Customer user = new Customer();
+                            RegularUser user = new RegularUser();
                             user.setUsername(firebaseUser.getEmail());
                             callback.onSuccess(user);
                         } else {
@@ -31,14 +33,14 @@ public class AuthRepository {
                 });
     }
 
-    public void signUp(String email, String pwd, AuthCallBack callback) {
+    public void signUp(String email, String username, String pwd, AuthCallBack callback) {
         mAuth.createUserWithEmailAndPassword(email, pwd)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         if (firebaseUser != null) {
-                            Customer user = new Customer();
-                            user.setUsername(firebaseUser.getEmail());
+                            RegularUser user = new RegularUser();
+                            user.setUsername(username);
                             callback.onSuccess(user);
                         } else {
                             callback.onError("Sign up succeeded but no user found.");
@@ -57,7 +59,7 @@ public class AuthRepository {
         if (firebaseUser == null) {
             return null;
         }
-        Customer user = new Customer();
+        RegularUser user = new RegularUser();
         user.setUsername(firebaseUser.getEmail());
         return user;
     }
