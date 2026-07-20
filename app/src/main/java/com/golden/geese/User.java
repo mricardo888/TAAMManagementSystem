@@ -13,7 +13,7 @@ package com.golden.geese;/*
  */
 import java.util.*;
 
-public class User {
+public abstract class User {
     private List<Artifact> likedArtifacts;
     private String username;
     private String pfp;
@@ -72,4 +72,6 @@ public class User {
                 ", savedArtifacts=" + savedArtifacts +
                 '}';
     }
+
+    public abstract boolean isAdmin();
 }
