@@ -8,6 +8,7 @@ material = "1.10.0"
 activityKtx = "1.8.0"
 constraintlayout = "2.1.4"
 firebaseAuth = "23.1.0"
+mockito = "5.2.0"
 googleServices = "4.4.2"
 
 [libraries]
@@ -19,6 +20,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
