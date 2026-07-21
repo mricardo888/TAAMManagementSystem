@@ -41,6 +41,7 @@ dependencies {
     implementation libs.material
     implementation libs.firebase.auth
     testImplementation libs.mockito.inline
+    testImplementation libs.junit
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.ext.junit
 }
