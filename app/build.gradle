@@ -40,8 +40,10 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.material
     implementation libs.firebase.auth
+    implementation libs.firebase.bom
     testImplementation libs.mockito.inline
     testImplementation libs.junit
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.ext.junit
+
 }

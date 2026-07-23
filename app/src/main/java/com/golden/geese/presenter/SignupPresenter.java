@@ -8,6 +8,7 @@ import com.golden.geese.view.AuthView;
 
 public class SignUpPresenter {
 
+
     private AuthView view;
     private AuthRepository repo;
 
