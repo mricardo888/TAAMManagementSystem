@@ -11,6 +11,7 @@ constraintlayout = "2.1.4"
 firebaseAuth = "23.1.0"
 mockito = "5.2.0"
 googleServices = "4.4.2"
+okhttp = "4.12.0"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -23,6 +24,8 @@ activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

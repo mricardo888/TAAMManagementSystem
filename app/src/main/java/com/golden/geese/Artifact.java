@@ -30,7 +30,7 @@ public class Artifact{
     private String notes;
     private String image;
     public int likes;
-    // public List<Comment> comments;
+    private List<Comment> comments;
     public int saves;
 
 

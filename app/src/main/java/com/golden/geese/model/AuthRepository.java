@@ -1,66 +1,11 @@
 package com.golden.geese.model;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.golden.geese.RegularUser;
 import com.golden.geese.User;
 
-public class AuthRepository {
-    private final FirebaseAuth mAuth;
+public interface AuthRepository {
+    void signIn(String email, String pwd, AuthCallBack callback);
 
-    public AuthRepository() {
-        mAuth = FirebaseAuth.getInstance();
-    }
+    void signUp(String email, String username, String pwd, AuthCallBack callback);
 
-    public void signIn(String email, String pwd, AuthCallBack callback) {
-        mAuth.signInWithEmailAndPassword(email, pwd)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        if (firebaseUser != null) {
-                            RegularUser user = new RegularUser();
-                            user.setUsername(firebaseUser.getEmail());
-                            callback.onSuccess(user);
-                        } else {
-                            callback.onError("Sign in succeeded but no user found.");
-                        }
-                    } else {
-                        String errorMsg = task.getException() != null
-                                ? task.getException().getMessage()
-                                : "Sign in failed.";
-                        callback.onError(errorMsg);
-                    }
-                });
-    }
-
-    public void signUp(String email, String username, String pwd, AuthCallBack callback) {
-        mAuth.createUserWithEmailAndPassword(email, pwd)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        if (firebaseUser != null) {
-                            RegularUser user = new RegularUser();
-                            user.setUsername(username);
-                            callback.onSuccess(user);
-                        } else {
-                            callback.onError("Sign up succeeded but no user found.");
-                        }
-                    } else {
-                        String errorMsg = task.getException() != null
-                                ? task.getException().getMessage()
-                                : "Sign up failed.";
-                        callback.onError(errorMsg);
-                    }
-                });
-    }
-
-    public User getCurrentUser() {
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        if (firebaseUser == null) {
-            return null;
-        }
-        RegularUser user = new RegularUser();
-        user.setUsername(firebaseUser.getEmail());
-        return user;
-    }
+    User getCurrentUser();
 }

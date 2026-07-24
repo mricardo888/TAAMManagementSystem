@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.golden.geese.model.AuthRepository;
+import com.golden.geese.model.FirebaseAuthRepository;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        authRepository = new AuthRepository();
+        authRepository = new FirebaseAuthRepository();
         User currentUser = authRepository.getCurrentUser();
         if (currentUser != null) {
             SessionManager.getInstance().setCurrentUser(currentUser);
