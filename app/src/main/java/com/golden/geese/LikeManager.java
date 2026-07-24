@@ -1,0 +1,2 @@
+public class LikeManager {
+}
