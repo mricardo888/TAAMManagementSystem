@@ -2,9 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white2">#FFFEFB</color>
+    <color name="beige">#F3F3E6</color>
+    <color name="beige2">#B1AB99</color>
+    <color name="yellow">#EECD5C</color>
+    <color name="olive">#706736</color>
+    <color name="brown">#4C4637</color>
     <color name="welcome_background">#F3F3E6</color>
     <color name="welcome_button">#B1AB99</color>
     <color name="welcome_text">#4C4637</color>
-
-
 </resources>
