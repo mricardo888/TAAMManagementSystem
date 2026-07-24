@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">TAAMManagementSystem</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="welcome_user">Welcome, </string>
+    <string name="on_display">On Display</string>
+    <string name="view_all">View All</string>
+    <string name="artifacts">Artifacts</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_profile">Profile</string>
 </resources>
