@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white2">
 
+    <!-- User Info Card -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/user_card_container"
         android:layout_width="match_parent"
@@ -66,6 +67,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:flow_horizontalBias="0.5">
 
+            <!-- Likes and Comments Counter -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -185,6 +187,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Liked Artifacts -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/liked_artifacts_container"
         android:layout_width="match_parent"
@@ -243,6 +246,7 @@
         
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Saved Artifacts -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/saved_artifacts_container"
         android:layout_width="match_parent"
