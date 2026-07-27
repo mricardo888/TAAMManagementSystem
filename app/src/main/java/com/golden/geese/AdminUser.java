@@ -10,6 +10,9 @@ public class AdminUser extends User {
         super(username, pfp);
     }
 
+
+
+
     @Override
     public boolean isAdmin() {
         return true;
