@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,7 +51,7 @@ public class HomeFragment extends Fragment {
 
     private void setupCarousel() {
         List<Artifact> carouselData = getDummyData();
-        ArtifactAdapter carouselAdapter = new ArtifactAdapter(carouselData, R.layout.item_carousel);
+        ArtifactAdapter carouselAdapter = new ArtifactAdapter(carouselData, R.layout.item_carousel, this::openDetailsScreen);
         viewPagerCarousel.setAdapter(carouselAdapter);
 
         // 1. Enable peeking beyond bounds
@@ -108,7 +109,7 @@ public class HomeFragment extends Fragment {
 
     private void setupRecyclerView() {
         List<Artifact> artifactData = getDummyData();
-        ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifactData, R.layout.item_artifact);
+        ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifactData, R.layout.item_artifact, this::openDetailsScreen);
 
         // Sets up standard horizontal scrolling
         rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -124,5 +125,15 @@ public class HomeFragment extends Fragment {
         list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
         list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
         return list;
+    }
+
+    private void openDetailsScreen(Artifact artifact) {
+        // 1. Pack your artifact data into a Bundle
+        Bundle args = new Bundle();
+        args.putSerializable("Artifact", artifact);
+
+        // 2. Find the NavController and navigate using your action ID
+        NavController navController = Navigation.findNavController(requireView());
+        navController.navigate(R.id.action_homeFragment_to_detailsFragment, args);
     }
 }
