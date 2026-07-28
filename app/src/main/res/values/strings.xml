@@ -1,13 +1,22 @@
 <resources>
     <string name="app_name">TAAMManagementSystem</string>
     <string name="name_placeholder">John Doe</string>
-    <string name="like_count">0</string>
+    <string name="expanded_artifact_placeholder">A Tang \'Sancai\' \'Baoxianghua\' Box</string>
+    <string name="description_placeholder">This tricolor (sancai) box has a round shape with shallow straight walls, a concave circular mouth, a flat base, and a slightly curved lid. The outer surface of the lid is decorated with intricate molded patterns, displaying exquisite and varied designs. The exterior of the box is covered in tricolor glazes, including green, yellow, white, and blue. The interior of the box and the base are covered in yellow glaze. The entire piece is adorned with fine crackle patterns</string>
+    <string name="comm_name_placeholder">jimmyd</string>
+    <string name="comm_date_placeholder">July 27, 2026</string>
+    <string name="comm_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="pf_like_count">0</string>
+    <string name="pf_comment_count">0</string>
+    <string name="ea_like_count">0</string>
+    <string name="ea_comment_count">0</string>
     <string name="tab_home">Home</string>
     <string name="tab_profile">Profile</string>
-    <string name="liked_scroller">Liked Artifacts</string>
-    <string name="saved_scroller">Saved Artifacts</string>
-    <string name="likes_title">Likes</string>
-    <string name="comments_title">Comments</string>
+    <string name="likes">Likes</string>
+    <string name="comments">Comments</string>
+    <string name="liked_artifacts">Liked Artifacts</string>
+    <string name="saved_artifacts">Saved Artifacts</string>
     <string name="view_all">View All</string>
-    <string name="setting_button_description">Open settings</string>
+    <string name="read_more">Read more</string>
+    <string name="read_less">Read less</string>
 </resources>
