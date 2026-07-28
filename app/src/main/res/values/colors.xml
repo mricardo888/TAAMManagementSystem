@@ -8,4 +8,5 @@
     <color name="yellow">#EECD5C</color>
     <color name="olive">#706736</color>
     <color name="brown">#4C4637</color>
+    <color name="error_red">#B00020</color>
 </resources>

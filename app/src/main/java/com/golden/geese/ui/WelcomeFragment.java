@@ -1,4 +1,4 @@
-package com.golden.geese;
+package com.golden.geese.ui;
 
 import android.os.Bundle;
 
@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.golden.geese.R;
 
 public class WelcomeFragment extends Fragment {
 
@@ -22,13 +23,20 @@ public class WelcomeFragment extends Fragment {
 
         View view =inflater.inflate(R.layout.fragment_welcome_screen, container, false);
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         Button buttonSignUp = view.findViewById(R.id.SignUpButton);
         Button buttonLogIn = view.findViewById(R.id.LoginButton);
 
+        buttonSignUp.setOnClickListener(v -> {loadFragment(new SignUpNameFragment());});
 //        buttonSignUp.setOnClickListener(v -> {loadFragment(new );});
 
 
-        return view;
     }
 
     private void loadFragment(Fragment fragment) {
