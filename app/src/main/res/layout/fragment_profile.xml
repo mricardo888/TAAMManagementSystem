@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white2">
+
+    <!-- User Info Card -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/user_card_container"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/user_card_inner_container"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:backgroundTint="@color/beige"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:shapeAppearanceOverlay="@style/BottomRoundedCard"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0">
+
+            <ImageButton
+                android:id="@+id/settings_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_margin="5dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:contentDescription="@string/setting_button_description"
+                android:src="@drawable/settings_icon"
+                app:tint="@color/olive" />
+
+            <TextView
+                android:id="@+id/profile_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|top"
+                android:layout_margin="20dp"
+                android:text="@string/name_placeholder"
+                android:fontFamily="@font/idiqlat_regular"
+                android:textColor="@color/olive"
+                android:textSize="32sp" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="300dp"
+            android:layout_height="105dp"
+            app:cardBackgroundColor="@color/white2"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0.5dp"
+            app:strokeColor="@color/olive"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:flow_horizontalBias="0.5">
+
+            <!-- Likes and Comments Counter -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/middle_guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <LinearLayout
+                    android:id="@+id/left_container"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/middle_guideline"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:id="@+id/likes_counter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="42.5dp"
+                        android:layout_gravity="center"
+                        android:padding="0dp"
+                        android:text="@string/like_count"
+                        android:fontFamily="@font/idiqlat_extralight"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/olive"
+                        android:textSize="32sp" />
+
+                    <TextView
+                        android:id="@+id/likes_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="0dp"
+                        android:text="@string/likes_title"
+                        android:fontFamily="@font/idiqlat_extralight"
+                        android:textColor="@color/olive"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/right_container"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    app:layout_constraintStart_toEndOf="@id/middle_guideline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:id="@+id/comments_counter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="42.5dp"
+                        android:layout_gravity="center"
+                        android:padding="0dp"
+                        android:text="@string/like_count"
+                        android:fontFamily="@font/idiqlat_extralight"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/olive"
+                        android:textSize="32sp" />
+
+                    <TextView
+                        android:id="@+id/comments_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="0dp"
+                        android:text="@string/comments_title"
+                        android:fontFamily="@font/idiqlat_extralight"
+                        android:textColor="@color/olive"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="1dp"
+                android:layout_height="70dp"
+                android:layout_marginVertical="16dp"
+                android:layout_marginHorizontal="150dp"
+                android:background="@color/olive"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profile_picture"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:padding="2dp"
+            android:scaleType="centerCrop"
+            android:background="@color/white2"
+            android:src="@drawable/placeholder_pfp"
+            app:shapeAppearanceOverlay="@style/CircleImage"
+            app:strokeWidth="3dp"
+            app:strokeColor="@color/white2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:flow_horizontalBias="0.5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Liked Artifacts -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/liked_artifacts_container"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:layout_marginTop="260dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0">
+
+        <TextView
+            android:id="@+id/liked_scroller_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/liked_scroller"
+            android:fontFamily="@font/idiqlat_regular"
+            android:textColor="@color/olive"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="0dp"
+            android:layout_alignParentEnd="true"
+            android:text="@string/view_all"
+            android:textAllCaps="false"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/olive"
+            android:textSize="16sp"
+            android:letterSpacing="0"
+            app:icon="@drawable/arrow_forward_icon"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/brown"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+        
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/liked_artifact_scroller"
+            android:layout_width="0dp"
+            android:layout_height="216dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:clipToPadding="false"
+            android:paddingHorizontal="2dp"
+            android:scrollbars="none"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/liked_scroller_title" />
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Saved Artifacts -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/saved_artifacts_container"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/liked_artifacts_container"
+        app:layout_constraintVertical_bias="0">
+
+        <TextView
+            android:id="@+id/saved_scroller_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/idiqlat_regular"
+            android:text="@string/saved_scroller"
+            android:textColor="@color/olive"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/roboto"
+            android:letterSpacing="0"
+            android:text="@string/view_all"
+            android:textAllCaps="false"
+            android:textColor="@color/olive"
+            android:textSize="16sp"
+            app:icon="@drawable/arrow_forward_icon"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/brown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/saved_artifact_scroller"
+            android:layout_width="0dp"
+            android:layout_height="216dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingHorizontal="2dp"
+            android:scrollbars="none"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/saved_scroller_title" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_nav_container"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/beige"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Home Tab -->
+        <LinearLayout
+            android:id="@+id/tab_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:padding="6dp"
+                android:src="@drawable/home_icon"
+                app:tint="@color/olive" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/tab_home"
+                android:textColor="@color/olive"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:background="#D3CDBE" />
+
+        <!-- Profile Tab -->
+        <LinearLayout
+            android:id="@+id/tab_profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_tab_selected"
+                android:padding="3dp"
+                android:src="@drawable/account_icon"
+                app:tint="@color/olive" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/tab_profile"
+                android:textColor="@color/olive"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
