@@ -4,4 +4,5 @@ public interface AuthView {
     void showError(String message);
     void showLoading();
     void goToHome();
+    void nextStep();
 }
