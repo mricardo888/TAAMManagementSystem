@@ -94,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
-                android:layout_marginEnd="7dp"
+                android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:src="@drawable/edit_icon"
@@ -165,7 +165,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="top|end"
                         android:layout_marginTop="12.5dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="15dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:scaleType="centerInside"
                         android:src="@drawable/heart_icon"
@@ -231,10 +231,10 @@
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:maxLines="7"
+            android:maxLines="6"
             android:textColor="@color/olive"
             android:textSize="12sp"
-            android:lineSpacingExtra="-4dp"
+            android:lineSpacingExtra="-3dp"
             android:fontFamily="@font/idiqlat_extralight"
             android:text="@string/description_placeholder"
             app:layout_constraintStart_toStartOf="parent"
@@ -246,7 +246,7 @@
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:layout_marginTop="-6dp"
+            android:layout_marginTop="-3dp"
             android:fontFamily="@font/idiqlat_regular"
             android:text="@string/read_more"
             android:textColor="@color/olive"
@@ -268,12 +268,12 @@
                 android:text="@string/comments"
                 android:fontFamily="@font/idiqlat_regular"
                 android:textColor="@color/olive"
-                android:textSize="26sp"
+                android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/filter_icon"
+                android:id="@+id/filter_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
@@ -285,6 +285,34 @@
                 app:layout_constraintStart_toEndOf="@id/comments_title"
                 app:layout_constraintTop_toTopOf="@id/comments_title"
                 app:layout_constraintBottom_toBottomOf="@id/comments_title"/>
+
+            <ImageButton
+                android:id="@+id/add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/add_circle_icon"
+                app:tint="@color/olive"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/comments_title"
+                app:layout_constraintBottom_toBottomOf="@id/comments_title"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/comments_section"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:orientation="vertical"
+                android:paddingHorizontal="0dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/comments_title" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
