@@ -13,7 +13,7 @@ package com.golden.geese;/*
  */
 import java.util.*; // imports needed if image platform changes
 
-public class Artifact{
+public class Artifact implements Likeable {
     private int lotNum;
     private String name;
     private String description;
@@ -29,9 +29,11 @@ public class Artifact{
     private int accessionNum;
     private String notes;
     private String image;
-    public int likes;
-    private List<Comment> comments;
-    public int saves;
+    private LikeManager likeManager;
+    private CommentManager commentManager;
+    private SaveManager saveManager;
+
+    private static int IDTracker = 0;
 
 
     /**
@@ -54,9 +56,9 @@ public class Artifact{
         accessionNum = 0;
         notes = "";
         image = "";
-        likes = 0;
-        comments = new ArrayList<>();
-        saves = 0;
+        likeManager = new LikeManager();
+        commentManager = new CommentManager();
+        saveManager = new SaveManager();
     }
 
     /**
@@ -234,27 +236,20 @@ public class Artifact{
     }
 
     public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
+        return likeManager.getNumInteractions();
     }
 
     public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+        return commentManager.getInteractions();
     }
 
     public int getSaves() {
-        return saves;
+        return saveManager.getNumInteractions();
     }
 
-    public void setSaves(int saves) {
-        this.saves = saves;
+    public static int getNewID() {
+        IDTracker++;
+        return IDTracker;
     }
 
     /**
