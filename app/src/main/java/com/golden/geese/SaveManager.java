@@ -13,26 +13,36 @@
  */
 package com.golden.geese;
 
-public class SaveManager {
+public class SaveManager extends InteractionManager<Save> {
 
-    private static com.golden.geese.SaveManager instance;
-    private SaveManager() {
+    public SaveManager() {
+        super();
     }
-    public static com.golden.geese.SaveManager getInstance(){
-        if(instance == null){
-            instance = new com.golden.geese.SaveManager();
+
+    public void toggleSave(User user, Artifact artifact){
+        for(Save s : interactions) {
+            if(s.getAuthor().equals(user)) {
+                delete(user, s);
+                return;
+            }
         }
-        return instance;
+        Save save = new Save(user, artifact);
+        add(user, save);
     }
 
-    public void toggleSaves(Artifact artifact, User user){
+    @Override
+    public void add(User user, Save save) {
+        if(save.getAuthor().equals(user)) {
+            interactions.add(save);
+            user.save(save.artifact);
+        }
+    }
 
-        if(user.getSavedArtifacts().contains(artifact)){
-            user.getSavedArtifacts().remove(artifact);
-            artifact.saves--;
-        } else{
-            user.getSavedArtifacts().add(artifact);
-            artifact.saves++;
+    @Override
+    public void delete(User user, Save save) {
+        if(save.getAuthor().equals(user)) {
+            interactions.remove(save);
+            user.unsave((Artifact) save.artifact);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.golden.geese.model;
 import androidx.annotation.NonNull;
 
 import com.golden.geese.Artifact;
+import com.golden.geese.Comment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
