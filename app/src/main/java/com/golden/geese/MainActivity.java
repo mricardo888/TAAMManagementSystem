@@ -8,7 +8,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.golden.geese.model.AuthRepository;
+import com.golden.geese.model.FirebaseAuthRepository;
+
 public class MainActivity extends AppCompatActivity {
+
+    private AuthRepository authRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +25,11 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        authRepository = new FirebaseAuthRepository();
+        User currentUser = authRepository.getCurrentUser();
+        if (currentUser != null) {
+            SessionManager.getInstance().setCurrentUser(currentUser);
+        }
     }
 }

@@ -1,4 +1,4 @@
-/*
+package com.golden.geese;/*
  * Artifact
  * Version 1.0
  * Bob Zhao July 17, 2026
@@ -13,7 +13,7 @@
  */
 import java.util.*;
 
-public class User {
+public abstract class User {
     private List<Artifact> likedArtifacts;
     private String username;
     private String pfp;
@@ -72,4 +72,6 @@ public class User {
                 ", savedArtifacts=" + savedArtifacts +
                 '}';
     }
+
+    public abstract boolean isAdmin();
 }

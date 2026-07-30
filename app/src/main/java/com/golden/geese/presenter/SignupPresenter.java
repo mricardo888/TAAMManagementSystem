@@ -1,15 +1,18 @@
 package com.golden.geese.presenter;
 
+import com.golden.geese.SessionManager;
+import com.golden.geese.User;
 import com.golden.geese.model.AuthCallBack;
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.view.AuthView;
 
-public class SignUpPresenter {
+public class SignupPresenter {
+
 
     private AuthView view;
     private AuthRepository repo;
 
-    public SignUpPresenter(AuthView view, AuthRepository repo) {
+    public SignupPresenter(AuthView view, AuthRepository repo) {
         this.view = view;
         this.repo = repo;
     }
@@ -33,6 +36,7 @@ public class SignUpPresenter {
         repo.signUp(email, username, password, new AuthCallBack() {
             @Override
             public void onSuccess(User user) {
+                SessionManager.getInstance().setCurrentUser(user);
                 view.goToHome();
             }
 

@@ -1,4 +1,4 @@
-/*
+package com.golden.geese;/*
  * Artifact
  * Version 1.0
  * Bob Zhao July 14, 2026
@@ -30,7 +30,7 @@ public class Artifact{
     private String notes;
     private String image;
     public int likes;
-    public List<Comment> comments;
+    private List<Comment> comments;
     public int saves;
 
 
