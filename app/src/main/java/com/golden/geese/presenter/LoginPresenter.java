@@ -1,5 +1,7 @@
 package com.golden.geese.presenter;
 
+import com.golden.geese.SessionManager;
+import com.golden.geese.User;
 import com.golden.geese.model.AuthCallBack;
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.view.AuthView;
@@ -29,6 +31,7 @@ public class LoginPresenter {
         repo.signIn(email, password, new AuthCallBack() {
             @Override
             public void onSuccess(User user) {
+                SessionManager.getInstance().setCurrentUser(user);
                 view.goToHome();
             }
 
