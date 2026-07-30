@@ -50,11 +50,11 @@
         android:fontFamily="@font/idiqlat_extralight"
         android:textColor="@color/olive"
         android:alpha="0.67"
-        android:textSize="14sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/comment_profile_picture"
         app:layout_constraintBottom_toBottomOf="@id/comment_profile_picture"
-        app:layout_constraintVertical_bias="0.5"/>
+        app:layout_constraintVertical_bias="0.4"/>
 
     <TextView
         android:id="@+id/comment_body"

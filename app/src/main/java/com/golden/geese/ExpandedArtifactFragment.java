@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,10 +32,18 @@ public class ExpandedArtifactFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstnaceState) {
-        super.onViewCreated(view, savedInstnaceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.expanded_artifact_fragment), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         commentsRV = view.findViewById(R.id.comments_section);
+
+        currentUser = new RegularUser();
 
         TextView descriptionText = view.findViewById(R.id.description_text);
         TextView readMoreText = view.findViewById(R.id.read_more_text);
@@ -96,13 +107,7 @@ public class ExpandedArtifactFragment extends Fragment {
                 saveButton.setImageResource(R.drawable.bookmark_icon);
             }
         });
-
-        // Filter button UNFINISHED
-        ImageButton filterButton = view.findViewById(R.id.filter_button);
-        filterButton.setOnClickListener(clickedView -> {
-            // open filter menu
-        });
-
+        
         // Add comment button UNFINISHED
         ImageButton addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener(clickedView -> {
@@ -141,10 +146,15 @@ public class ExpandedArtifactFragment extends Fragment {
     private List<Comment> getDummyData() {
         List<Comment> comments = new ArrayList<>();
 
-        comments.add(new Comment("user_001", "This artifact looks amazing."));
-        comments.add(new Comment("user_002", "I really like the glaze and pattern details."));
-        comments.add(new Comment("user_003", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."));
-        comments.add(new Comment("user_004", "I would love to see this artifact in person."));
+        RegularUser u1 = new RegularUser("user_001", null);
+        RegularUser u2 = new RegularUser("user_001", null);
+        RegularUser u3 = new RegularUser("user_001", null);
+        RegularUser u4 = new RegularUser("user_001", null);
+
+        comments.add(new Comment(u1, "This artifact looks amazing."));
+        comments.add(new Comment(u2, "I really like the glaze and pattern details."));
+        comments.add(new Comment(u3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."));
+        comments.add(new Comment(u4, "I would love to see this artifact in person."));
 
         return comments;
     }

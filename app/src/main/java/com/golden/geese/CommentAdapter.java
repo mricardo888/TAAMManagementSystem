@@ -43,7 +43,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void onBindViewHolder(@NonNull CommentAdapter.CommentViewHolder holder, int position) {
         Comment comment = comments.get(position);
 
-        holder.username.setText(comment.getAuthorId());
+        holder.username.setText(comment.getAuthorId().getUsername());
         holder.body.setText(comment.getText());
         holder.profileImage.setImageResource(R.drawable.placeholder_pfp);
 

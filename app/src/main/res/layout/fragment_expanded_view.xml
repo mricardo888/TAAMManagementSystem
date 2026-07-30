@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/expanded_artifact_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -271,20 +272,6 @@
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/filter_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|end"
-                android:layout_marginStart="5dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="centerInside"
-                android:src="@drawable/filter_icon"
-                app:tint="@color/olive"
-                app:layout_constraintStart_toEndOf="@id/comments_title"
-                app:layout_constraintTop_toTopOf="@id/comments_title"
-                app:layout_constraintBottom_toBottomOf="@id/comments_title"/>
 
             <ImageButton
                 android:id="@+id/add_button"
