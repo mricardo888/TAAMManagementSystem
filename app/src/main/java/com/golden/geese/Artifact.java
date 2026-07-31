@@ -11,6 +11,8 @@
  * Toronto Code of Behaviour on Academic Matters.
  *
  */
+package com.golden.geese;
+
 import java.util.*; // imports needed if image platform changes
 
 public class Artifact{

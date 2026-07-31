@@ -21,18 +21,18 @@ import com.golden.geese.view.AuthView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class SignUpNameFragment extends Fragment implements AuthView {
+public class SignUpEmailFragment extends Fragment implements AuthView {
 
     private SignUpPresenter presenter;
     private TextInputLayout inputLayout;
-    private TextInputEditText nameInput;
+    private TextInputEditText emailInput;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_signup_name, container, false);
+        View view = inflater.inflate(R.layout.fragment_signup_email, container, false);
         presenter = SignUpPresenter.getSignUpPresenter();
         return view;
 
@@ -42,17 +42,17 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        inputLayout = view.findViewById(R.id.nameInputLayout);
-        nameInput = view.findViewById(R.id.nameInput);
+        inputLayout = view.findViewById(R.id.emailInputLayout);
+        emailInput = view.findViewById(R.id.emailInput);
         Button nextButton = view.findViewById(R.id.nextButton);
         ImageButton backButton = view.findViewById(R.id.backButton);
 
         // Set the text back to original
-        nameInput.setText(presenter.getUsername());
+        emailInput.setText(presenter.getEmail());
 
         backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        nextButton.setOnClickListener(v -> {presenter.validateName(nameInput.getText().toString());});
+        nextButton.setOnClickListener(v -> {presenter.validateEmail(emailInput.getText().toString());});
     }
 
     private void loadFragment(Fragment fragment) {
@@ -64,7 +64,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     @Override
     public void showError(String message) {
         inputLayout.setError(message);
-        nameInput.setError(message);
+        emailInput.setError(message);
     }
 
     @Override
@@ -77,6 +77,6 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     }
 
     public void nextStep() {
-        loadFragment(new SignUpNameFragment());
+        loadFragment(new SignUpPasswordFragment());
     }
 }

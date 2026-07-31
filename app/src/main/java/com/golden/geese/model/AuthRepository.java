@@ -1,5 +1,6 @@
 package com.golden.geese.model;
 
+import com.golden.geese.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -16,9 +17,9 @@ public class AuthRepository {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         if (firebaseUser != null) {
-                            Customer user = new Customer();
-                            user.setUsername(firebaseUser.getEmail());
-                            callback.onSuccess(user);
+//                            Customer user = new Customer();
+//                            user.setUsername(firebaseUser.getEmail());
+//                            callback.onSuccess(user);
                         } else {
                             callback.onError("Sign in succeeded but no user found.");
                         }
@@ -37,9 +38,9 @@ public class AuthRepository {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         if (firebaseUser != null) {
-                            Customer user = new Customer();
-                            user.setUsername(firebaseUser.getEmail());
-                            callback.onSuccess(user);
+//                            Customer user = new Customer();
+//                            user.setUsername(firebaseUser.getEmail());
+//                            callback.onSuccess(user);
                         } else {
                             callback.onError("Sign up succeeded but no user found.");
                         }
@@ -52,13 +53,13 @@ public class AuthRepository {
                 });
     }
 
-    public User getCurrentUser() {
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        if (firebaseUser == null) {
-            return null;
-        }
-        Customer user = new Customer();
-        user.setUsername(firebaseUser.getEmail());
-        return user;
-    }
+//    public User getCurrentUser() {
+//        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+//        if (firebaseUser == null) {
+//            return null;
+//        }
+//        Customer user = new Customer();
+//        user.setUsername(firebaseUser.getEmail());
+//        return user;
+//    }
 }

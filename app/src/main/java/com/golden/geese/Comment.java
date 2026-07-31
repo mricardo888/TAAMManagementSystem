@@ -11,6 +11,7 @@
  * Toronto Code of Behaviour on Academic Matters.
  *
  */
+package com.golden.geese;
 import java.time.LocalDateTime;
 
 public class Comment {

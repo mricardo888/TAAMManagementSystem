@@ -50,7 +50,7 @@ public class SignUpPresenter {
         view.nextStep();
     }
 
-    public void validatePassword (String password) {
+    public void validatePassword (String password, String passwordConfirmation) {
         if (password == null || password.length() < 6) {
             view.showError("Password must be at least 6 characters.");
             return;
@@ -84,5 +84,28 @@ public class SignUpPresenter {
         // Need to call once user has created account and signed in
         // So that presenter memory and all data from signup process is cleaned
         instance = null;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setUsername (String username) {
+        this.username = username;
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setEmail (String email) {
+        this.email = email;
+    }
+
+    public String getEmail () {
+        return email;
     }
 }
