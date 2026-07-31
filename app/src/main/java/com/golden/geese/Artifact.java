@@ -15,7 +15,7 @@ import com.google.firebase.database.Exclude;
 
 import java.util.*; // imports needed if image platform changes
 
-public class Artifact{
+public class Artifact implements Likeable {
     private int lotNum;
     private String name;
     private String description;
@@ -31,9 +31,11 @@ public class Artifact{
     private int accessionNum;
     private String notes;
     private String image;
-    private List<String> likedBy;
-    private List<String> savedBy;
-    private List<Comment> comments;
+    private LikeManager likeManager;
+    private CommentManager commentManager;
+    private SaveManager saveManager;
+
+    private static int IDTracker = 0;
 
 
     /**
@@ -56,9 +58,9 @@ public class Artifact{
         accessionNum = 0;
         notes = "";
         image = "";
-        likedBy = new ArrayList<>();
-        savedBy = new ArrayList<>();
-        comments = new ArrayList<>();
+        likeManager = new LikeManager();
+        commentManager = new CommentManager();
+        saveManager = new SaveManager();
     }
 
     /**
@@ -239,49 +241,22 @@ public class Artifact{
         this.image = image;
     }
 
-    public List<String> getLikedBy() {
-        return likedBy;
-    }
-
-    public void setLikedBy(List<String> likedBy) {
-        this.likedBy = likedBy == null ? new ArrayList<>() : likedBy;
-    }
-
-    public List<String> getSavedBy() {
-        return savedBy;
-    }
-
-    public void setSavedBy(List<String> savedBy) {
-        this.savedBy = savedBy == null ? new ArrayList<>() : savedBy;
-    }
-
-    @Exclude
     public int getLikes() {
-        return likedBy.size();
+        return likeManager.getNumInteractions();
+    }
+
+    public List<Comment> getComments() {
+        return commentManager.getInteractions();
     }
 
     @Exclude
     public int getSaves() {
-        return savedBy.size();
+        return saveManager.getNumInteractions();
     }
 
-    @Exclude
-    public boolean isLikedBy(String uid) {
-        return likedBy.contains(uid);
-    }
-
-    @Exclude
-    public boolean isSavedBy(String uid) {
-        return savedBy.contains(uid);
-    }
-
-    @Exclude
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public static int getNewID() {
+        IDTracker++;
+        return IDTracker;
     }
 
     /**
