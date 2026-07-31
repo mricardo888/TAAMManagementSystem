@@ -37,7 +37,7 @@ public class SignUpPresenter {
             view.showError("Username cannot be empty.");
             return;
         }
-        this.username = username;
+        setUsername(username);
         view.nextStep();
     }
 
@@ -46,7 +46,7 @@ public class SignUpPresenter {
             view.showError("Email cannot be empty.");
             return;
         }
-        this.email = email;
+        setEmail(email);
         view.nextStep();
     }
 
@@ -55,7 +55,7 @@ public class SignUpPresenter {
             view.showError("Password must be at least 6 characters.");
             return;
         }
-        this.password = password;
+        setPassword(password);
         signup();
     }
 
@@ -76,8 +76,10 @@ public class SignUpPresenter {
 //        });
     }
 
-    public void onDestroy () {
-        view = null;
+    public void onDestroy (AuthView caller) {
+        if (caller == view) {
+            view = null;
+        }
     }
 
     public void completeProcess () {
