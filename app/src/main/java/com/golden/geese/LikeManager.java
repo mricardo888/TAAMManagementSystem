@@ -13,26 +13,39 @@
  */
 package com.golden.geese;
 
-public class LikeManager {
-
-    private static com.golden.geese.LikeManager instance;
-    private LikeManager() {
+public class LikeManager extends InteractionManager<Like> {
+    public LikeManager() {
+        super();
     }
-    public static com.golden.geese.LikeManager getInstance(){
-        if(instance == null){
-            instance = new com.golden.geese.LikeManager();
+
+    public void toggleLike(User user, Likeable likedObject){
+        for(Like l : interactions) {
+            if(l.getAuthor().equals(user)) {
+                delete(user, l);
+                return;
+            }
         }
-        return instance;
+        Like like = new Like(user, likedObject);
+        add(user, like);
     }
 
-    public void toggleLikes(Artifact artifact, User user){
+    @Override
+    public void add(User user, Like like) {
+        if(like.getAuthor().equals(user)) {
+            interactions.add(like);
+            if (like.likedObject instanceof Artifact) {
+                user.like((Artifact) like.likedObject);
+            }
+        }
+    }
 
-        if(user.getLikedArtifacts().contains(artifact)){
-            user.getLikedArtifacts().remove(artifact);
-            artifact.likes--;
-        } else{
-            user.getLikedArtifacts().add(artifact);
-            artifact.likes++;
+    @Override
+    public void delete(User user, Like like) {
+        if(like.getAuthor().equals(user)) {
+            interactions.remove(like);
+            if(like.likedObject instanceof Artifact) {
+                like.getAuthor().unlike((Artifact) like.likedObject);
+            }
         }
     }
 }
