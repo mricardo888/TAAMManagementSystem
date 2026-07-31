@@ -1,5 +1,8 @@
 package com.golden.geese.presenter;
 
+import com.golden.geese.SessionManager;
+import com.golden.geese.User;
+import com.golden.geese.model.AuthCallBack;
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.ui.LoginFragment;
 import com.golden.geese.view.AuthView;

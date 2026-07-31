@@ -6,7 +6,7 @@ plugins {
 android {
     namespace 'com.golden.geese'
     compileSdk {
-        version = release(36) {
+        version = release(37) {
             minorApiLevel = 1
         }
     }
@@ -41,12 +41,21 @@ dependencies {
     implementation libs.activity.ktx
     implementation libs.annotation
     implementation libs.appcompat
+    implementation libs.cardview
     implementation libs.constraintlayout
+    implementation libs.fragment
     implementation libs.lifecycle.livedata.ktx
     implementation libs.lifecycle.viewmodel.ktx
     implementation libs.material
+    implementation platform(libs.firebase.bom)
     implementation libs.firebase.auth
+    implementation libs.firebase.database
+    implementation libs.okhttp
+    implementation libs.glide
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    testImplementation libs.mockito.inline
     testImplementation libs.junit
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.ext.junit
+
 }

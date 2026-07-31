@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">TAAMManagementSystem</string>
+    <string name="name_placeholder">John Doe</string>
+    <string name="expanded_artifact_placeholder">A Tang \'Sancai\' \'Baoxianghua\' Box</string>
+    <string name="description_placeholder">This tricolor (sancai) box has a round shape with shallow straight walls, a concave circular mouth, a flat base, and a slightly curved lid. The outer surface of the lid is decorated with intricate molded patterns, displaying exquisite and varied designs. The exterior of the box is covered in tricolor glazes, including green, yellow, white, and blue. The interior of the box and the base are covered in yellow glaze. The entire piece is adorned with fine crackle patterns. During the mid-Tang Dynasty, the tricolor glazing technique reached its peak, resulting in a wide variety of vessel forms and refined craftsmanship. The glaze colors during this period were lustrous and the coloring appeared natural. Vessels were often fully glazed both on the inside and outside, utilizing colors such as green, yellow, white, blue, and black, creating a complex and diverse palette. The production process involved applying a base layer of slip before adding various colored glazes to achieve the desired overall effect in terms of both form and decoration. The decoration techniques included carving, stamping, appliqué, and modeling. These tricolor artifacts showcased rich content and were considered exquisite examples of Tang tricolor ware.</string>
+    <string name="comm_name_placeholder">jimmyd</string>
+    <string name="comm_date_placeholder">July 27, 2026</string>
+    <string name="comm_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="pf_like_count">0</string>
+    <string name="pf_comment_count">0</string>
+    <string name="ea_like_count">0</string>
+    <string name="ea_comment_count">0</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_profile">Profile</string>
+    <string name="likes">Likes</string>
+    <string name="comments">Comments</string>
+    <string name="liked_artifacts">Liked Artifacts</string>
+    <string name="saved_artifacts">Saved Artifacts</string>
+    <string name="view_all">View All</string>
+    <string name="read_more">Read more</string>
+    <string name="read_less">Read less</string>
+    <string name="supabase_url" translatable="false">https://uvnrdrmwhkhlfxkgxzmk.supabase.co</string>
+    <string name="supabase_anon_key" translatable="false">sb_publishable_4vNG3L02W_ce0H5ZTQmTew_-EinHYN1</string>
+    <string name="supabase_image_bucket" translatable="false">artifacts</string>
+    <string name="welcome_user">Welcome, </string>
+    <string name="on_display">On Display</string>
+    <string name="artifacts">Artifacts</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_profile">Profile</string>
+    <string name="name_placeholder">John Doe</string>
+    <string name="like_count">0</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_profile">Profile</string>
+    <string name="liked_scroller">Liked Artifacts</string>
+    <string name="saved_scroller">Saved Artifacts</string>
+    <string name="likes_title">Likes</string>
+    <string name="comments_title">Comments</string>
+    <string name="view_all">View All</string>
+    <string name="setting_button_description">Open settings</string>
 </resources>
