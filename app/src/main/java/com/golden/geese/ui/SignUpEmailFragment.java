@@ -34,6 +34,7 @@ public class SignUpEmailFragment extends Fragment implements AuthView {
 
         View view = inflater.inflate(R.layout.fragment_signup_email, container, false);
         presenter = SignUpPresenter.getSignUpPresenter();
+        presenter.setView(this);
         return view;
 
     }
@@ -75,8 +76,13 @@ public class SignUpEmailFragment extends Fragment implements AuthView {
     public void goToHome() {
 
     }
-
     public void nextStep() {
         loadFragment(new SignUpPasswordFragment());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.onDestroy();
     }
 }
