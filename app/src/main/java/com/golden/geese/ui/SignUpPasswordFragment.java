@@ -84,13 +84,9 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
     public void showLoading() {
 
     }
-    @Override
-    public void goToHome() {
-
-    }
 
     public void nextStep() {
-        goToHome();
+        //TODO: load home screen fragment
     }
 
     @Override

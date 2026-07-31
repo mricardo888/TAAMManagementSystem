@@ -65,7 +65,7 @@ public class SignUpPresenter {
 //        repo.signUp(email, username, password, new AuthCallBack() {
 //            @Override
 //            public void onSuccess(User user) {
-//                view.goToHome();
+//                view.nextStep();
 //                completeProcess();
 //            }
 //

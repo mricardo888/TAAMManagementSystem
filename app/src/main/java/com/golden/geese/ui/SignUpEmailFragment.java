@@ -75,10 +75,7 @@ public class SignUpEmailFragment extends Fragment implements AuthView {
     public void showLoading() {
 
     }
-    @Override
-    public void goToHome() {
 
-    }
     @Override
     public void nextStep() {
         loadFragment(new SignUpPasswordFragment());
@@ -88,5 +85,6 @@ public class SignUpEmailFragment extends Fragment implements AuthView {
     public void onDestroyView() {
         super.onDestroyView();
         presenter.onDestroy(this);
+        presenter.completeProcess();
     }
 }

@@ -76,10 +76,6 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     public void showLoading() {
 
     }
-    @Override
-    public void goToHome() {
-
-    }
 
     public void nextStep() {
         loadFragment(new SignUpEmailFragment());
