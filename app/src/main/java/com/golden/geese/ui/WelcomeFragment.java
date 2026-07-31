@@ -34,7 +34,7 @@ public class WelcomeFragment extends Fragment {
         Button buttonLogIn = view.findViewById(R.id.LoginButton);
 
         buttonSignUp.setOnClickListener(v -> {loadFragment(new SignUpNameFragment());});
-//        buttonSignUp.setOnClickListener(v -> {loadFragment(new );});
+        buttonLogIn.setOnClickListener(v -> {loadFragment(new LoginFragment());});
 
 
     }
