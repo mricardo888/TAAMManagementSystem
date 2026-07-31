@@ -10,7 +10,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.golden.geese.model.AuthRepository;
+import com.golden.geese.model.FirebaseAuthRepository;
+
 public class MainActivity extends AppCompatActivity {
+
+    private AuthRepository authRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,27 +29,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-//        db = FirebaseDatabase.getInstance("https://b07-demo-summer-2024-default-rtdb.firebaseio.com/");
-//         TODO: Set-up firebase and add link
-
-        if (savedInstanceState == null) {
-            if (userIsLoggedIn()) {
-//                loadFragment(new HomeFragment());
-            } else {
-                loadFragment(new WelcomeFragment());
-            }
+        authRepository = new FirebaseAuthRepository();
+        User currentUser = authRepository.getCurrentUser();
+        if (currentUser != null) {
+            SessionManager.getInstance().setCurrentUser(currentUser);
         }
-
-    }
-
-    private boolean userIsLoggedIn () {
-        // TODO: Make the new class the that authenticates user and return if they are logged
-        return false;
-    }
-
-    private void loadFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_fragment_container, fragment);
-        transaction.commit();
     }
 }
