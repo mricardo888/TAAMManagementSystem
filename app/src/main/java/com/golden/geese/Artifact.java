@@ -11,6 +11,8 @@ package com.golden.geese;/*
  * Toronto Code of Behaviour on Academic Matters.
  *
  */
+import com.google.firebase.database.Exclude;
+
 import java.util.*; // imports needed if image platform changes
 
 public class Artifact{
@@ -29,9 +31,9 @@ public class Artifact{
     private int accessionNum;
     private String notes;
     private String image;
-    public int likes;
+    private List<String> likedBy;
+    private List<String> savedBy;
     private List<Comment> comments;
-    public int saves;
 
 
     /**
@@ -54,9 +56,9 @@ public class Artifact{
         accessionNum = 0;
         notes = "";
         image = "";
-        likes = 0;
+        likedBy = new ArrayList<>();
+        savedBy = new ArrayList<>();
         comments = new ArrayList<>();
-        saves = 0;
     }
 
     /**
@@ -119,6 +121,10 @@ public class Artifact{
      */
     public int getLotNum() {
         return lotNum;
+    }
+
+    public void setLotNum(int lotNum) {
+        this.lotNum = lotNum;
     }
 
     public String getName() {
@@ -233,28 +239,49 @@ public class Artifact{
         this.image = image;
     }
 
+    public List<String> getLikedBy() {
+        return likedBy;
+    }
+
+    public void setLikedBy(List<String> likedBy) {
+        this.likedBy = likedBy == null ? new ArrayList<>() : likedBy;
+    }
+
+    public List<String> getSavedBy() {
+        return savedBy;
+    }
+
+    public void setSavedBy(List<String> savedBy) {
+        this.savedBy = savedBy == null ? new ArrayList<>() : savedBy;
+    }
+
+    @Exclude
     public int getLikes() {
-        return likes;
+        return likedBy.size();
     }
 
-    public void setLikes(int likes) {
-        this.likes = likes;
+    @Exclude
+    public int getSaves() {
+        return savedBy.size();
     }
 
+    @Exclude
+    public boolean isLikedBy(String uid) {
+        return likedBy.contains(uid);
+    }
+
+    @Exclude
+    public boolean isSavedBy(String uid) {
+        return savedBy.contains(uid);
+    }
+
+    @Exclude
     public List<Comment> getComments() {
         return comments;
     }
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
-    }
-
-    public int getSaves() {
-        return saves;
-    }
-
-    public void setSaves(int saves) {
-        this.saves = saves;
     }
 
     /**
