@@ -11,6 +11,8 @@ package com.golden.geese;/*
  * Toronto Code of Behaviour on Academic Matters.
  *
  */
+import com.google.firebase.database.Exclude;
+
 import java.util.*; // imports needed if image platform changes
 
 public class Artifact implements Likeable {
@@ -121,6 +123,10 @@ public class Artifact implements Likeable {
      */
     public int getLotNum() {
         return lotNum;
+    }
+
+    public void setLotNum(int lotNum) {
+        this.lotNum = lotNum;
     }
 
     public String getName() {
@@ -243,6 +249,7 @@ public class Artifact implements Likeable {
         return commentManager.getInteractions();
     }
 
+    @Exclude
     public int getSaves() {
         return saveManager.getNumInteractions();
     }

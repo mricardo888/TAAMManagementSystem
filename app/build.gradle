@@ -43,6 +43,8 @@ dependencies {
     implementation libs.firebase.auth
     implementation libs.firebase.database
     implementation libs.okhttp
+    implementation libs.glide
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     testImplementation libs.mockito.inline
     testImplementation libs.junit
     androidTestImplementation libs.espresso.core

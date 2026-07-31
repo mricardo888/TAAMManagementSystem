@@ -74,3 +74,21 @@ public class Comment extends Interaction implements Likeable {
     }
 }
 
+    @Exclude
+    public List<User> getLikeCount() {
+        return likeCount;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "commentId='" + commentId + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", username='" + username + '\'' +
+                ", text='" + text + '\'' +
+                ", timestamp=" + timestamp +
+                ", edited=" + edited +
+                ", replies=" + replies.size() +
+                '}';
+    }
+}
