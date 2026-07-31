@@ -3,6 +3,7 @@ package com.golden.geese.model;
 import com.golden.geese.Comment;
 
 import java.util.List;
+import com.golden.geese.Comment;
 
 public interface CommentRepository {
     void addComment(int lotNum, Comment comment, RepositoryCallback<Void> callback);
