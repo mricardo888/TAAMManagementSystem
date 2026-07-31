@@ -7,5 +7,7 @@ public interface SaveRepository {
 
     void unsaveArtifact(int lotNum, String uid, RepositoryCallback<Void> callback);
 
+    void isArtifactSavedByUser(int lotNum, String uid, RepositoryCallback<Boolean> callback);
+
     void getSavedLotNumbers(String uid, RepositoryCallback<List<Integer>> callback);
 }
