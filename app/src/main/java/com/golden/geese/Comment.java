@@ -13,59 +13,82 @@
  */
 package com.golden.geese;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Comment {
+public class Comment extends Interaction implements Likeable {
     // The properties of a comment
-    private User authorId;
     private String text;
-    private LocalDateTime timestamp;
-    private List<User> likeCount;
+    private LikeManager likeManager;
+    private CommentManager subCommentManager;
     private boolean edited;
-    private List<com.golden.geese.Comment> replies;
+
+    private String id;
 
     // Constructor
-    public Comment(User authorId, String text) {
-        this.authorId = authorId;
+    public Comment() {
+        super();
+        text = "";
+        likeManager = new LikeManager();
+        subCommentManager = new CommentManager();
+        edited = false;
+        id = "";
+    }
+
+    public Comment(User author, String text) {
+        super(author);
         this.text = text;
-        this.timestamp = LocalDateTime.now(); // Automatically sets to current time
-        this.likeCount = new ArrayList<User>(0);
+        this.likeManager = new LikeManager();
+        this.subCommentManager = new CommentManager();
         this.edited = false;
-        this.replies = new ArrayList<com.golden.geese.Comment>(0);
     }
 
     // Getters
-    public User getAuthorId() {
-        return authorId;
-    }
 
     public String getText() {
         return text;
     }
 
     public void setText(String text){
+        this.text = text;
+    }
+
+    public void editText(String text) {
         edited = true;
         this.text = text;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-    public void setTimestamp(){
-        this.timestamp = LocalDateTime.now();
+    public int getLikeCount() {
+        return likeManager.getNumInteractions();
     }
 
-    public List<User> getLikeCount() {
-        return likeCount;
-    }
     public boolean isEdited(){
         return edited;
     }
-    public List<com.golden.geese.Comment> getReplies(){
-        return replies;
+
+    public List<Comment> getSubComments() {
+        return subCommentManager.getInteractions();
     }
 
+    public void setCommentId(String id) {
+        this.id = id;
+    }
 }
 
+    @Exclude
+    public List<User> getLikeCount() {
+        return likeCount;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "commentId='" + commentId + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", username='" + username + '\'' +
+                ", text='" + text + '\'' +
+                ", timestamp=" + timestamp +
+                ", edited=" + edited +
+                ", replies=" + replies.size() +
+                '}';
+    }
+}
