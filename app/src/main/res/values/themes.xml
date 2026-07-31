@@ -2,8 +2,32 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.TAAMManagementSystem" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorContainer">@color/black2</item>
+        <item name="colorPrimary">@color/yellow</item>
+        <item name="colorOnPrimary">@color/olive</item>
+        <item name="colorPrimaryContainer">@color/beige</item>
+        <item name="colorOnPrimaryContainer">@color/olive</item>
+        <item name="android:windowBackground">@color/white2</item>
+        <item name="android:colorBackground">@color/white2</item>
+        <item name="colorOnBackground">@color/olive</item>
+        <item name="colorSurface">@color/beige</item>
     </style>
 
     <style name="Theme.TAAMManagementSystem" parent="Base.Theme.TAAMManagementSystem" />
+
+    <style name="BottomRoundedCard">
+        <item name="cornerFamily">rounded</item>
+
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+
+        <item name="cornerSizeBottomLeft">15dp</item>
+        <item name="cornerSizeBottomRight">15dp</item>
+    </style>
+
+    <style name="CircleImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

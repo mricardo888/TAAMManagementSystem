@@ -1,5 +1,5 @@
 /*
- * Artifact
+ * Comment
  * Version 1.0
  * Bob Zhao July 17, 2026
  *
@@ -12,43 +12,83 @@
  *
  */
 package com.golden.geese;
-import java.time.LocalDateTime;
 
-public class Comment {
+import java.util.List;
 
+public class Comment extends Interaction implements Likeable {
     // The properties of a comment
-    private String authorId;
     private String text;
-    private LocalDateTime timestamp;
-    private int likeCount;
+    private LikeManager likeManager;
+    private CommentManager subCommentManager;
+    private boolean edited;
+
+    private String id;
 
     // Constructor
-    public Comment(String authorId, String text) {
-        this.authorId = authorId;
+    public Comment() {
+        super();
+        text = "";
+        likeManager = new LikeManager();
+        subCommentManager = new CommentManager();
+        edited = false;
+        id = "";
+    }
+
+    public Comment(User author, String text) {
+        super(author);
         this.text = text;
-        this.timestamp = LocalDateTime.now(); // Automatically sets to current time
-        this.likeCount = 0;
+        this.likeManager = new LikeManager();
+        this.subCommentManager = new CommentManager();
+        this.edited = false;
     }
 
     // Getters
-    public String getAuthorId() {
-        return authorId;
-    }
 
     public String getText() {
         return text;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void editText(String text) {
+        edited = true;
+        this.text = text;
     }
 
     public int getLikeCount() {
+        return likeManager.getNumInteractions();
+    }
+
+    public boolean isEdited(){
+        return edited;
+    }
+
+    public List<Comment> getSubComments() {
+        return subCommentManager.getInteractions();
+    }
+
+    public void setCommentId(String id) {
+        this.id = id;
+    }
+}
+
+    @Exclude
+    public List<User> getLikeCount() {
         return likeCount;
     }
 
-    // Setters / Modifiers
-    public void incrementLikes() {
-        this.likeCount++;
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "commentId='" + commentId + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", username='" + username + '\'' +
+                ", text='" + text + '\'' +
+                ", timestamp=" + timestamp +
+                ", edited=" + edited +
+                ", replies=" + replies.size() +
+                '}';
     }
 }

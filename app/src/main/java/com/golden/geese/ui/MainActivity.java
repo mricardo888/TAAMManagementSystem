@@ -9,10 +9,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.golden.geese.R;
 
+
+import com.golden.geese.model.AuthRepository;
+import com.golden.geese.model.FirebaseAuthRepository;
+
 public class MainActivity extends AppCompatActivity {
+
+    private AuthRepository authRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +31,11 @@ public class MainActivity extends AppCompatActivity {
 //            return insets;
 //        });
 
-//        db = FirebaseDatabase.getInstance("https://b07-demo-summer-2024-default-rtdb.firebaseio.com/");
-//         TODO: Set-up firebase and add link
+        authRepository = new FirebaseAuthRepository();
+        User currentUser = authRepository.getCurrentUser();
+        if (currentUser != null) {
+            SessionManager.getInstance().setCurrentUser(currentUser);
+        }
 
         if (savedInstanceState == null) {
             if (userIsLoggedIn()) {
