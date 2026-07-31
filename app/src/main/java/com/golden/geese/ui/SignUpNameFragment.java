@@ -21,6 +21,8 @@ import com.golden.geese.view.AuthView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
+
 public class SignUpNameFragment extends Fragment implements AuthView {
 
     private SignUpPresenter presenter;
@@ -34,6 +36,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
 
         View view = inflater.inflate(R.layout.fragment_signup_name, container, false);
         presenter = SignUpPresenter.getSignUpPresenter();
+        presenter.setView(this);
         return view;
 
     }
@@ -52,7 +55,9 @@ public class SignUpNameFragment extends Fragment implements AuthView {
 
         backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        nextButton.setOnClickListener(v -> {presenter.validateName(nameInput.getText().toString());});
+        nextButton.setOnClickListener(v -> {
+            presenter.validateName(Objects.requireNonNull(nameInput.getText()).toString());
+        });
     }
 
     private void loadFragment(Fragment fragment) {
@@ -77,6 +82,12 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     }
 
     public void nextStep() {
-        loadFragment(new SignUpNameFragment());
+        loadFragment(new SignUpEmailFragment());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.onDestroy();
     }
 }
