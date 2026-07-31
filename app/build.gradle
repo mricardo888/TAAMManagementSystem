@@ -32,12 +32,20 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
     implementation libs.activity.ktx
+    implementation libs.annotation
     implementation libs.appcompat
+    implementation libs.cardview
     implementation libs.constraintlayout
+    implementation libs.fragment
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
     implementation libs.material
     implementation platform(libs.firebase.bom)
     implementation libs.firebase.auth
