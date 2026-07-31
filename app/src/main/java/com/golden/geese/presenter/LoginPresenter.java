@@ -4,45 +4,55 @@ import com.golden.geese.SessionManager;
 import com.golden.geese.User;
 import com.golden.geese.model.AuthCallBack;
 import com.golden.geese.model.AuthRepository;
+import com.golden.geese.ui.LoginFragment;
 import com.golden.geese.view.AuthView;
+import com.golden.geese.view.LoginView;
 
 public class LoginPresenter {
 
-    private AuthView view;
+    private LoginView view;
     private AuthRepository repo;
 
-    public LoginPresenter(AuthView view, AuthRepository repo) {
+    public LoginPresenter() {
+    }
+
+    public void setView (LoginView view) {
         this.view = view;
+    }
+
+    public void setRepo (AuthRepository repo) {
         this.repo = repo;
     }
 
     public void login(String email, String password) {
         if (email == null || email.trim().isEmpty()) {
-            view.showError("Email cannot be empty.");
+            view.showEmailError("Email cannot be empty.");
             return;
         }
         if (password == null || password.isEmpty()) {
-            view.showError("Password cannot be empty.");
+            view.showPasswordError("Password cannot be empty.");
             return;
         }
 
-        view.showLoading();
+//        view.showLoading();
 
-        repo.signIn(email, password, new AuthCallBack() {
-            @Override
-            public void onSuccess(User user) {
-                SessionManager.getInstance().setCurrentUser(user);
-                view.goToHome();
-            }
-
-            @Override
-            public void onError(String message) {
-                view.showError(message);
-            }
-        });
+//        repo.signIn(email, password, new AuthCallBack() {
+//            @Override
+//            public void onSuccess(User user) {
+//                view.goToHome();
+//            }
+//
+//            @Override
+//            public void onError(String message) {
+//                view.showError(message);
+//            }
+//        });
     }
 
-    public void goToSignUp() {
-        // Activity that implements AuthView, triggered from here if needed.
+    public void onDestroy(LoginView caller) {
+        if (caller == view) {
+            view = null;
+            repo = null;
+        }
     }
 }

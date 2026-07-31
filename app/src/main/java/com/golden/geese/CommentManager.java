@@ -21,6 +21,7 @@ public class CommentManager extends InteractionManager<Comment> {
         if(comment.getAuthor().equals(user)) {
             comment.setText(text);
         }
+        return null; //TODO: ^^^
     }
 
     @Override
