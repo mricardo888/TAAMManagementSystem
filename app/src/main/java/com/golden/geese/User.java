@@ -11,7 +11,10 @@
  * Toronto Code of Behaviour on Academic Matters.
  *
  */
+package com.golden.geese;
+
 import java.util.*;
+import com.golden.geese.*;
 
 public class User {
     private List<Artifact> likedArtifacts;

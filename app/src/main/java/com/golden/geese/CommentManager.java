@@ -6,6 +6,7 @@ public class CommentManager {
         if(instance == null){
             //TODO: implement singleton structure
         }
+        return null; //TODO: ^^^
     }
 
 
