@@ -36,7 +36,6 @@ public class SignUpNameFragment extends Fragment implements AuthView {
 
         View view = inflater.inflate(R.layout.fragment_signup_name, container, false);
         presenter = SignUpPresenter.getSignUpPresenter();
-        presenter.setView(this);
         return view;
 
     }
@@ -52,6 +51,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
 
         // Set the text back to original
         nameInput.setText(presenter.getUsername());
+        presenter.setView(this);
 
         backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
@@ -88,6 +88,6 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        presenter.onDestroy();
+        presenter.onDestroy(this);
     }
 }

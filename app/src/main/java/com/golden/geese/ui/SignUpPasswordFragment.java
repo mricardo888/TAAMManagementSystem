@@ -21,6 +21,8 @@ import com.golden.geese.view.AuthView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
+
 public class SignUpPasswordFragment extends Fragment implements AuthView {
 
     private SignUpPresenter presenter;
@@ -36,7 +38,6 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
 
         View view = inflater.inflate(R.layout.fragment_signup_password, container, false);
         presenter = SignUpPresenter.getSignUpPresenter();
-        presenter.setView(this);
         return view;
 
     }
@@ -54,11 +55,13 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
 
         // Set the text back to original
         passwordInput.setText(presenter.getPassword());
+        presenter.setView(this);
 
         backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         nextButton.setOnClickListener(v -> {
-            presenter.validatePassword(passwordInput.getText().toString(), passwordConfirmationInput.getText().toString());
+            presenter.validatePassword(Objects.requireNonNull(passwordInput.getText()).toString(),
+                    Objects.requireNonNull(passwordConfirmationInput.getText()).toString());
         });
     }
 
@@ -93,6 +96,6 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        presenter.onDestroy();
+        presenter.onDestroy(this);
     }
 }
