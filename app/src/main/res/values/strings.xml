@@ -25,16 +25,4 @@
     <string name="welcome_user">Welcome, </string>
     <string name="on_display">On Display</string>
     <string name="artifacts">Artifacts</string>
-    <string name="tab_home">Home</string>
-    <string name="tab_profile">Profile</string>
-    <string name="name_placeholder">John Doe</string>
-    <string name="like_count">0</string>
-    <string name="tab_home">Home</string>
-    <string name="tab_profile">Profile</string>
-    <string name="liked_scroller">Liked Artifacts</string>
-    <string name="saved_scroller">Saved Artifacts</string>
-    <string name="likes_title">Likes</string>
-    <string name="comments_title">Comments</string>
-    <string name="view_all">View All</string>
-    <string name="setting_button_description">Open settings</string>
 </resources>
