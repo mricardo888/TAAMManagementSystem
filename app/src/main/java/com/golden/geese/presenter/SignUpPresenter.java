@@ -13,6 +13,7 @@ public class SignUpPresenter {
     private AuthRepository repo;
 
     private String username, email, password;
+
     private SignUpPresenter () {
         this.username = "";
         this.email = "";
@@ -36,6 +37,9 @@ public class SignUpPresenter {
     }
 
     public void validateName (String username) {
+        if (view == null) {
+            return;
+        }
         if (username == null || username.trim().isEmpty()) {
             view.showError("Username cannot be empty.");
             return;
@@ -45,6 +49,9 @@ public class SignUpPresenter {
     }
 
     public void validateEmail (String email) {
+        if (view == null) {
+            return;
+        }
         if (email == null || email.trim().isEmpty()) {
             view.showError("Email cannot be empty.");
             return;
@@ -54,8 +61,15 @@ public class SignUpPresenter {
     }
 
     public void validatePassword (String password, String passwordConfirmation) {
+        if (view == null) {
+            return;
+        }
         if (password == null || password.length() < 6) {
             view.showError("Password must be at least 6 characters.");
+            return;
+        }
+        if (!password.equals(passwordConfirmation)) {
+            view.showError("Passwords do not match.");
             return;
         }
         setPassword(password);
@@ -87,8 +101,6 @@ public class SignUpPresenter {
     }
 
     public void completeProcess () {
-        // Need to call once user has created account and signed in
-        // So that presenter memory and all data from signup process is cleaned
         instance = null;
     }
 
