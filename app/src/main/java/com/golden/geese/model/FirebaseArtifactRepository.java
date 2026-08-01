@@ -111,6 +111,22 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
     }
 
     @Override
+    public void getLikeCount(int lotNum, RepositoryCallback<Integer> callback) {
+        root.child(ARTIFACTS).child(String.valueOf(lotNum)).child(LIKED_BY)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        callback.onSuccess(readUids(snapshot).size());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onError(error.getMessage());
+                    }
+                });
+    }
+
+    @Override
     public void saveArtifact(int lotNum, String uid, RepositoryCallback<Void> callback) {
         updateUidList(lotNum, SAVED_BY, uid, true, callback);
     }
@@ -127,12 +143,21 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
 
     @Override
     public void getSavedLotNumbers(String uid, RepositoryCallback<List<Integer>> callback) {
+        getLotNumbersContaining(SAVED_BY, uid, callback);
+    }
+
+    @Override
+    public void getLikedLotNumbers(String uid, RepositoryCallback<List<Integer>> callback) {
+        getLotNumbersContaining(LIKED_BY, uid, callback);
+    }
+
+    private void getLotNumbersContaining(String listName, String uid, RepositoryCallback<List<Integer>> callback) {
         root.child(ARTIFACTS).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Integer> lotNumbers = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (readUids(child.child(SAVED_BY)).contains(uid)) {
+                    if (readUids(child.child(listName)).contains(uid)) {
                         Integer lotNum = parseLotNum(child.getKey());
                         if (lotNum != null) {
                             lotNumbers.add(lotNum);

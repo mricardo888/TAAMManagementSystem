@@ -14,9 +14,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.golden.geese.HomeFragment;
 import com.golden.geese.R;
+import com.golden.geese.model.FirebaseAuthRepository;
 import com.golden.geese.presenter.LoginPresenter;
 import com.golden.geese.presenter.SignUpPresenter;
 import com.golden.geese.view.LoginView;
@@ -38,6 +41,7 @@ public class LoginFragment extends Fragment implements LoginView{
 
         View view = inflater.inflate(R.layout.fragment_login_screen, container, false);
         presenter = new LoginPresenter();
+        presenter.setRepo(new FirebaseAuthRepository());
         return view;
     }
 
@@ -88,7 +92,10 @@ public class LoginFragment extends Fragment implements LoginView{
 
     @Override
     public void goToHome() {
-//        TODO: load home fragment
+        getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment_container, new HomeFragment());
+        transaction.commit();
     }
 
     @Override

@@ -43,7 +43,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void onBindViewHolder(@NonNull CommentAdapter.CommentViewHolder holder, int position) {
         Comment comment = comments.get(position);
 
-        holder.username.setText(comment.getAuthorId().getUsername());
+        holder.username.setText(comment.getAuthor().getUsername());
         holder.body.setText(comment.getText());
         holder.profileImage.setImageResource(R.drawable.placeholder_pfp);
 
@@ -57,7 +57,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             holder.time.setText("");
         }
 
-        boolean isOwner = currentUser != null && currentUser.getUsername() != null && currentUser.getUsername().equals(comment.getAuthorId());
+        boolean isOwner = currentUser != null && currentUser.getUsername() != null && currentUser.getUsername().equals(comment.getAuthor().getUsername());
         boolean isAdmin = currentUser != null && currentUser.isAdmin();
 
         holder.deleteButton.setVisibility((isOwner || isAdmin) ? View.VISIBLE : View.GONE);

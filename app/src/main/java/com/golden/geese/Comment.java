@@ -13,33 +13,35 @@
  */
 package com.golden.geese;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Comment extends Interaction implements Likeable {
     // The properties of a comment
     private String text;
     private LikeManager likeManager;
-    private CommentManager subCommentManager;
     private boolean edited;
-
-    private String id;
+    private String commentId;
+    private String parentId;
+    private List<Comment> replies;
 
     // Constructor
     public Comment() {
         super();
         text = "";
         likeManager = new LikeManager();
-        subCommentManager = new CommentManager();
         edited = false;
-        id = "";
+        commentId = "";
+        replies = new ArrayList<>();
     }
 
     public Comment(User author, String text) {
         super(author);
         this.text = text;
         this.likeManager = new LikeManager();
-        this.subCommentManager = new CommentManager();
         this.edited = false;
+        this.commentId = "";
+        this.replies = new ArrayList<>();
     }
 
     // Getters
@@ -65,18 +67,28 @@ public class Comment extends Interaction implements Likeable {
         return edited;
     }
 
-    public List<Comment> getSubComments() {
-        return subCommentManager.getInteractions();
+    public String getCommentId() {
+        return commentId;
     }
 
-    public void setCommentId(String id) {
-        this.id = id;
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
-}
 
-    @Exclude
-    public List<User> getLikeCount() {
-        return likeCount;
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public boolean isReply() {
+        return parentId != null && !parentId.isEmpty();
+    }
+
+    public List<Comment> getReplies() {
+        return replies;
     }
 
     @Override
@@ -84,9 +96,7 @@ public class Comment extends Interaction implements Likeable {
         return "Comment{" +
                 "commentId='" + commentId + '\'' +
                 ", parentId='" + parentId + '\'' +
-                ", username='" + username + '\'' +
                 ", text='" + text + '\'' +
-                ", timestamp=" + timestamp +
                 ", edited=" + edited +
                 ", replies=" + replies.size() +
                 '}';

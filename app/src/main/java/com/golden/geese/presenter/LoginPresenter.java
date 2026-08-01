@@ -34,19 +34,18 @@ public class LoginPresenter {
             return;
         }
 
-//        view.showLoading();
+        repo.signIn(email, password, new AuthCallBack() {
+            @Override
+            public void onSuccess(User user) {
+                SessionManager.getInstance().setCurrentUser(user);
+                view.goToHome();
+            }
 
-//        repo.signIn(email, password, new AuthCallBack() {
-//            @Override
-//            public void onSuccess(User user) {
-//                view.goToHome();
-//            }
-//
-//            @Override
-//            public void onError(String message) {
-//                view.showError(message);
-//            }
-//        });
+            @Override
+            public void onError(String message) {
+                view.showPasswordError(message);
+            }
+        });
     }
 
     public void onDestroy(LoginView caller) {

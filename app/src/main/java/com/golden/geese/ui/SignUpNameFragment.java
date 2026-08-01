@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.golden.geese.R;
+import com.golden.geese.model.FirebaseAuthRepository;
 import com.golden.geese.presenter.SignUpPresenter;
 import com.golden.geese.view.AuthView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -36,6 +37,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
 
         View view = inflater.inflate(R.layout.fragment_signup_name, container, false);
         presenter = SignUpPresenter.getSignUpPresenter();
+        presenter.setRepo(new FirebaseAuthRepository());
         return view;
 
     }
