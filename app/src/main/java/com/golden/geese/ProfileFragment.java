@@ -43,8 +43,8 @@ public class ProfileFragment extends Fragment {
         List<Artifact> likedArtifacts = getDummyData();
         List<Artifact> savedArtifacts = getDummyData();
 
-        ArtifactAdapter likedAdapter = new ArtifactAdapter(likedArtifacts, R.layout.item_artifact);
-        ArtifactAdapter savedAdapter = new ArtifactAdapter(savedArtifacts, R.layout.item_artifact);
+        ArtifactAdapter likedAdapter = new ArtifactAdapter(likedArtifacts, R.layout.item_artifact, this::openDetailsScreen);
+        ArtifactAdapter savedAdapter = new ArtifactAdapter(savedArtifacts, R.layout.item_artifact, this::openDetailsScreen);
 
         likedArtifactsRV.setAdapter(likedAdapter);
         savedArtifactsRV.setAdapter(savedAdapter);
@@ -58,5 +58,14 @@ public class ProfileFragment extends Fragment {
         list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
         list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
         return list;
+    }
+
+    private void openDetailsScreen(Artifact artifact) {
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(artifact);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_fragment_container, detailsFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

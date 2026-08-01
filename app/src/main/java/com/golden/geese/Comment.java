@@ -23,6 +23,8 @@ public class Comment extends Interaction implements Likeable {
     private boolean edited;
 
     private String id;
+    private String parentId;
+    private boolean isReply;
 
     // Constructor
     public Comment() {
@@ -72,23 +74,10 @@ public class Comment extends Interaction implements Likeable {
     public void setCommentId(String id) {
         this.id = id;
     }
-}
 
-    @Exclude
-    public List<User> getLikeCount() {
-        return likeCount;
-    }
+    public void setParentId(String parentId) { this.parentId = parentId; }
 
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "commentId='" + commentId + '\'' +
-                ", parentId='" + parentId + '\'' +
-                ", username='" + username + '\'' +
-                ", text='" + text + '\'' +
-                ", timestamp=" + timestamp +
-                ", edited=" + edited +
-                ", replies=" + replies.size() +
-                '}';
-    }
+    public String getParentId() { return parentId; }
+
+    public boolean isReply() { return isReply; }
 }

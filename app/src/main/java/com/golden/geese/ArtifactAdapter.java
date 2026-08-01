@@ -13,10 +13,16 @@ import java.util.List;
 public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.ArtifactViewHolder> {
     private List<Artifact> artifactList;
     private int layoutId;
+    private onArtifactClickListener listener;
 
-    public ArtifactAdapter(List<Artifact> artifactList, int layoutId) {
+    public interface onArtifactClickListener {
+        void onArtifactClick(Artifact artifact);
+    }
+
+    public ArtifactAdapter(List<Artifact> artifactList, int layoutId, onArtifactClickListener listener) {
         this.artifactList = artifactList;
         this.layoutId = layoutId;
+        this.listener = listener;
     }
 
     @NonNull
@@ -36,6 +42,12 @@ public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.Artifa
         // Sets a local drawable resource.
         // If loading from the internet later, use Glide: Glide.with(holder.itemView).load(artifact.getImageUrl()).into(holder.ivImage);
         holder.ivImage.setImageResource(R.drawable.ic_launcher_background);
+
+        holder.itemView.setOnClickListener(v -> {
+            if(listener != null) {
+                listener.onArtifactClick(artifact);
+            }
+        });
     }
 
     @Override

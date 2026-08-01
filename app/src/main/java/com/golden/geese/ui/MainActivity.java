@@ -12,6 +12,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.golden.geese.R;
 
 
+import com.golden.geese.SessionManager;
+import com.golden.geese.User;
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.model.FirebaseAuthRepository;
 

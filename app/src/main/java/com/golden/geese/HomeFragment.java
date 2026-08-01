@@ -5,8 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
@@ -128,12 +126,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void openDetailsScreen(Artifact artifact) {
-        // 1. Pack your artifact data into a Bundle
-        Bundle args = new Bundle();
-        args.putSerializable("Artifact", artifact);
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(artifact);
 
-        // 2. Find the NavController and navigate using your action ID
-        NavController navController = Navigation.findNavController(requireView());
-        navController.navigate(R.id.action_homeFragment_to_detailsFragment, args);
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_fragment_container, detailsFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

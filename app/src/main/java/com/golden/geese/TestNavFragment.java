@@ -5,8 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +30,7 @@ public class TestNavFragment extends Fragment {
         // Access the button directly using type-safe binding property
         binding.testNavButton2.setOnClickListener(v -> {
             // Trigger navigation to test nav screen
-            Navigation.findNavController(v).navigate(R.id.action_testNavFragment_to_homeFragment);
+            //Navigation.findNavController(v).navigate(R.id.action_testNavFragment_to_homeFragment);
         });
     }
 

@@ -296,7 +296,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
                             Comment comment = child.getValue(Comment.class);
                             if (comment != null && child.getKey() != null) {
                                 comment.setCommentId(child.getKey());
-                                comment.getReplies().clear();
+                                //comment.getReplies().clear();
                                 byId.put(child.getKey(), comment);
                             }
                         }
@@ -317,7 +317,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
             if (parent == null) {
                 roots.add(comment);
             } else {
-                parent.getReplies().add(comment);
+                parent.getSubComments().add(comment);
             }
         }
         return roots;

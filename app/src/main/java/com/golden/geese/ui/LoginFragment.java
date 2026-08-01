@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.golden.geese.HomeFragment;
 import com.golden.geese.R;
 import com.golden.geese.presenter.LoginPresenter;
 import com.golden.geese.presenter.SignUpPresenter;
@@ -60,7 +61,9 @@ public class LoginFragment extends Fragment implements LoginView{
         nextButton.setOnClickListener(v -> {
             presenter.login(
                 Objects.requireNonNull(emailInput.getText()).toString(),
-                    Objects.requireNonNull(passwordInput.getText()).toString());});
+                    Objects.requireNonNull(passwordInput.getText()).toString());
+            goToHome();
+        });
 
         signUpButton.setOnClickListener(v -> {
             loadFragment(new SignUpNameFragment());
@@ -88,7 +91,7 @@ public class LoginFragment extends Fragment implements LoginView{
 
     @Override
     public void goToHome() {
-//        TODO: load home fragment
+        loadFragment(new HomeFragment());
     }
 
     @Override

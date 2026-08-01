@@ -27,10 +27,19 @@ public class DetailsFragment extends Fragment {
         TextView tvDetailTitle = view.findViewById(R.id.tv_name);
 
         if (getArguments() != null) {
-            Artifact artifact = (Artifact) getArguments().getSerializable("Artifact");
+            Artifact artifact = (Artifact) getArguments().getSerializable("artifact");
 
             tvDetailTitle.setText(artifact.getName());
             ivDetailImage.setImageResource(R.drawable.ic_launcher_background);
         }
     }
+
+    public static DetailsFragment newInstance(Artifact artifact) {
+        DetailsFragment fragment = new DetailsFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("artifact", artifact);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 }
