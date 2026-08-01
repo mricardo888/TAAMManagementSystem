@@ -5,17 +5,24 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.golden.geese.model.FirebaseArtifactRepository;
+import com.golden.geese.model.RepositoryCallback;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
+    private final FirebaseArtifactRepository repository = new FirebaseArtifactRepository();
+
     private RecyclerView likedArtifactsRV;
     private RecyclerView savedArtifactsRV;
 
@@ -32,31 +39,89 @@ public class ProfileFragment extends Fragment {
 
         savedArtifactsRV = view.findViewById(R.id.saved_artifact_scroller);
 
-        setupRecyclerViews();
-    }
-
-    private void setupRecyclerViews()
-    {
         likedArtifactsRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         savedArtifactsRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        List<Artifact> likedArtifacts = getDummyData();
-        List<Artifact> savedArtifacts = getDummyData();
+        view.findViewById(R.id.tab_home).setOnClickListener(clickedView -> {
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_fragment_container, new HomeFragment());
+            transaction.addToBackStack(null);
+            transaction.commit();
+        });
 
-        ArtifactAdapter likedAdapter = new ArtifactAdapter(likedArtifacts, R.layout.item_artifact);
-        ArtifactAdapter savedAdapter = new ArtifactAdapter(savedArtifacts, R.layout.item_artifact);
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            TextView profileName = view.findViewById(R.id.profile_name);
+            profileName.setText(currentUser.getUsername());
+        }
 
-        likedArtifactsRV.setAdapter(likedAdapter);
-        savedArtifactsRV.setAdapter(savedAdapter);
+        loadArtifacts();
     }
 
-    private List<Artifact> getDummyData() {
-        List<Artifact> list = new ArrayList<>();
-        // Note: Change R.drawable.sample_image to the actual name of your image file in res/drawable
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        return list;
+    private void loadArtifacts() {
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null || currentUser.getUid() == null) {
+            return;
+        }
+        String uid = currentUser.getUid();
+
+        repository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
+            @Override
+            public void onSuccess(List<Artifact> allArtifacts) {
+                if (!isAdded()) {
+                    return;
+                }
+                loadLikedArtifacts(uid, allArtifacts);
+                loadSavedArtifacts(uid, allArtifacts);
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+    }
+
+    private void loadLikedArtifacts(String uid, List<Artifact> allArtifacts) {
+        repository.getLikedLotNumbers(uid, new RepositoryCallback<List<Integer>>() {
+            @Override
+            public void onSuccess(List<Integer> lotNumbers) {
+                if (!isAdded()) {
+                    return;
+                }
+                ArtifactAdapter adapter = new ArtifactAdapter(filterByLotNumbers(allArtifacts, lotNumbers), R.layout.item_artifact);
+                likedArtifactsRV.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+    }
+
+    private void loadSavedArtifacts(String uid, List<Artifact> allArtifacts) {
+        repository.getSavedLotNumbers(uid, new RepositoryCallback<List<Integer>>() {
+            @Override
+            public void onSuccess(List<Integer> lotNumbers) {
+                if (!isAdded()) {
+                    return;
+                }
+                ArtifactAdapter adapter = new ArtifactAdapter(filterByLotNumbers(allArtifacts, lotNumbers), R.layout.item_artifact);
+                savedArtifactsRV.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+    }
+
+    private List<Artifact> filterByLotNumbers(List<Artifact> allArtifacts, List<Integer> lotNumbers) {
+        List<Artifact> filtered = new ArrayList<>();
+        for (Artifact artifact : allArtifacts) {
+            if (lotNumbers.contains(artifact.getLotNum())) {
+                filtered.add(artifact);
+            }
+        }
+        return filtered;
     }
 }

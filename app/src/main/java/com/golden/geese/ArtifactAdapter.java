@@ -8,15 +8,28 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.ArtifactViewHolder> {
+    public interface OnArtifactClickListener {
+        void onClick(Artifact artifact);
+    }
+
     private List<Artifact> artifactList;
     private int layoutId;
+    private OnArtifactClickListener clickListener;
 
     public ArtifactAdapter(List<Artifact> artifactList, int layoutId) {
+        this(artifactList, layoutId, null);
+    }
+
+    public ArtifactAdapter(List<Artifact> artifactList, int layoutId, OnArtifactClickListener clickListener) {
         this.artifactList = artifactList;
         this.layoutId = layoutId;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -33,9 +46,17 @@ public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.Artifa
 
         holder.tvName.setText(artifact.getName());
 
-        // Sets a local drawable resource.
-        // If loading from the internet later, use Glide: Glide.with(holder.itemView).load(artifact.getImageUrl()).into(holder.ivImage);
-        holder.ivImage.setImageResource(R.drawable.ic_launcher_background);
+        Glide.with(holder.itemView)
+                .load(artifact.getImage())
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_background)
+                .into(holder.ivImage);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onClick(artifact);
+            }
+        });
     }
 
     @Override

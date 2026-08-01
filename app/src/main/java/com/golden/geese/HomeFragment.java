@@ -5,8 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
@@ -18,13 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.golden.geese.databinding.FragmentHomeBinding;
+import com.golden.geese.model.ArtifactRepository;
+import com.golden.geese.model.FirebaseArtifactRepository;
+import com.golden.geese.model.RepositoryCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
     private ViewPager2 viewPagerCarousel;
     private RecyclerView rvArtifacts;
+    private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -40,20 +42,43 @@ public class HomeFragment extends Fragment {
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
         rvArtifacts = view.findViewById(R.id.rv_artifacts);
 
-        setupCarousel();
-        setupRecyclerView();
-//        // Access the button directly using type-safe binding property
-//        binding.testNavButton1.setOnClickListener(v -> {
-//            // Trigger navigation to test nav screen
-//            Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_testNavFragment);
-//        });
+        rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        setupCarouselTransforms();
+
+        view.findViewById(R.id.tab_profile).setOnClickListener(clickedView -> {
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_fragment_container, new ProfileFragment());
+            transaction.addToBackStack(null);
+            transaction.commit();
+        });
+
+        artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
+            @Override
+            public void onSuccess(List<Artifact> artifacts) {
+                if (!isAdded()) {
+                    return;
+                }
+                setupCarousel(artifacts);
+                setupRecyclerView(artifacts);
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
     }
 
-    private void setupCarousel() {
-        List<Artifact> carouselData = getDummyData();
-        ArtifactAdapter carouselAdapter = new ArtifactAdapter(carouselData, R.layout.item_carousel, this::openDetailsScreen);
+    private void setupCarousel(List<Artifact> artifacts) {
+        ArtifactAdapter carouselAdapter = new ArtifactAdapter(artifacts, R.layout.item_carousel, this::openDetailsScreen);
         viewPagerCarousel.setAdapter(carouselAdapter);
+    }
 
+    private void setupRecyclerView(List<Artifact> artifacts) {
+        ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifacts, R.layout.item_artifact, this::openDetailsScreen);
+        rvArtifacts.setAdapter(artifactAdapter);
+    }
+
+    private void setupCarouselTransforms() {
         // 1. Enable peeking beyond bounds
         viewPagerCarousel.setClipToPadding(false);
         viewPagerCarousel.setClipChildren(false);
@@ -107,33 +132,16 @@ public class HomeFragment extends Fragment {
         viewPagerCarousel.setPageTransformer(transformer);
     }
 
-    private void setupRecyclerView() {
-        List<Artifact> artifactData = getDummyData();
-        ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifactData, R.layout.item_artifact, this::openDetailsScreen);
-
-        // Sets up standard horizontal scrolling
-        rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        rvArtifacts.setAdapter(artifactAdapter);
-    }
-
-    // Generates dummy data to populate the lists
-    private List<Artifact> getDummyData() {
-        List<Artifact> list = new ArrayList<>();
-        // Note: Change R.drawable.sample_image to the actual name of your image file in res/drawable
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        list.add(new Artifact(0, "A Tang 'Sancai'\n'Baoxianghua' Box", "", "", null, "", "", null, "", "", "", "", 0, "", null));
-        return list;
-    }
-
     private void openDetailsScreen(Artifact artifact) {
-        // 1. Pack your artifact data into a Bundle
         Bundle args = new Bundle();
         args.putSerializable("Artifact", artifact);
 
-        // 2. Find the NavController and navigate using your action ID
-        NavController navController = Navigation.findNavController(requireView());
-        navController.navigate(R.id.action_homeFragment_to_detailsFragment, args);
+        ExpandedArtifactFragment fragment = new ExpandedArtifactFragment();
+        fragment.setArguments(args);
+
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

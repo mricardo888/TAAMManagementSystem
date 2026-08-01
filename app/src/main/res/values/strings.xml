@@ -25,4 +25,5 @@
     <string name="welcome_user">Welcome, </string>
     <string name="on_display">On Display</string>
     <string name="artifacts">Artifacts</string>
+    <string name="setting_button_description">Settings</string>
 </resources>

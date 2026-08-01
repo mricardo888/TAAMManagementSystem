@@ -9,8 +9,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import com.golden.geese.HomeFragment;
 import com.golden.geese.R;
-
+import com.golden.geese.SessionManager;
+import com.golden.geese.User;
 
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.model.FirebaseAuthRepository;
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             if (userIsLoggedIn()) {
-//                loadFragment(new HomeFragment());
+                loadFragment(new HomeFragment());
             } else {
                 loadFragment(new WelcomeFragment());
             }
@@ -48,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean userIsLoggedIn () {
-        // TODO: Make the new class the that authenticates user and return if they are logged
-        return false;
+        return SessionManager.getInstance().isLoggedIn();
     }
 
     private void loadFragment(Fragment fragment) {

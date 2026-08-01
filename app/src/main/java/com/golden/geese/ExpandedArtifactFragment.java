@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -17,14 +20,28 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.golden.geese.model.FirebaseArtifactRepository;
+import com.golden.geese.model.RepositoryCallback;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExpandedArtifactFragment extends Fragment {
+    private final FirebaseArtifactRepository repository = new FirebaseArtifactRepository();
+
     private RecyclerView commentsRV;
     private CommentAdapter commentAdapter;
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
     private User currentUser;
+    private Artifact artifact;
+
+    private ImageButton likeButton;
+    private TextView likesCounter;
+    private ImageButton saveButton;
+    private TextView commentsCounter;
+    private boolean liked = false;
+    private boolean saved = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,21 +58,40 @@ public class ExpandedArtifactFragment extends Fragment {
             return insets;
         });
 
-        commentsRV = view.findViewById(R.id.comments_section);
-
-        currentUser = new RegularUser();
-
-        TextView descriptionText = view.findViewById(R.id.description_text);
-        TextView readMoreText = view.findViewById(R.id.read_more_text);
-
-        final boolean[] liked = {false};
-        final boolean[] saved = {false};
-        boolean[] expanded = {false};
+        currentUser = SessionManager.getInstance().getCurrentUser();
         boolean isAdmin = currentUser != null && currentUser.isAdmin();
 
-        setupRecyclerView();
+        if (getArguments() != null) {
+            artifact = (Artifact) getArguments().getSerializable("Artifact");
+        }
 
-        // Description expanding/collapsing
+        commentsRV = view.findViewById(R.id.comments_section);
+        commentsRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        commentAdapter = new CommentAdapter(comments, currentUser, this::onDeleteComment);
+        commentsRV.setAdapter(commentAdapter);
+
+        TextView artifactName = view.findViewById(R.id.artifact_name);
+        ImageView artifactImage = view.findViewById(R.id.image_placeholder);
+        TextView descriptionText = view.findViewById(R.id.description_text);
+        TextView readMoreText = view.findViewById(R.id.read_more_text);
+        likesCounter = view.findViewById(R.id.likes_counter);
+        commentsCounter = view.findViewById(R.id.comments_counter);
+
+        final boolean[] expanded = {false};
+
+        if (artifact != null) {
+            artifactName.setText(artifact.getName());
+            descriptionText.setText(artifact.getDescription());
+            Glide.with(this)
+                    .load(artifact.getImage())
+                    .placeholder(R.drawable.expanded_artifact_placeholder)
+                    .error(R.drawable.expanded_artifact_placeholder)
+                    .into(artifactImage);
+            loadLikeState();
+            loadSaveState();
+            loadComments();
+        }
+
         readMoreText.setOnClickListener(clickedView -> {
             expanded[0] = !expanded[0];
 
@@ -71,91 +107,222 @@ public class ExpandedArtifactFragment extends Fragment {
             }
         });
 
-        // Back button
         ImageButton backButton = view.findViewById(R.id.back_button);
-        backButton.setOnClickListener(clickedView -> {
-            // Go back to previous page
-        });
+        backButton.setOnClickListener(clickedView -> getParentFragmentManager().popBackStack());
 
-        // Like button UNFINISHED
-        ImageButton likeButton = view.findViewById(R.id.like_button);
-        TextView likeCount = view.findViewById(R.id.likes_counter);
-        likeButton.setOnClickListener(clickedView -> {
-            liked[0] = !liked[0];
+        likeButton = view.findViewById(R.id.like_button);
+        likeButton.setOnClickListener(clickedView -> toggleLike());
 
-            if (liked[0])
-            {
-                likeButton.setImageResource(R.drawable.filled_heart_icon);
-            }
-            else
-            {
-                likeButton.setImageResource(R.drawable.heart_icon);
-            }
-        });
+        saveButton = view.findViewById(R.id.save_button);
+        saveButton.setOnClickListener(clickedView -> toggleSave());
 
-        // Save button UNFINISHED
-        ImageButton saveButton = view.findViewById(R.id.save_button);
-        saveButton.setOnClickListener(clickedView -> {
-            saved[0] = !saved[0];
-
-            if (saved[0])
-            {
-                saveButton.setImageResource(R.drawable.filled_bookmark_icon);
-            }
-            else
-            {
-                saveButton.setImageResource(R.drawable.bookmark_icon);
-            }
-        });
-        
-        // Add comment button UNFINISHED
         ImageButton addButton = view.findViewById(R.id.add_button);
-        addButton.setOnClickListener(clickedView -> {
-            // open add comment popup
-        });
+        addButton.setOnClickListener(clickedView -> showAddCommentDialog());
 
-        // Admin controls
-
-        // Edit button UNFINISHED
         ImageButton editButton = view.findViewById(R.id.edit_button);
-        backButton.setOnClickListener(clickedView -> {
-            // open up edit artifact page
-        });
         editButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
-        // Remove button UNFINISHED
         ImageButton removeButton = view.findViewById(R.id.remove_button);
-        backButton.setOnClickListener(clickedView -> {
-            // open up confirm remove artifact popup
-        });
+        removeButton.setOnClickListener(clickedView -> confirmDeleteArtifact());
         removeButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
     }
 
-    private void setupRecyclerView()
-    {
-        commentsRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
-        List<Comment> comments = getDummyData();
-        CommentAdapter commentAdapter = new CommentAdapter(
-            comments,
-            currentUser,
-            (comment, position) -> {}
-        );
-        commentsRV.setAdapter(commentAdapter);
+    private void loadLikeState() {
+        repository.getLikeCount(artifact.getLotNum(), new RepositoryCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer count) {
+                if (isAdded()) {
+                    likesCounter.setText(String.valueOf(count));
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+
+        if (currentUser == null || currentUser.getUid() == null) {
+            return;
+        }
+
+        repository.isArtifactLikedByUser(artifact.getLotNum(), currentUser.getUid(), new RepositoryCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean isLiked) {
+                if (isAdded()) {
+                    liked = isLiked;
+                    likeButton.setImageResource(liked ? R.drawable.filled_heart_icon : R.drawable.heart_icon);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
     }
 
-    private List<Comment> getDummyData() {
-        List<Comment> comments = new ArrayList<>();
+    private void toggleLike() {
+        if (currentUser == null || currentUser.getUid() == null) {
+            return;
+        }
 
-        RegularUser u1 = new RegularUser("user_001", null);
-        RegularUser u2 = new RegularUser("user_001", null);
-        RegularUser u3 = new RegularUser("user_001", null);
-        RegularUser u4 = new RegularUser("user_001", null);
+        String uid = currentUser.getUid();
+        RepositoryCallback<Void> callback = new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (isAdded()) {
+                    loadLikeState();
+                }
+            }
 
-        comments.add(new Comment(u1, "This artifact looks amazing."));
-        comments.add(new Comment(u2, "I really like the glaze and pattern details."));
-        comments.add(new Comment(u3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."));
-        comments.add(new Comment(u4, "I would love to see this artifact in person."));
+            @Override
+            public void onError(String message) {
+            }
+        };
 
-        return comments;
+        if (liked) {
+            repository.unlikeArtifact(artifact.getLotNum(), uid, callback);
+        } else {
+            repository.likeArtifact(artifact.getLotNum(), uid, callback);
+        }
+    }
+
+    private void loadSaveState() {
+        if (currentUser == null || currentUser.getUid() == null) {
+            return;
+        }
+
+        repository.isArtifactSavedByUser(artifact.getLotNum(), currentUser.getUid(), new RepositoryCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean isSaved) {
+                if (isAdded()) {
+                    saved = isSaved;
+                    saveButton.setImageResource(saved ? R.drawable.filled_bookmark_icon : R.drawable.bookmark_icon);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+    }
+
+    private void toggleSave() {
+        if (currentUser == null || currentUser.getUid() == null) {
+            return;
+        }
+
+        String uid = currentUser.getUid();
+        RepositoryCallback<Void> callback = new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (isAdded()) {
+                    loadSaveState();
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        };
+
+        if (saved) {
+            repository.unsaveArtifact(artifact.getLotNum(), uid, callback);
+        } else {
+            repository.saveArtifact(artifact.getLotNum(), uid, callback);
+        }
+    }
+
+    private void loadComments() {
+        repository.getComments(artifact.getLotNum(), new RepositoryCallback<List<Comment>>() {
+            @Override
+            public void onSuccess(List<Comment> result) {
+                if (!isAdded()) {
+                    return;
+                }
+                comments = result;
+                commentAdapter = new CommentAdapter(comments, currentUser, ExpandedArtifactFragment.this::onDeleteComment);
+                commentsRV.setAdapter(commentAdapter);
+                commentsCounter.setText(String.valueOf(comments.size()));
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+    }
+
+    private void showAddCommentDialog() {
+        if (currentUser == null || artifact == null) {
+            return;
+        }
+
+        EditText input = new EditText(requireContext());
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Add Comment")
+                .setView(input)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    String text = input.getText().toString().trim();
+                    if (!text.isEmpty()) {
+                        addComment(text);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void addComment(String text) {
+        Comment comment = new Comment(currentUser, text);
+        repository.addComment(artifact.getLotNum(), comment, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (isAdded()) {
+                    loadComments();
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+    }
+
+    private void onDeleteComment(Comment comment, int position) {
+        repository.deleteComment(artifact.getLotNum(), comment.getCommentId(), new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (isAdded()) {
+                    commentsCounter.setText(String.valueOf(comments.size()));
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+    }
+
+    private void confirmDeleteArtifact() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete Artifact")
+                .setMessage("Are you sure you want to delete this artifact? This cannot be undone.")
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> deleteArtifact())
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void deleteArtifact() {
+        repository.deleteArtifact(artifact.getLotNum(), new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (isAdded()) {
+                    getParentFragmentManager().popBackStack();
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
     }
 }
