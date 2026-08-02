@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.golden.geese.model.FirebaseArtifactRepository;
 import com.golden.geese.model.RepositoryCallback;
+import com.golden.geese.ui.UserSettingsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ProfileFragment extends Fragment {
 
     private RecyclerView likedArtifactsRV;
     private RecyclerView savedArtifactsRV;
+    private ImageButton settingsButton;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,6 +38,8 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstnaceState) {
         super.onViewCreated(view, savedInstnaceState);
 
+        settingsButton = view.findViewById(R.id.settings_button);
+
         likedArtifactsRV = view.findViewById(R.id.liked_artifact_scroller);
 
         savedArtifactsRV = view.findViewById(R.id.saved_artifact_scroller);
@@ -42,11 +47,12 @@ public class ProfileFragment extends Fragment {
         likedArtifactsRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         savedArtifactsRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        view.findViewById(R.id.tab_home).setOnClickListener(clickedView -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_fragment_container, new HomeFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+        view.findViewById(R.id.tab_home).setOnClickListener(v -> {
+            loadFragment(new HomeFragment());
+        });
+
+        settingsButton.setOnClickListener( v -> {
+            loadFragment(new UserSettingsFragment());
         });
 
         User currentUser = SessionManager.getInstance().getCurrentUser();
@@ -56,6 +62,13 @@ public class ProfileFragment extends Fragment {
         }
 
         loadArtifacts();
+    }
+
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void loadArtifacts() {
