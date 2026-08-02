@@ -255,17 +255,93 @@
             app:layout_constraintStart_toStartOf="@id/description_text"
             app:layout_constraintTop_toBottomOf="@id/description_text" />
 
+        <TextView
+            android:id="@+id/category_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/olive"
+            android:textSize="14sp"
+            android:fontFamily="@font/idiqlat_regular"
+            android:text="@string/ea_category"
+            app:layout_constraintStart_toStartOf="@id/description_text"
+            app:layout_constraintTop_toBottomOf="@id/read_more_text" />
+
+        <TextView
+            android:id="@+id/category_text"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/olive"
+            android:textSize="12sp"
+            android:fontFamily="@font/idiqlat_extralight"
+            android:text="@string/category_placeholder"
+            app:layout_constraintStart_toEndOf="@id/category_label"
+            app:layout_constraintTop_toTopOf="@id/category_label"
+            app:layout_constraintBottom_toBottomOf="@id/category_label"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <TextView
+            android:id="@+id/materials_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/olive"
+            android:textSize="14sp"
+            android:fontFamily="@font/idiqlat_regular"
+            android:text="@string/ea_materials"
+            app:layout_constraintStart_toStartOf="@id/description_text"
+            app:layout_constraintTop_toBottomOf="@id/category_label" />
+
+        <TextView
+            android:id="@+id/materials_text"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/olive"
+            android:textSize="12sp"
+            android:fontFamily="@font/idiqlat_extralight"
+            android:text="@string/materials_placeholder"
+            app:layout_constraintStart_toEndOf="@id/materials_label"
+            app:layout_constraintTop_toTopOf="@id/materials_label"
+            app:layout_constraintBottom_toBottomOf="@id/materials_label"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <TextView
+            android:id="@+id/dynasty_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/olive"
+            android:textSize="14sp"
+            android:fontFamily="@font/idiqlat_regular"
+            android:text="@string/ea_dynasty"
+            app:layout_constraintStart_toStartOf="@id/description_text"
+            app:layout_constraintTop_toBottomOf="@id/materials_label" />
+
+        <TextView
+            android:id="@+id/dynasty_text"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/olive"
+            android:textSize="12sp"
+            android:fontFamily="@font/idiqlat_extralight"
+            android:text="@string/dynasty_placeholder"
+            app:layout_constraintStart_toEndOf="@id/dynasty_label"
+            app:layout_constraintTop_toTopOf="@id/dynasty_label"
+            app:layout_constraintBottom_toBottomOf="@id/dynasty_label"
+            app:layout_constraintVertical_bias="0.5" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/read_more_text">
+            app:layout_constraintTop_toBottomOf="@id/dynasty_label">
 
             <TextView
                 android:id="@+id/comments_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="28dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/comments"
                 android:fontFamily="@font/idiqlat_regular"
                 android:textColor="@color/olive"

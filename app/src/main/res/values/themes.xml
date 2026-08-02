@@ -30,4 +30,36 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="CustomDeleteDialog"
+        parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+
+        <item name="colorPrimary">@color/beige</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/CustomDialogTitleText</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/CustomDialogBodyText</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogNegativeButton</item>
+    </style>
+
+    <style name="CustomDialogTitleText"
+        parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/brown</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="CustomDialogBodyText"
+        parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">@color/olive</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="DialogPositiveButton"
+        parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/brown</item>
+    </style>
+
+    <style name="DialogNegativeButton"
+        parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/olive</item>
+    </style>
+
 </resources>
