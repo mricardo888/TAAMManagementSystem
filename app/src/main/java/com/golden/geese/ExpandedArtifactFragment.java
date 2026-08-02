@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -17,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +29,7 @@ public class ExpandedArtifactFragment extends Fragment {
     private CommentAdapter commentAdapter;
     private List<Comment> comments;
     private User currentUser;
+    private Artifact currentArtifact;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,12 +46,17 @@ public class ExpandedArtifactFragment extends Fragment {
             return insets;
         });
 
+        currentUser = new RegularUser();
+        currentArtifact = new Artifact(1, "B", "C", "D", new String[] {"E"}, "F");
+
         commentsRV = view.findViewById(R.id.comments_section);
 
-        currentUser = new RegularUser();
-
+        TextView artifactNameText = view.findViewById(R.id.artifact_name);
         TextView descriptionText = view.findViewById(R.id.description_text);
         TextView readMoreText = view.findViewById(R.id.read_more_text);
+        TextView categoryText = view.findViewById(R.id.category_text);
+        TextView materialsText = view.findViewById(R.id.materials_text);
+        TextView dynastyText = view.findViewById(R.id.dynasty_text);
 
         final boolean[] liked = {false};
         final boolean[] saved = {false};
@@ -74,7 +84,7 @@ public class ExpandedArtifactFragment extends Fragment {
         // Back button
         ImageButton backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(clickedView -> {
-            // Go back to previous page
+            // TODO: Go back to previous page
         });
 
         // Like button UNFINISHED
@@ -91,6 +101,8 @@ public class ExpandedArtifactFragment extends Fragment {
             {
                 likeButton.setImageResource(R.drawable.heart_icon);
             }
+
+            // TODO: Make changes to database
         });
 
         // Save button UNFINISHED
@@ -106,36 +118,92 @@ public class ExpandedArtifactFragment extends Fragment {
             {
                 saveButton.setImageResource(R.drawable.bookmark_icon);
             }
+
+            // TODO: Make changes to database
         });
         
         // Add comment button UNFINISHED
         ImageButton addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener(clickedView -> {
-            // open add comment popup
+            View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_comment, null);
+
+            EditText commentInput = dialogView.findViewById(R.id.comment_input);
+
+            AlertDialog dialog =
+                    new MaterialAlertDialogBuilder(
+                            requireContext(),
+                            R.style.CustomDeleteDialog
+                    )
+                            .setTitle(R.string.add_comment)
+                            .setView(dialogView)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.post, null)
+                            .create();
+
+            dialog.setOnShowListener(unused -> {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                        .setOnClickListener(buttonView -> {
+                            String commentText = commentInput.getText().toString().trim();
+
+                            if (commentText.isEmpty()) {
+                                commentInput.setError("Comment cannot be empty");
+                                return;
+                            }
+
+                            Comment newComment = new Comment(currentUser, commentText);
+                            commentAdapter.addComment(newComment);
+
+                            dialog.dismiss();
+                        });
+            });
+
+            dialog.show();
         });
 
         // Admin controls
 
         // Edit button UNFINISHED
         ImageButton editButton = view.findViewById(R.id.edit_button);
-        backButton.setOnClickListener(clickedView -> {
-            // open up edit artifact page
+        editButton.setOnClickListener(clickedView -> {
+            EditArtifactDialogFragment dialog =
+                    new EditArtifactDialogFragment();
+
+            dialog.setArtifact(currentArtifact, updatedArtifact -> {
+                artifactNameText.setText(updatedArtifact.getName());
+                descriptionText.setText(updatedArtifact.getDescription());
+                categoryText.setText(updatedArtifact.getCategory());
+                dynastyText.setText(updatedArtifact.getDynasty());
+
+                String[] materials = updatedArtifact.getMaterials();
+                materialsText.setText(materials == null ? "" : String.join(", ", materials));
+            });
+
+            dialog.show(getParentFragmentManager(), "EditArtifactDialog");
         });
+
         editButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
         // Remove button UNFINISHED
         ImageButton removeButton = view.findViewById(R.id.remove_button);
-        backButton.setOnClickListener(clickedView -> {
-            // open up confirm remove artifact popup
+        removeButton.setOnClickListener(clickedView -> {
+            new MaterialAlertDialogBuilder(requireContext(), R.style.CustomDeleteDialog)
+                    .setTitle("Delete artifact?")
+                    .setMessage("This action cannot be undone.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        // TODO: Delete artifact from database
+                    })
+                    .show();
         });
+
         removeButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
     }
 
     private void setupRecyclerView()
     {
         commentsRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
-        List<Comment> comments = getDummyData();
-        CommentAdapter commentAdapter = new CommentAdapter(
+        comments = getDummyData();
+        commentAdapter = new CommentAdapter(
             comments,
             currentUser,
             (comment, position) -> {}
