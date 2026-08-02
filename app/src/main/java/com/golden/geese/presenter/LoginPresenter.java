@@ -4,8 +4,6 @@ import com.golden.geese.SessionManager;
 import com.golden.geese.User;
 import com.golden.geese.model.AuthCallBack;
 import com.golden.geese.model.AuthRepository;
-import com.golden.geese.ui.LoginFragment;
-import com.golden.geese.view.AuthView;
 import com.golden.geese.view.LoginView;
 
 public class LoginPresenter {
@@ -25,28 +23,30 @@ public class LoginPresenter {
     }
 
     public void login(String email, String password) {
+        if (view == null || repo == null) {
+            return;
+        }
         if (email == null || email.trim().isEmpty()) {
             view.showEmailError("Email cannot be empty.");
             return;
         }
-        if (password == null || password.isEmpty()) {
+        if (password == null || password.trim().isEmpty()) {
             view.showPasswordError("Password cannot be empty.");
             return;
         }
 
-//        view.showLoading();
+        repo.signIn(email, password, new AuthCallBack() {
+            @Override
+            public void onSuccess(User user) {
+                SessionManager.getInstance().setCurrentUser(user);
+                view.goToHome();
+            }
 
-//        repo.signIn(email, password, new AuthCallBack() {
-//            @Override
-//            public void onSuccess(User user) {
-//                view.goToHome();
-//            }
-//
-//            @Override
-//            public void onError(String message) {
-//                view.showError(message);
-//            }
-//        });
+            @Override
+            public void onError(String message) {
+                view.showPasswordError(message);
+            }
+        });
     }
 
     public void onDestroy(LoginView caller) {

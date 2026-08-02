@@ -13,9 +13,12 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.golden.geese.HomeFragment;
 import com.golden.geese.R;
+import com.golden.geese.model.FirebaseAuthRepository;
 import com.golden.geese.presenter.SignUpPresenter;
 import com.golden.geese.view.AuthView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -38,6 +41,7 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
 
         View view = inflater.inflate(R.layout.fragment_signup_password, container, false);
         presenter = SignUpPresenter.getSignUpPresenter();
+        presenter.setRepo(new FirebaseAuthRepository());
         return view;
 
     }
@@ -86,7 +90,10 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
     }
 
     public void nextStep() {
-        //TODO: load home screen fragment
+        getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment_container, new HomeFragment());
+        transaction.commit();
     }
 
     @Override
