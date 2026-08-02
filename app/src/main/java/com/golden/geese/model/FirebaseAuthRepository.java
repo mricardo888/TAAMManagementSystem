@@ -30,6 +30,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                                 @Override
                                 public void onSuccess(Boolean isAdmin) {
                                     User user = isAdmin ? new AdminUser() : new RegularUser();
+                                    user.setUid(firebaseUser.getUid());
                                     user.setUsername(firebaseUser.getEmail());
                                     callback.onSuccess(user);
                                 }
@@ -63,6 +64,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                                         @Override
                                         public void onSuccess(Void result) {
                                             RegularUser user = new RegularUser();
+                                            user.setUid(firebaseUser.getUid());
                                             user.setUsername(username);
                                             callback.onSuccess(user);
                                         }
@@ -91,6 +93,7 @@ public class FirebaseAuthRepository implements AuthRepository {
             return null;
         }
         RegularUser user = new RegularUser();
+        user.setUid(firebaseUser.getUid());
         user.setUsername(firebaseUser.getEmail());
         return user;
     }

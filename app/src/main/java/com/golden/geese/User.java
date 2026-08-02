@@ -1,23 +1,10 @@
-package com.golden.geese;/*
- * Artifact
- * Version 1.0
- * Bob Zhao July 17, 2026
- *
- * This code is provided as part of the coursework for CSCB07H3
- * at the University of Toronto.
- *
- * Unauthorized reproduction, distribution, or sharing of this code is strictly
- * prohibited and constitutes a violation of the University of
- * Toronto Code of Behaviour on Academic Matters.
- *
- */
 package com.golden.geese;
 
 import java.util.*;
-import com.golden.geese.*;
 
 public abstract class User {
     private List<Artifact> likedArtifacts;
+    private String uid;
     private String username;
     private String pfp;
     private List<Artifact> savedArtifacts;
@@ -34,6 +21,14 @@ public abstract class User {
         this();
         this.username = username;
         this.pfp = pfp;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getUsername() {

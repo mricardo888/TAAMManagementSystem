@@ -37,6 +37,10 @@ android {
     }
 }
 
+tasks.withType(Test).configureEach {
+    jvmArgs '-Dnet.bytebuddy.experimental=true'
+}
+
 dependencies {
     implementation libs.activity.ktx
     implementation libs.annotation

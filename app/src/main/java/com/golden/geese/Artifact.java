@@ -13,9 +13,10 @@ package com.golden.geese;/*
  */
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.*; // imports needed if image platform changes
 
-public class Artifact implements Likeable {
+public class Artifact implements Likeable, Serializable {
     private int lotNum;
     private String name;
     private String description;
@@ -31,9 +32,9 @@ public class Artifact implements Likeable {
     private int accessionNum;
     private String notes;
     private String image;
-    private LikeManager likeManager;
-    private CommentManager commentManager;
-    private SaveManager saveManager;
+    private transient LikeManager likeManager;
+    private transient CommentManager commentManager;
+    private transient SaveManager saveManager;
 
     private static int IDTracker = 0;
 
@@ -252,6 +253,13 @@ public class Artifact implements Likeable {
     @Exclude
     public int getSaves() {
         return saveManager.getNumInteractions();
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        likeManager = new LikeManager();
+        commentManager = new CommentManager();
+        saveManager = new SaveManager();
     }
 
     public static int getNewID() {
