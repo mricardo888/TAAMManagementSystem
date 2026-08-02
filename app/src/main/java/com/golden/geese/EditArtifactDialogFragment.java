@@ -18,7 +18,11 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.Arrays;
 
+import com.golden.geese.model.FirebaseArtifactRepository;
+import com.golden.geese.model.RepositoryCallback;
+
 public class EditArtifactDialogFragment extends DialogFragment {
+    private final FirebaseArtifactRepository repository = new FirebaseArtifactRepository();
     private Artifact artifact;
     private OnArtifactUpdatedListener updatedListener;
 
@@ -109,12 +113,47 @@ public class EditArtifactDialogFragment extends DialogFragment {
             artifact.setMaterials(materials);
         }
 
-        if (updatedListener != null) {
-            updatedListener.onArtifactUpdated(artifact);
-        }
+        saveArtifactToBackend();
+    }
 
-        Toast.makeText(requireContext(), "Artifact updated", Toast.LENGTH_SHORT).show();
-        dismiss();
+    private void saveArtifactToBackend()
+    {
+        repository.updateArtifact(
+                artifact,
+                new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        if (updatedListener != null) {
+                            updatedListener.onArtifactUpdated(artifact);
+                        }
+
+                        Toast.makeText(
+                                requireContext(),
+                                "Artifact updated",
+                                Toast.LENGTH_SHORT).show();
+                        dismiss();
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        Toast.makeText(
+                                requireContext(),
+                                message == null
+                                        ? "Failed to update artifact"
+                                        : message,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
+        );
     }
 
     @Override
