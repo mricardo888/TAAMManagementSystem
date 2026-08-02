@@ -15,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.golden.geese.databinding.FragmentHomeBinding;
 import com.golden.geese.model.ArtifactRepository;
@@ -41,15 +42,14 @@ public class HomeFragment extends Fragment {
         // Link views to the XML IDs
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
         rvArtifacts = view.findViewById(R.id.rv_artifacts);
+        Button displayViewAllButton = view.findViewById(R.id.onDisplayViewAllButton);
+        Button artifactsViewAllButton = view.findViewById(R.id.artifactsViewAllButton);
 
         rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupCarouselTransforms();
 
         view.findViewById(R.id.tab_profile).setOnClickListener(clickedView -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_fragment_container, new ProfileFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            loadFragment(new ProfileFragment());
         });
 
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
@@ -65,6 +65,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onError(String message) {
             }
+        });
+
+        displayViewAllButton.setOnClickListener(v -> {
+
+        });
+
+        artifactsViewAllButton.setOnClickListener(v -> {
+            loadFragment(new BrowseFragment());
         });
     }
 
@@ -139,6 +147,13 @@ public class HomeFragment extends Fragment {
         ExpandedArtifactFragment fragment = new ExpandedArtifactFragment();
         fragment.setArguments(args);
 
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment_container, fragment);
         transaction.addToBackStack(null);

@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             if (userIsLoggedIn()) {
                 loadFragment(new HomeFragment());
             } else {
-                loadFragment(new WelcomeFragment());
+                loadFragment(new HomeFragment());
             }
         }
 
