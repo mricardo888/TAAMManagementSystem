@@ -118,6 +118,69 @@ public class ArtifactImageUploader {
         });
     }
 
+    public void deleteArtifactImage(String imageUrl, ImageDeleteCallback callback) {
+        if (isBlank(imageUrl)) {
+            callback.onSuccess();
+            return;
+        }
+
+        String filePath = extractFilePathFromPublicUrl(imageUrl);
+        if (filePath == null) {
+            postDeleteError(callback, "Could not resolve storage path from image URL");
+            return;
+        }
+
+        HttpUrl deleteUrl = buildStorageUrl("storage/v1/object", filePath);
+        if (deleteUrl == null) {
+            postDeleteError(callback, "Invalid Supabase URL configuration");
+            return;
+        }
+
+        Request request = new Request.Builder()
+                .url(deleteUrl)
+                .addHeader("apikey", supabaseAnonKey)
+                .addHeader("Authorization", "Bearer " + supabaseAnonKey)
+                .delete()
+                .build();
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                postDeleteError(callback, "Delete failed: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                try {
+                    if (response.isSuccessful()) {
+                        postDeleteSuccess(callback);
+                    } else {
+                        postDeleteError(callback, "Delete failed with status " + response.code());
+                    }
+                } finally {
+                    response.close();
+                }
+            }
+        });
+    }
+
+    private String extractFilePathFromPublicUrl(String imageUrl) {
+        String marker = "/storage/v1/object/public/" + bucketName + "/";
+        int index = imageUrl.indexOf(marker);
+        if (index == -1) {
+            return null;
+        }
+        return imageUrl.substring(index + marker.length());
+    }
+
+    private void postDeleteSuccess(ImageDeleteCallback callback) {
+        mainHandler.post(callback::onSuccess);
+    }
+
+    private void postDeleteError(ImageDeleteCallback callback, String message) {
+        mainHandler.post(() -> callback.onError(message));
+    }
+
     private byte[] readImageBytes(Uri imageUri) throws IOException {
         ContentResolver resolver = appContext.getContentResolver();
         try (InputStream inputStream = resolver.openInputStream(imageUri);

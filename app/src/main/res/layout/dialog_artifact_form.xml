@@ -110,6 +110,126 @@
                     android:minHeight="48dp"
                     android:spinnerMode="dropdown" />
 
+                <EditText
+                    android:id="@+id/artifact_origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:hint="@string/origin"
+                    android:textColorHint="@color/olive"
+                    android:alpha="0.67"
+                    android:backgroundTint="@color/olive" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/artifact_dimension_length"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/dimension_length"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/olive"
+                        android:alpha="0.67"
+                        android:backgroundTint="@color/olive" />
+
+                    <EditText
+                        android:id="@+id/artifact_dimension_width"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:hint="@string/dimension_width"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/olive"
+                        android:alpha="0.67"
+                        android:backgroundTint="@color/olive" />
+
+                    <EditText
+                        android:id="@+id/artifact_dimension_height"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:hint="@string/dimension_height"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/olive"
+                        android:alpha="0.67"
+                        android:backgroundTint="@color/olive" />
+
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/artifact_condition_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="top"
+                    android:hint="@string/condition_report"
+                    android:inputType="textMultiLine"
+                    android:textColorHint="@color/olive"
+                    android:alpha="0.67"
+                    android:backgroundTint="@color/olive" />
+
+                <EditText
+                    android:id="@+id/artifact_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:hint="@string/location"
+                    android:textColorHint="@color/olive"
+                    android:alpha="0.67"
+                    android:backgroundTint="@color/olive" />
+
+                <EditText
+                    android:id="@+id/artifact_acquisition_method"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:hint="@string/acquisition_method"
+                    android:textColorHint="@color/olive"
+                    android:alpha="0.67"
+                    android:backgroundTint="@color/olive" />
+
+                <EditText
+                    android:id="@+id/artifact_provenance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="top"
+                    android:hint="@string/provenance"
+                    android:inputType="textMultiLine"
+                    android:textColorHint="@color/olive"
+                    android:alpha="0.67"
+                    android:backgroundTint="@color/olive" />
+
+                <EditText
+                    android:id="@+id/artifact_accession_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:hint="@string/accession_number"
+                    android:inputType="number"
+                    android:textColorHint="@color/olive"
+                    android:alpha="0.67"
+                    android:backgroundTint="@color/olive" />
+
+                <EditText
+                    android:id="@+id/artifact_notes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="top"
+                    android:hint="@string/notes"
+                    android:inputType="textMultiLine"
+                    android:textColorHint="@color/olive"
+                    android:alpha="0.67"
+                    android:backgroundTint="@color/olive" />
+
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>

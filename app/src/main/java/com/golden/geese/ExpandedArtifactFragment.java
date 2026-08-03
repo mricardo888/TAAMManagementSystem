@@ -24,6 +24,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.bumptech.glide.Glide;
 import com.golden.geese.model.FirebaseArtifactRepository;
 import com.golden.geese.model.RepositoryCallback;
+import com.golden.geese.storage.ArtifactImageUploader;
+import com.golden.geese.storage.ImageDeleteCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -391,6 +393,19 @@ public class ExpandedArtifactFragment extends Fragment {
             @Override
             public void onSuccess(Void result) {
                 if (isAdded()) {
+                    String imageUrl = artifact.getImage();
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        new ArtifactImageUploader(requireContext())
+                                .deleteArtifactImage(imageUrl, new ImageDeleteCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                    }
+
+                                    @Override
+                                    public void onError(String errorMessage) {
+                                    }
+                                });
+                    }
                     getParentFragmentManager().popBackStack();
                 }
             }

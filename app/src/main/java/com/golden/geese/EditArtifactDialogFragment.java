@@ -47,14 +47,17 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
 
             saveInputs(artifact);
 
-            resolveImage(artifact.getImage(), String.valueOf(artifact.getLotNum()), imageUrl -> {
+            String previousImageUrl = artifact.getImage();
+            boolean replacingImage = selectedImageUri != null;
+
+            resolveImage(previousImageUrl, String.valueOf(artifact.getLotNum()), imageUrl -> {
                 artifact.setImage(imageUrl);
-                updateArtifact();
+                updateArtifact(replacingImage ? previousImageUrl : null);
             });
         });
     }
 
-    private void updateArtifact()
+    private void updateArtifact(String oldImageUrlToDelete)
     {
         repository.updateArtifact(
                 artifact,
@@ -63,6 +66,10 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
                     public void onSuccess(Void result) {
                         if (!isAdded()) {
                             return;
+                        }
+
+                        if (oldImageUrlToDelete != null && !oldImageUrlToDelete.isEmpty()) {
+                            deleteCloudImage(oldImageUrlToDelete);
                         }
 
                         notifyArtifactSaved(artifact);
