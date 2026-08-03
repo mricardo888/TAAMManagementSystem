@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Button;
 
 import com.golden.geese.databinding.FragmentHomeBinding;
 import com.golden.geese.model.ArtifactRepository;
@@ -47,15 +48,14 @@ public class HomeFragment extends Fragment {
         // Link views to the XML IDs
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
         rvArtifacts = view.findViewById(R.id.rv_artifacts);
+        Button displayViewAllButton = view.findViewById(R.id.onDisplayViewAllButton);
+        Button artifactsViewAllButton = view.findViewById(R.id.artifactsViewAllButton);
 
         rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupCarouselTransforms();
 
         view.findViewById(R.id.tab_profile).setOnClickListener(clickedView -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_fragment_container, new ProfileFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            loadFragment(new ProfileFragment());
         });
 
         // Add button function
@@ -76,6 +76,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onError(String message) {
             }
+        });
+
+        displayViewAllButton.setOnClickListener(v -> {
+
+        });
+
+        artifactsViewAllButton.setOnClickListener(v -> {
+            loadFragment(new BrowseFragment());
         });
     }
 
@@ -160,9 +168,14 @@ public class HomeFragment extends Fragment {
         AddArtifactDialogFragment dialog = new AddArtifactDialogFragment();
 
         dialog.setOnArtifactSavedListener(newArtifact -> {
-            // TODO: Change to relead whatever needs to be reloaded
+            loadFragment(new HomeFragment());
         });
 
         dialog.show(getParentFragmentManager(), "AddArtifactDialog");
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
