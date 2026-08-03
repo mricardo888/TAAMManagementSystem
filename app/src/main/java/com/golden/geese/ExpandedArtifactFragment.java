@@ -39,7 +39,7 @@ public class ExpandedArtifactFragment extends Fragment {
     private TextView artifactName;
     private TextView descriptionText;
     private TextView categoryText;
-    private TextView materialsText;
+    private TextView materialText;
     private TextView dynastyText;
     private ImageButton likeButton;
     private TextView likesCounter;
@@ -80,7 +80,7 @@ public class ExpandedArtifactFragment extends Fragment {
         TextView descriptionText = view.findViewById(R.id.description_text);
         TextView readMoreText = view.findViewById(R.id.read_more_text);
         TextView categoryText = view.findViewById(R.id.category_text);
-        TextView materialsText = view.findViewById(R.id.materials_text);
+        TextView materialText = view.findViewById(R.id.material_text);
         TextView dynastyText = view.findViewById(R.id.dynasty_text);
         likesCounter = view.findViewById(R.id.likes_counter);
         commentsCounter = view.findViewById(R.id.comments_counter);
@@ -237,9 +237,7 @@ public class ExpandedArtifactFragment extends Fragment {
             descriptionText.setText(updatedArtifact.getDescription());
             categoryText.setText(updatedArtifact.getCategory());
             dynastyText.setText(updatedArtifact.getDynasty());
-
-            String[] materials = updatedArtifact.getMaterials();
-            materialsText.setText(materials == null ? "" : String.join(", ", materials));
+            materialText.setText(updatedArtifact.getMaterial());
         });
 
         dialog.show(getParentFragmentManager(), "EditArtifactDialog");

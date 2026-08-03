@@ -67,7 +67,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         fields.put("name", artifact.getName());
         fields.put("description", artifact.getDescription());
         fields.put("category", artifact.getCategory());
-        fields.put("materials", artifact.getMaterials());
+        fields.put("material", artifact.getMaterial());
         fields.put("dynasty", artifact.getDynasty());
         fields.put("origin", artifact.getOrigin());
         fields.put("dimensions", artifact.getDimensions());
