@@ -21,7 +21,7 @@ public class Artifact implements Likeable, Serializable {
     private String name;
     private String description;
     private String category;
-    private String[] materials;
+    private String material;
     private String dynasty;
     private String origin;
     private double[] dimensions;
@@ -48,7 +48,7 @@ public class Artifact implements Likeable, Serializable {
         name = "";
         description = "";
         category = "";
-        materials = new String[0];
+        material = "";
         dynasty = "";
         origin = "";
         dimensions = new double[3];
@@ -69,18 +69,18 @@ public class Artifact implements Likeable, Serializable {
      * @param lotNum - the lot number integer
      * @param name - name of the artifact in String
      * @param description - Description of the artifact
-     * @param category - category the artifact is in
-     * @param materials - String array of materials in the artifact
+     * @param category - String category the artifact is in
+     * @param material - String material of the artifact
      * @param dynasty - String dynasty when the artifact is from
      */
     public Artifact(int lotNum, String name, String description, String category,
-                    String[] materials, String dynasty){
+                    String material, String dynasty){
         this();
         this.lotNum = lotNum;
         this.name = name;
         this.description = description;
         this.category = category;
-        this.materials = materials;
+        this.material = material;
         this.dynasty = dynasty;
     }
 
@@ -90,7 +90,7 @@ public class Artifact implements Likeable, Serializable {
      * @param name
      * @param description
      * @param category
-     * @param materials
+     * @param material
      * @param dynasty
      * @param origin
      * @param dimensions
@@ -103,10 +103,10 @@ public class Artifact implements Likeable, Serializable {
      * @param image
      */
     public Artifact(int lotNum, String name, String description, String category,
-                    String[] materials, String dynasty, String origin, double[] dimensions,
+                    String material, String dynasty, String origin, double[] dimensions,
                     String conditionReport, String location, String acqMethod, String provenance,
                     int accessionNum, String notes, String image){
-        this(lotNum, name, description, category, materials, dynasty);
+        this(lotNum, name, description, category, material, dynasty);
         this.origin = origin;
         this.dimensions = dimensions;
         this.conditionReport = conditionReport;
@@ -154,12 +154,12 @@ public class Artifact implements Likeable, Serializable {
         this.category = category;
     }
 
-    public String[] getMaterials() {
-        return materials;
+    public String getMaterial() {
+        return material;
     }
 
-    public void setMaterials(String[] materials) {
-        this.materials = materials;
+    public void setMaterial(String material) {
+        this.material = material;
     }
 
     public String getDynasty() {
@@ -278,7 +278,7 @@ public class Artifact implements Likeable, Serializable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", category='" + category + '\'' +
-                ", materials=" + Arrays.toString(materials) +
+                ", material='" + material + '\'' +
                 ", dynasty='" + dynasty + '\'' +
                 ", origin='" + origin + '\'' +
                 ", dimensions=" + Arrays.toString(dimensions) +

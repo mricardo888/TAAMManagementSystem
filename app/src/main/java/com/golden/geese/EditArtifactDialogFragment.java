@@ -29,7 +29,7 @@ public class EditArtifactDialogFragment extends DialogFragment {
     private EditText nameInput;
     private EditText descriptionInput;
     private EditText categoryInput;
-    private EditText materialsInput;
+    private EditText materialInput;
     private EditText dynastyInput;
 
     public interface OnArtifactUpdatedListener
@@ -56,7 +56,7 @@ public class EditArtifactDialogFragment extends DialogFragment {
         nameInput = view.findViewById(R.id.edit_name);
         descriptionInput = view.findViewById(R.id.edit_description);
         categoryInput = view.findViewById(R.id.edit_category);
-        materialsInput = view.findViewById(R.id.edit_materials);
+        materialInput = view.findViewById(R.id.edit_material);
         dynastyInput = view.findViewById(R.id.edit_dynasty);
 
         Button cancelButton = view.findViewById(R.id.cancel_edit_button);
@@ -79,9 +79,7 @@ public class EditArtifactDialogFragment extends DialogFragment {
         descriptionInput.setText(artifact.getDescription());
         categoryInput.setText(artifact.getCategory());
         dynastyInput.setText(artifact.getDynasty());
-
-        String[] materials = artifact.getMaterials();
-        materialsInput.setText(materials == null ? "" : String.join(", ", materials));
+        materialInput.setText(artifact.getMaterial());
     }
 
     private void saveChanges()
@@ -97,21 +95,7 @@ public class EditArtifactDialogFragment extends DialogFragment {
         artifact.setDescription(descriptionInput.getText().toString().trim());
         artifact.setCategory(categoryInput.getText().toString().trim());
         artifact.setDynasty(dynastyInput.getText().toString().trim());
-        String materialsText = materialsInput.getText().toString().trim();
-
-        if (materialsText.isEmpty())
-        {
-            artifact.setMaterials(new String[0]);
-        }
-        else
-        {
-            String[] materials = Arrays.stream(materialsText.split(","))
-                    .map(String::trim)
-                    .filter(value -> !value.isEmpty())
-                    .toArray(String[]::new);
-
-            artifact.setMaterials(materials);
-        }
+        artifact.setMaterial(materialInput.getText().toString().trim());
 
         saveArtifactToBackend();
     }
