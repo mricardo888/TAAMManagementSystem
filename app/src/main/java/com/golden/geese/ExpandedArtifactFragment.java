@@ -232,7 +232,8 @@ public class ExpandedArtifactFragment extends Fragment {
         EditArtifactDialogFragment dialog =
                 new EditArtifactDialogFragment();
 
-        dialog.setArtifact(artifact, updatedArtifact -> {
+        dialog.setArtifact(artifact);
+        dialog.setOnArtifactSavedListener(updatedArtifact -> {
             artifactName.setText(updatedArtifact.getName());
             descriptionText.setText(updatedArtifact.getDescription());
             categoryText.setText(updatedArtifact.getCategory());
