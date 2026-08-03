@@ -38,7 +38,17 @@ public class ArtifactImageUploader {
         this.supabaseAnonKey = context.getString(com.golden.geese.R.string.supabase_anon_key).trim();
         this.bucketName = context.getString(com.golden.geese.R.string.supabase_image_bucket).trim();
         this.httpClient = new OkHttpClient();
-        this.mainHandler = new Handler(Looper.getMainLooper());
+
+        Looper mainLooper = Looper.getMainLooper();
+        this.mainHandler = mainLooper == null ? null : new Handler(mainLooper);
+    }
+
+    private void runOnMainThread(Runnable action) {
+        if (mainHandler == null) {
+            action.run();
+        } else {
+            mainHandler.post(action);
+        }
     }
 
     public void uploadArtifactImage(Uri imageUri, String lotNumber, ImageUploadCallback callback) {
@@ -174,11 +184,11 @@ public class ArtifactImageUploader {
     }
 
     private void postDeleteSuccess(ImageDeleteCallback callback) {
-        mainHandler.post(callback::onSuccess);
+        runOnMainThread(callback::onSuccess);
     }
 
     private void postDeleteError(ImageDeleteCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message));
+        runOnMainThread(() -> callback.onError(message));
     }
 
     private byte[] readImageBytes(Uri imageUri) throws IOException {
@@ -231,11 +241,11 @@ public class ArtifactImageUploader {
     }
 
     private void postSuccess(ImageUploadCallback callback, String imageUrl) {
-        mainHandler.post(() -> callback.onSuccess(imageUrl));
+        runOnMainThread(() -> callback.onSuccess(imageUrl));
     }
 
     private void postError(ImageUploadCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message));
+        runOnMainThread(() -> callback.onError(message));
     }
 
     private boolean isBlank(String value) {
