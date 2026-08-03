@@ -29,6 +29,19 @@ render.experimental.xml
 # Google Services (e.g. APIs or Firebase)
 google-services.json
 
+# Firebase service account keys -- NEVER COMMIT.
+# These grant full admin access to the database and bypass every security rule.
+# If one is ever committed, revoke it in the Firebase Console: deleting the file
+# does not remove it from the git history.
+*firebase-adminsdk*.json
+serviceAccountKey.json
+service-account*.json
+
+# Python (tools/seed)
+__pycache__/
+*.py[cod]
+.venv/
+
 # Android Profiling
 *.hprof
 app/src/.DS_Store
