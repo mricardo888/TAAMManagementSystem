@@ -282,28 +282,28 @@
             app:layout_constraintVertical_bias="0.5" />
 
         <TextView
-            android:id="@+id/materials_label"
+            android:id="@+id/material_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/olive"
             android:textSize="14sp"
             android:fontFamily="@font/idiqlat_regular"
-            android:text="@string/ea_materials"
+            android:text="@string/ea_material"
             app:layout_constraintStart_toStartOf="@id/description_text"
             app:layout_constraintTop_toBottomOf="@id/category_label" />
 
         <TextView
-            android:id="@+id/materials_text"
+            android:id="@+id/material_text"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:textColor="@color/olive"
             android:textSize="12sp"
             android:fontFamily="@font/idiqlat_extralight"
-            android:text="@string/materials_placeholder"
-            app:layout_constraintStart_toEndOf="@id/materials_label"
-            app:layout_constraintTop_toTopOf="@id/materials_label"
-            app:layout_constraintBottom_toBottomOf="@id/materials_label"
+            android:text="@string/material_placeholder"
+            app:layout_constraintStart_toEndOf="@id/material_label"
+            app:layout_constraintTop_toTopOf="@id/material_label"
+            app:layout_constraintBottom_toBottomOf="@id/material_label"
             app:layout_constraintVertical_bias="0.5" />
 
         <TextView
@@ -315,7 +315,7 @@
             android:fontFamily="@font/idiqlat_regular"
             android:text="@string/ea_dynasty"
             app:layout_constraintStart_toStartOf="@id/description_text"
-            app:layout_constraintTop_toBottomOf="@id/materials_label" />
+            app:layout_constraintTop_toBottomOf="@id/material_label" />
 
         <TextView
             android:id="@+id/dynasty_text"

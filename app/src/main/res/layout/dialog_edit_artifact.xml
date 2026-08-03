@@ -66,11 +66,11 @@
                     android:backgroundTint="@color/olive" />
 
                 <EditText
-                    android:id="@+id/edit_materials"
+                    android:id="@+id/edit_material"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:hint="@string/materials"
+                    android:hint="@string/material"
                     android:textColorHint="@color/olive"
                     android:alpha="0.67"
                     android:backgroundTint="@color/olive" />
