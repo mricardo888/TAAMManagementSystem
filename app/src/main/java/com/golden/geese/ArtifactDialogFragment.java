@@ -29,6 +29,9 @@ import com.golden.geese.storage.ArtifactImageUploader;
 import com.golden.geese.storage.ImageDeleteCallback;
 import com.golden.geese.storage.ImageUploadCallback;
 
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class ArtifactDialogFragment extends DialogFragment {
     protected TextView formTitle;
     protected EditText lotNumberInput;
@@ -222,11 +225,11 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         accessionNumberInput.setText(String.valueOf(artifact.getAccessionNum()));
         notesInput.setText(artifact.getNotes());
 
-        double[] dimensions = artifact.getDimensions();
-        if (dimensions != null && dimensions.length == 3) {
-            dimensionLengthInput.setText(String.valueOf(dimensions[0]));
-            dimensionWidthInput.setText(String.valueOf(dimensions[1]));
-            dimensionHeightInput.setText(String.valueOf(dimensions[2]));
+        List<Double> dimensions = artifact.getDimensions();
+        if (dimensions != null && dimensions.size() == 3) {
+            dimensionLengthInput.setText(String.valueOf(dimensions.get(0)));
+            dimensionWidthInput.setText(String.valueOf(dimensions.get(1)));
+            dimensionHeightInput.setText(String.valueOf(dimensions.get(2)));
         }
 
         Glide.with(this)
@@ -258,11 +261,11 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         artifact.setAccessionNum(parseIntOrZero(accessionNumberInput.getText().toString().trim()));
         artifact.setNotes(notesInput.getText().toString().trim());
 
-        artifact.setDimensions(new double[]{
+        artifact.setDimensions(Arrays.asList(
                 parseDoubleOrZero(dimensionLengthInput.getText().toString().trim()),
                 parseDoubleOrZero(dimensionWidthInput.getText().toString().trim()),
                 parseDoubleOrZero(dimensionHeightInput.getText().toString().trim())
-        });
+        ));
     }
 
     private int parseIntOrZero(String value) {
