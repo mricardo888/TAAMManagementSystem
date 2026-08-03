@@ -229,8 +229,7 @@ public class ExpandedArtifactFragment extends Fragment {
     }
 
     private void showEditArtifactDialog() {
-        EditArtifactDialogFragment dialog =
-                new EditArtifactDialogFragment();
+        EditArtifactDialogFragment dialog = new EditArtifactDialogFragment();
 
         dialog.setArtifact(artifact);
         dialog.setOnArtifactSavedListener(updatedArtifact -> {

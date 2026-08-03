@@ -73,4 +73,8 @@ public class AddArtifactDialogFragment extends ArtifactDialogFragment {
                 }
         );
     }
+
+    protected String getFormTitle() {
+        return "Add Artifact";
+    }
 }

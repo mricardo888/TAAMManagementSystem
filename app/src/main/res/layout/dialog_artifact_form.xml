@@ -19,7 +19,7 @@
             android:id="@+id/form_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/edit_artifact"
+            android:text="@string/form_title"
             android:textColor="@color/olive"
             android:fontFamily="@font/idiqlat_regular"
             android:textSize="24sp" />
