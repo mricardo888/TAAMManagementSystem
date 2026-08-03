@@ -14,7 +14,7 @@ package com.golden.geese;/*
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
-import java.util.*; // imports needed if image platform changes
+import java.util.*;
 
 public class Artifact implements Likeable, Serializable {
     private int lotNum;
