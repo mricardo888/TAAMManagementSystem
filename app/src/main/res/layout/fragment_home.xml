@@ -145,6 +145,22 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <ImageButton
+        android:id="@+id/add_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_image_button"
+        android:elevation="3dp"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/add_icon"
+        app:tint="@color/olive"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_container"/>
+
     <!-- Custom Bottom Navigation (To match Figma exactly) -->
     <LinearLayout
         android:id="@+id/bottom_nav_container"

@@ -15,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.golden.geese.databinding.FragmentHomeBinding;
 import com.golden.geese.model.ArtifactRepository;
@@ -26,6 +27,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     private ViewPager2 viewPagerCarousel;
     private RecyclerView rvArtifacts;
+    private ImageButton addButton;
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
 
     @Override
@@ -51,6 +53,10 @@ public class HomeFragment extends Fragment {
             transaction.addToBackStack(null);
             transaction.commit();
         });
+
+        // Add button function
+        addButton = view.findViewById(R.id.add_button);
+        addButton.setOnClickListener(clickedView -> showAdd);
 
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
             @Override
