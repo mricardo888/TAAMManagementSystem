@@ -13,7 +13,6 @@ import com.golden.geese.model.RepositoryCallback;
 
 public class AddArtifactDialogFragment extends ArtifactDialogFragment {
     private final FirebaseArtifactRepository repository = new FirebaseArtifactRepository();
-    private Artifact newArtifact;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -28,13 +27,56 @@ public class AddArtifactDialogFragment extends ArtifactDialogFragment {
                 return;
             }
 
-            newArtifact = new Artifact();
-            saveInputs(newArtifact);
-            addArtifact();
+            checkLotNumberThenCreate();
         });
     }
 
-    private void addArtifact()
+    private void checkLotNumberThenCreate() {
+        int lotNum = getLotNumberValue();
+
+        repository.doesLotNumberExist(lotNum, new RepositoryCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean exists) {
+                if (!isAdded()) {
+                    return;
+                }
+
+                if (exists) {
+                    lotNumberInput.setError("An artifact with this lot number already exists");
+                    lotNumberInput.requestFocus();
+                    return;
+                }
+
+                createArtifact(lotNum);
+            }
+
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) {
+                    return;
+                }
+
+                Toast.makeText(
+                        requireContext(),
+                        message == null ? "Could not verify lot number" : message,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
+
+    private void createArtifact(int lotNum) {
+        Artifact newArtifact = new Artifact();
+        saveInputs(newArtifact);
+        newArtifact.setLotNum(lotNum);
+
+        resolveImage("", String.valueOf(lotNum), imageUrl -> {
+            newArtifact.setImage(imageUrl == null ? "" : imageUrl);
+            addArtifact(newArtifact);
+        });
+    }
+
+    private void addArtifact(Artifact newArtifact)
     {
         repository.addArtifact(
                 newArtifact,

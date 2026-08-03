@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BrowseFragment extends Fragment {
+    private static final int PAGE_SIZE_ALL = -1;
+
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
     private RecyclerView rvArtifactGrid;
     private int paginationStartIndex = 0;
@@ -54,7 +56,7 @@ public class BrowseFragment extends Fragment {
         ImageButton backButton = view.findViewById(R.id.back_nav);
         EditText search = view.findViewById(R.id.et_search);
         MaterialButton sortButton = view.findViewById(R.id.btn_sort);
-        //ImageButton filterButton = view.findViewById(R.id.btn_filter);
+        MaterialButton pageSizeButton = view.findViewById(R.id.btn_page_size);
         MaterialButton backPageButton = view.findViewById(R.id.btn_page_back);
         MaterialButton nextPageButton = view.findViewById(R.id.btn_page_next);
         TextView pageTracker = view.findViewById(R.id.tv_page_number);
@@ -74,6 +76,10 @@ public class BrowseFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 currentSearch = charSequence.toString().toLowerCase();
+                paginationStartIndex = 0;
+                pageNumber = 1;
+                pageTracker.setText("Page " + pageNumber);
+                setUpGrid();
             }
         });
 
@@ -91,24 +97,35 @@ public class BrowseFragment extends Fragment {
             sortPopUp.show();
         });
 
-        /*
-        filterButton.setOnClickListener(v -> {
-            PopupMenu filterPopUp = new PopupMenu(requireContext(), v);
-            filterPopUp.getMenu().add("Dynasty");
-            filterPopUp.getMenu().add("Material");
+        pageSizeButton.setOnClickListener(v -> {
+            PopupMenu pageSizePopup = new PopupMenu(requireContext(), v);
+            pageSizePopup.getMenu().add("12 per page");
+            pageSizePopup.getMenu().add("24 per page");
+            pageSizePopup.getMenu().add("All");
 
-            filterPopUp.setOnMenuItemClickListener(item -> {
-                // Handle filter logic based on item.getTitle()
+            pageSizePopup.setOnMenuItemClickListener(item -> {
+                String title = item.getTitle().toString();
+                int chosenPageSize = title.equals("All")
+                        ? PAGE_SIZE_ALL
+                        : Integer.parseInt(title.split(" ")[0]);
+
+                requireActivity().getPreferences(Context.MODE_PRIVATE)
+                        .edit()
+                        .putInt(getString(R.string.saved_pagination_key), chosenPageSize)
+                        .apply();
+
+                paginationStartIndex = 0;
+                pageNumber = 1;
+                pageTracker.setText("Page " + pageNumber);
+                setUpGrid();
                 return true;
             });
-            filterPopUp.show();
+            pageSizePopup.show();
         });
-        */
 
         backPageButton.setOnClickListener(v -> {
             if(paginationStartIndex > 0) {
-                paginationStartIndex -= getPaginationValue();
-                paginationStartIndex = Math.max(paginationStartIndex, 0);
+                paginationStartIndex = Math.max(paginationStartIndex - currentPageSize, 0);
                 pageNumber--;
                 pageTracker.setText("Page " + pageNumber);
                 setUpGrid();
@@ -117,8 +134,7 @@ public class BrowseFragment extends Fragment {
 
         nextPageButton.setOnClickListener(v -> {
             if(paginationStartIndex + currentPageSize < numArtifacts) {
-                paginationStartIndex += getPaginationValue();
-                paginationStartIndex = Math.min(paginationStartIndex, numArtifacts);
+                paginationStartIndex = Math.min(paginationStartIndex + currentPageSize, numArtifacts);
                 pageNumber++;
                 pageTracker.setText("Page " + pageNumber);
                 setUpGrid();
@@ -147,12 +163,8 @@ public class BrowseFragment extends Fragment {
     }
 
     private void loadGrid(List<Artifact> artifacts) {
-        int paginationValue = getPaginationValue();
-        if(paginationValue + paginationStartIndex > artifacts.size()) {
-            paginationValue = artifacts.size() - paginationStartIndex;
-        }
-
-
+        int rawPageSize = readPageSizePreference();
+        currentPageSize = (rawPageSize == PAGE_SIZE_ALL) ? Math.max(artifacts.size(), 1) : rawPageSize;
 
         switch (sortMethod) {
             case "Name(A-Z)":
@@ -163,21 +175,19 @@ public class BrowseFragment extends Fragment {
                 break;
         }
 
-        List<Artifact> artifactsToLoad = artifacts.subList(paginationStartIndex,
-                paginationValue + paginationStartIndex);
+        int endIndex = Math.min(paginationStartIndex + currentPageSize, artifacts.size());
+        List<Artifact> artifactsToLoad = artifacts.subList(paginationStartIndex, endIndex);
         ArtifactGridAdapter gridAdapter = new ArtifactGridAdapter(artifactsToLoad,
                 this::openDetailsScreen);
 
         rvArtifactGrid.setAdapter(gridAdapter);
     }
 
-    private int getPaginationValue() {
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+    private int readPageSizePreference() {
+        SharedPreferences sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE);
         int defaultPagination = 12;
         String savedPaginationKey = getString(R.string.saved_pagination_key);
-        int paginationValue = sharedPref.getInt(savedPaginationKey, defaultPagination);
-        currentPageSize = paginationValue;
-        return paginationValue;
+        return sharedPref.getInt(savedPaginationKey, defaultPagination);
     }
 
     private void resetGrid() {

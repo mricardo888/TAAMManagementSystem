@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +18,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.golden.geese.R;
+import com.golden.geese.SessionManager;
+import com.golden.geese.User;
+import com.golden.geese.model.AuthRepository;
+import com.golden.geese.model.FirebaseAuthRepository;
+import com.golden.geese.model.RepositoryCallback;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -24,6 +30,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Objects;
 
 public class UserSettingsFragment extends Fragment {
+
+    private final AuthRepository authRepository = new FirebaseAuthRepository();
 
     private TextInputEditText settingsNameInput;
     private TextInputEditText settingsEmailInput;
@@ -76,10 +84,11 @@ public class UserSettingsFragment extends Fragment {
         settingsLogoutButton = view.findViewById(R.id.settingsLogoutButton);
         ImageButton settingsBackButton = view.findViewById(R.id.settingsBackButton);
 
-        // TODO: load real user data here instead of placeholders, prob get from repo
+        // TODO: load real username once profile data is exposed through a repository
         settingsNameInput.setText("Jane Doe");
-        settingsEmailInput.setText("jane@example.com");
-        //
+
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        settingsEmailInput.setText(currentUser == null ? "" : currentUser.getEmail());
 
         settingsBackButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         settingsEditButton.setOnClickListener(v -> enterEditMode());
@@ -134,60 +143,128 @@ public class UserSettingsFragment extends Fragment {
         String newName = Objects.requireNonNull(settingsNameInput.getText()).toString().trim();
         String newEmail = Objects.requireNonNull(settingsEmailInput.getText()).toString().trim();
 
-        boolean nameReady = false , emailReady = false, passwordReady = false;
-
-        if(!newName.equals("")) { // TODO: check if newName is diff as current name
-            if (newName.isEmpty()) {
-                settingsNameInput.setError("New username cannot be empty");
-                settingsNameInputLayout.setError("New username cannot be empty");
-            } else {
-                nameReady = true;
-                // TODO: let repo change username
-            }
-        } else {
-            nameReady = true;
+        if (newName.isEmpty()) {
+            settingsNameInputLayout.setError("New username cannot be empty");
+            return;
         }
+        settingsNameInputLayout.setError(null);
 
-        if(!newEmail.equals("")) { // TODO: check if newEmail is diff as current email
-            if (newEmail.isEmpty()) {
-                settingsEmailInput.setError("New username cannot be empty");
-                settingsEmailInputLayout.setError("New username cannot be empty");
-            } else {
-                emailReady = true;
-                // TODO: let repo change email
-            }
-        } else {
-            emailReady = true;
+        if (newEmail.isEmpty()) {
+            settingsEmailInputLayout.setError("New email cannot be empty");
+            return;
         }
-
+        settingsEmailInputLayout.setError(null);
 
         String currentPassword = Objects.requireNonNull(settingsCurrentPasswordInput.getText()).toString();
         String newPassword = Objects.requireNonNull(settingsNewPasswordInput.getText()).toString();
         String confirmNewPassword = Objects.requireNonNull(settingsConfirmNewPasswordInput.getText()).toString();
 
-        boolean changingPassword = !currentPassword.isEmpty() || !newPassword.isEmpty() || !confirmNewPassword.isEmpty();
+        boolean emailChanged = !newEmail.equals(originalEmail);
+        boolean changingPassword = !newPassword.isEmpty() || !confirmNewPassword.isEmpty();
 
         if (changingPassword) {
-            if (currentPassword.isEmpty()) {
-                settingsCurrentPasswordInputLayout.setError("Enter your current password");
+            if (newPassword.length() < 6) {
+                settingsNewPasswordInputLayout.setError("New password must be at least 6 characters");
+                return;
             }
-            else if(!currentPassword.equals(null)) { // TODO: make sure current password is correct
+            if (!newPassword.equals(confirmNewPassword)) {
+                settingsConfirmNewPasswordInputLayout.setError("Passwords do not match");
+                return;
+            }
+        }
+        settingsNewPasswordInputLayout.setError(null);
+        settingsConfirmNewPasswordInputLayout.setError(null);
+
+        if (!emailChanged && !changingPassword) {
+            exitEditMode();
+            return;
+        }
+
+        if (currentPassword.isEmpty()) {
+            settingsCurrentPasswordInputLayout.setError("Enter your current password to confirm these changes");
+            return;
+        }
+        settingsCurrentPasswordInputLayout.setError(null);
+
+        settingsSaveButton.setEnabled(false);
+        authRepository.reauthenticate(currentPassword, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (!isAdded()) {
+                    return;
+                }
+                applyAccountChanges(emailChanged, newEmail, changingPassword, newPassword);
+            }
+
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) {
+                    return;
+                }
+                settingsSaveButton.setEnabled(true);
                 settingsCurrentPasswordInputLayout.setError("Current password is incorrect");
             }
-            else if (newPassword.length() < 6) {
-                settingsNewPasswordInputLayout.setError("New password must be at least 6 characters");
-            }
-            else if (!newPassword.equals(confirmNewPassword)) {
-                settingsConfirmNewPasswordInputLayout.setError("Passwords do not match");
-            }
-            else {
-                passwordReady = true;
-                // TODO: call repo to update the user's password for newPassword
-            }
+        });
+    }
+
+    private void applyAccountChanges(boolean emailChanged, String newEmail, boolean changingPassword, String newPassword) {
+        if (!emailChanged) {
+            applyPasswordChange(newPassword);
+            return;
         }
-        if (nameReady && emailReady && passwordReady) {
-            exitEditMode();
-        }
+
+        authRepository.updateEmail(newEmail, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (!isAdded()) {
+                    return;
+                }
+                Toast.makeText(
+                        requireContext(),
+                        "Verification email sent to " + newEmail + ". Confirm it to finish updating your email.",
+                        Toast.LENGTH_LONG
+                ).show();
+
+                if (changingPassword) {
+                    applyPasswordChange(newPassword);
+                } else {
+                    settingsSaveButton.setEnabled(true);
+                    exitEditMode();
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) {
+                    return;
+                }
+                settingsSaveButton.setEnabled(true);
+                settingsEmailInputLayout.setError(message == null ? "Could not update email" : message);
+            }
+        });
+    }
+
+    private void applyPasswordChange(String newPassword) {
+        authRepository.updatePassword(newPassword, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (!isAdded()) {
+                    return;
+                }
+                settingsSaveButton.setEnabled(true);
+                Toast.makeText(requireContext(), "Password updated", Toast.LENGTH_SHORT).show();
+                exitEditMode();
+            }
+
+            @Override
+            public void onError(String message) {
+                if (!isAdded()) {
+                    return;
+                }
+                settingsSaveButton.setEnabled(true);
+                settingsNewPasswordInputLayout.setError(message == null ? "Could not update password" : message);
+            }
+        });
     }
 
     private void cancelEdit() {
@@ -197,8 +274,8 @@ public class UserSettingsFragment extends Fragment {
     }
 
     private void logout() {
-
-        // TODO: clear session/auth token via your AuthRepository
+        authRepository.signOut();
+        SessionManager.getInstance().logout();
 
         getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 

@@ -37,6 +37,7 @@ public class ExpandedArtifactFragment extends Fragment {
     private User currentUser;
     private Artifact artifact;
     private TextView artifactName;
+    private ImageView artifactImage;
     private TextView descriptionText;
     private TextView categoryText;
     private TextView materialText;
@@ -75,13 +76,13 @@ public class ExpandedArtifactFragment extends Fragment {
         commentAdapter = new CommentAdapter(comments, currentUser, this::onDeleteComment);
         commentsRV.setAdapter(commentAdapter);
 
-        TextView artifactName = view.findViewById(R.id.artifact_name);
-        ImageView artifactImage = view.findViewById(R.id.image_placeholder);
-        TextView descriptionText = view.findViewById(R.id.description_text);
+        artifactName = view.findViewById(R.id.artifact_name);
+        artifactImage = view.findViewById(R.id.image_placeholder);
+        descriptionText = view.findViewById(R.id.description_text);
         TextView readMoreText = view.findViewById(R.id.read_more_text);
-        TextView categoryText = view.findViewById(R.id.category_text);
-        TextView materialText = view.findViewById(R.id.material_text);
-        TextView dynastyText = view.findViewById(R.id.dynasty_text);
+        categoryText = view.findViewById(R.id.category_text);
+        materialText = view.findViewById(R.id.material_text);
+        dynastyText = view.findViewById(R.id.dynasty_text);
         likesCounter = view.findViewById(R.id.likes_counter);
         commentsCounter = view.findViewById(R.id.comments_counter);
 
@@ -90,6 +91,9 @@ public class ExpandedArtifactFragment extends Fragment {
         if (artifact != null) {
             artifactName.setText(artifact.getName());
             descriptionText.setText(artifact.getDescription());
+            categoryText.setText(artifact.getCategory());
+            materialText.setText(artifact.getMaterial());
+            dynastyText.setText(artifact.getDynasty());
             Glide.with(this)
                     .load(artifact.getImage())
                     .placeholder(R.drawable.expanded_artifact_placeholder)
@@ -238,6 +242,11 @@ public class ExpandedArtifactFragment extends Fragment {
             categoryText.setText(updatedArtifact.getCategory());
             dynastyText.setText(updatedArtifact.getDynasty());
             materialText.setText(updatedArtifact.getMaterial());
+            Glide.with(this)
+                    .load(updatedArtifact.getImage())
+                    .placeholder(R.drawable.expanded_artifact_placeholder)
+                    .error(R.drawable.expanded_artifact_placeholder)
+                    .into(artifactImage);
         });
 
         dialog.show(getParentFragmentManager(), "EditArtifactDialog");

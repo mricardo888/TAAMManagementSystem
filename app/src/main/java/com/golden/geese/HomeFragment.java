@@ -172,6 +172,8 @@ public class HomeFragment extends Fragment {
         });
 
         dialog.show(getParentFragmentManager(), "AddArtifactDialog");
+    }
+
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment_container, fragment);

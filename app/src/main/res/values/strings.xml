@@ -38,10 +38,12 @@
     <string name="cancel">Cancel</string>
     <string name="post">Post</string>
     <string name="form_title">Add/Edit Artifact</string>
+    <string name="lot_number">Lot Number</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
     <string name="category">Category</string>
     <string name="material">Material</string>
     <string name="dynasty">Dynasty</string>
     <string name="save">Save</string>
+    <string name="change_image">Change Image</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.golden.geese.model;
 
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.golden.geese.AdminUser;
@@ -32,6 +34,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                                     User user = isAdmin ? new AdminUser() : new RegularUser();
                                     user.setUid(firebaseUser.getUid());
                                     user.setUsername(firebaseUser.getEmail());
+                                    user.setEmail(firebaseUser.getEmail());
                                     callback.onSuccess(user);
                                 }
 
@@ -66,6 +69,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                                             RegularUser user = new RegularUser();
                                             user.setUid(firebaseUser.getUid());
                                             user.setUsername(username);
+                                            user.setEmail(email);
                                             callback.onSuccess(user);
                                         }
 
@@ -95,6 +99,52 @@ public class FirebaseAuthRepository implements AuthRepository {
         RegularUser user = new RegularUser();
         user.setUid(firebaseUser.getUid());
         user.setUsername(firebaseUser.getEmail());
+        user.setEmail(firebaseUser.getEmail());
         return user;
+    }
+
+    @Override
+    public void signOut() {
+        mAuth.signOut();
+    }
+
+    @Override
+    public void reauthenticate(String currentPassword, RepositoryCallback<Void> callback) {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null || firebaseUser.getEmail() == null) {
+            callback.onError("No signed-in user.");
+            return;
+        }
+
+        AuthCredential credential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), currentPassword);
+        firebaseUser.reauthenticate(credential)
+                .addOnSuccessListener(unused -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    @Override
+    public void updateEmail(String newEmail, RepositoryCallback<Void> callback) {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            callback.onError("No signed-in user.");
+            return;
+        }
+
+        firebaseUser.verifyBeforeUpdateEmail(newEmail)
+                .addOnSuccessListener(unused -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    @Override
+    public void updatePassword(String newPassword, RepositoryCallback<Void> callback) {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            callback.onError("No signed-in user.");
+            return;
+        }
+
+        firebaseUser.updatePassword(newPassword)
+                .addOnSuccessListener(unused -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 }
