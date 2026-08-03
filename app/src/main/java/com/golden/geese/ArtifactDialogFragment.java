@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public abstract class ArtifactDialogFragment extends DialogFragment {
+    protected TextView formTitle;
     protected EditText nameInput;
     protected EditText descriptionInput;
     protected EditText categoryInput;
@@ -41,11 +43,14 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        formTitle = view.findViewById(R.id.form_title);
         nameInput = view.findViewById(R.id.artifact_name);
         descriptionInput = view.findViewById(R.id.artifact_description);
         categoryInput = view.findViewById(R.id.artifact_category);
         materialInput = view.findViewById(R.id.artifact_material);
         dynastyInput = view.findViewById(R.id.artifact_dynasty);
+
+        formTitle.setText(getFormTitle());
     }
 
     protected boolean validateFields() {
@@ -165,4 +170,6 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
             window.setDimAmount(0.55f);
         }
     }
+
+    protected abstract String getFormTitle();
 }

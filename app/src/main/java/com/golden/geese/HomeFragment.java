@@ -25,6 +25,7 @@ import com.golden.geese.model.RepositoryCallback;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+    private User currentUser;
     private ViewPager2 viewPagerCarousel;
     private RecyclerView rvArtifacts;
     private ImageButton addButton;
@@ -39,6 +40,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        currentUser = SessionManager.getInstance().getCurrentUser();
+        boolean isAdmin = currentUser != null && currentUser.isAdmin();
 
         // Link views to the XML IDs
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
@@ -56,7 +60,8 @@ public class HomeFragment extends Fragment {
 
         // Add button function
         addButton = view.findViewById(R.id.add_button);
-        addButton.setOnClickListener(clickedView -> showAdd);
+        addButton.setOnClickListener(clickedView -> showAddArtifactDialog());
+        addButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
             @Override
@@ -149,5 +154,15 @@ public class HomeFragment extends Fragment {
         transaction.replace(R.id.main_fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void showAddArtifactDialog() {
+        AddArtifactDialogFragment dialog = new AddArtifactDialogFragment();
+
+        dialog.setOnArtifactSavedListener(newArtifact -> {
+            // TODO: Change to relead whatever needs to be reloaded
+        });
+
+        dialog.show(getParentFragmentManager(), "AddArtifactDialog");
     }
 }
