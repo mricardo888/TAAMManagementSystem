@@ -44,6 +44,16 @@
     <string name="category">Category</string>
     <string name="material">Material</string>
     <string name="dynasty">Dynasty</string>
+    <string name="origin">Cultural Origin</string>
+    <string name="dimension_length">Length (cm)</string>
+    <string name="dimension_width">Width (cm)</string>
+    <string name="dimension_height">Height (cm)</string>
+    <string name="condition_report">Condition Report</string>
+    <string name="location">Current Location</string>
+    <string name="acquisition_method">Acquisition Method</string>
+    <string name="provenance">Provenance</string>
+    <string name="accession_number">Accession Number</string>
+    <string name="notes">Notes</string>
     <string name="save">Save</string>
     <string name="change_image">Change Image</string>
 </resources>

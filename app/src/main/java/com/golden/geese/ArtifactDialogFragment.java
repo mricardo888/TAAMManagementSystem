@@ -26,6 +26,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 import com.golden.geese.storage.ArtifactImageUploader;
+import com.golden.geese.storage.ImageDeleteCallback;
 import com.golden.geese.storage.ImageUploadCallback;
 
 public abstract class ArtifactDialogFragment extends DialogFragment {
@@ -36,6 +37,16 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
     protected Spinner categoryInput;
     protected Spinner materialInput;
     protected Spinner dynastyInput;
+    protected EditText originInput;
+    protected EditText dimensionLengthInput;
+    protected EditText dimensionWidthInput;
+    protected EditText dimensionHeightInput;
+    protected EditText conditionReportInput;
+    protected EditText locationInput;
+    protected EditText acquisitionMethodInput;
+    protected EditText provenanceInput;
+    protected EditText accessionNumberInput;
+    protected EditText notesInput;
     protected ImageView imagePreview;
     protected Uri selectedImageUri;
 
@@ -80,6 +91,16 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         categoryInput = view.findViewById(R.id.artifact_category);
         materialInput = view.findViewById(R.id.artifact_material);
         dynastyInput = view.findViewById(R.id.artifact_dynasty);
+        originInput = view.findViewById(R.id.artifact_origin);
+        dimensionLengthInput = view.findViewById(R.id.artifact_dimension_length);
+        dimensionWidthInput = view.findViewById(R.id.artifact_dimension_width);
+        dimensionHeightInput = view.findViewById(R.id.artifact_dimension_height);
+        conditionReportInput = view.findViewById(R.id.artifact_condition_report);
+        locationInput = view.findViewById(R.id.artifact_location);
+        acquisitionMethodInput = view.findViewById(R.id.artifact_acquisition_method);
+        provenanceInput = view.findViewById(R.id.artifact_provenance);
+        accessionNumberInput = view.findViewById(R.id.artifact_accession_number);
+        notesInput = view.findViewById(R.id.artifact_notes);
         imagePreview = view.findViewById(R.id.edit_image_preview);
         Button changeImageButton = view.findViewById(R.id.change_image_button);
 
@@ -193,6 +214,21 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         setSpinnerSelection(materialInput, artifact.getMaterial());
         setSpinnerSelection(dynastyInput, artifact.getDynasty());
 
+        originInput.setText(artifact.getOrigin());
+        conditionReportInput.setText(artifact.getConditionReport());
+        locationInput.setText(artifact.getLocation());
+        acquisitionMethodInput.setText(artifact.getAcqMethod());
+        provenanceInput.setText(artifact.getProvenance());
+        accessionNumberInput.setText(String.valueOf(artifact.getAccessionNum()));
+        notesInput.setText(artifact.getNotes());
+
+        double[] dimensions = artifact.getDimensions();
+        if (dimensions != null && dimensions.length == 3) {
+            dimensionLengthInput.setText(String.valueOf(dimensions[0]));
+            dimensionWidthInput.setText(String.valueOf(dimensions[1]));
+            dimensionHeightInput.setText(String.valueOf(dimensions[2]));
+        }
+
         Glide.with(this)
                 .load(artifact.getImage())
                 .placeholder(R.drawable.expanded_artifact_placeholder)
@@ -213,6 +249,36 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         artifact.setCategory(categoryInput.getSelectedItem().toString());
         artifact.setMaterial(materialInput.getSelectedItem().toString());
         artifact.setDynasty(dynastyInput.getSelectedItem().toString());
+
+        artifact.setOrigin(originInput.getText().toString().trim());
+        artifact.setConditionReport(conditionReportInput.getText().toString().trim());
+        artifact.setLocation(locationInput.getText().toString().trim());
+        artifact.setAcqMethod(acquisitionMethodInput.getText().toString().trim());
+        artifact.setProvenance(provenanceInput.getText().toString().trim());
+        artifact.setAccessionNum(parseIntOrZero(accessionNumberInput.getText().toString().trim()));
+        artifact.setNotes(notesInput.getText().toString().trim());
+
+        artifact.setDimensions(new double[]{
+                parseDoubleOrZero(dimensionLengthInput.getText().toString().trim()),
+                parseDoubleOrZero(dimensionWidthInput.getText().toString().trim()),
+                parseDoubleOrZero(dimensionHeightInput.getText().toString().trim())
+        });
+    }
+
+    private int parseIntOrZero(String value) {
+        try {
+            return value.isEmpty() ? 0 : Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private double parseDoubleOrZero(String value) {
+        try {
+            return value.isEmpty() ? 0.0 : Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
     }
 
     protected int getLotNumberValue() {
@@ -248,6 +314,18 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
                         errorMessage == null ? "Failed to upload image" : errorMessage,
                         Toast.LENGTH_SHORT
                 ).show();
+            }
+        });
+    }
+
+    protected void deleteCloudImage(String imageUrl) {
+        imageUploader.deleteArtifactImage(imageUrl, new ImageDeleteCallback() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onError(String errorMessage) {
             }
         });
     }
