@@ -15,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Button;
 
 import com.golden.geese.databinding.FragmentHomeBinding;
@@ -25,8 +26,10 @@ import com.golden.geese.model.RepositoryCallback;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+    private User currentUser;
     private ViewPager2 viewPagerCarousel;
     private RecyclerView rvArtifacts;
+    private ImageButton addButton;
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
 
     @Override
@@ -38,6 +41,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        currentUser = SessionManager.getInstance().getCurrentUser();
+        boolean isAdmin = currentUser != null && currentUser.isAdmin();
 
         // Link views to the XML IDs
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
@@ -51,6 +57,11 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.tab_profile).setOnClickListener(clickedView -> {
             loadFragment(new ProfileFragment());
         });
+
+        // Add button function
+        addButton = view.findViewById(R.id.add_button);
+        addButton.setOnClickListener(clickedView -> showAddArtifactDialog());
+        addButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
             @Override
@@ -153,6 +164,14 @@ public class HomeFragment extends Fragment {
         transaction.commit();
     }
 
+    private void showAddArtifactDialog() {
+        AddArtifactDialogFragment dialog = new AddArtifactDialogFragment();
+
+        dialog.setOnArtifactSavedListener(newArtifact -> {
+            loadFragment(new HomeFragment());
+        });
+
+        dialog.show(getParentFragmentManager(), "AddArtifactDialog");
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment_container, fragment);
