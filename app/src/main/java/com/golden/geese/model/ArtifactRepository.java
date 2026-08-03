@@ -9,6 +9,8 @@ public interface ArtifactRepository {
 
     void addArtifact(Artifact artifact, RepositoryCallback<Void> callback);
 
+    void doesLotNumberExist(int lotNum, RepositoryCallback<Boolean> callback);
+
     void updateArtifact(Artifact artifact, RepositoryCallback<Void> callback);
 
     void deleteArtifact(int lotNum, RepositoryCallback<Void> callback);

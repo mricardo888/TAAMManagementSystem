@@ -6,6 +6,7 @@ public abstract class User {
     private List<Artifact> likedArtifacts;
     private String uid;
     private String username;
+    private String email;
     private String pfp;
     private List<Artifact> savedArtifacts;
 
@@ -37,6 +38,14 @@ public abstract class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPfp() {

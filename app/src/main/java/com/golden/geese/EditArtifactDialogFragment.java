@@ -3,7 +3,6 @@ package com.golden.geese;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +18,11 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
     public void setArtifact(Artifact artifact)
     {
         this.artifact = artifact;
+    }
+
+    @Override
+    protected boolean isLotNumberEditable() {
+        return false;
     }
 
     @Override
@@ -42,7 +46,11 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
             }
 
             saveInputs(artifact);
-            updateArtifact();
+
+            resolveImage(artifact.getImage(), String.valueOf(artifact.getLotNum()), imageUrl -> {
+                artifact.setImage(imageUrl);
+                updateArtifact();
+            });
         });
     }
 

@@ -62,6 +62,22 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
     }
 
     @Override
+    public void doesLotNumberExist(int lotNum, RepositoryCallback<Boolean> callback) {
+        root.child(ARTIFACTS).child(String.valueOf(lotNum))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        callback.onSuccess(snapshot.exists());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onError(error.getMessage());
+                    }
+                });
+    }
+
+    @Override
     public void updateArtifact(Artifact artifact, RepositoryCallback<Void> callback) {
         Map<String, Object> fields = new HashMap<>();
         fields.put("name", artifact.getName());

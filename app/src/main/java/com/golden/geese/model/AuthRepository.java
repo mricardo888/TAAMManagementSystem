@@ -8,4 +8,12 @@ public interface AuthRepository {
     void signUp(String email, String username, String pwd, AuthCallBack callback);
 
     User getCurrentUser();
+
+    void signOut();
+
+    void reauthenticate(String currentPassword, RepositoryCallback<Void> callback);
+
+    void updateEmail(String newEmail, RepositoryCallback<Void> callback);
+
+    void updatePassword(String newPassword, RepositoryCallback<Void> callback);
 }
