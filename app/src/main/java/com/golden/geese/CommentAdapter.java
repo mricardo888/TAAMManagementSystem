@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -57,7 +59,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             holder.time.setText("");
         }
 
-        boolean isOwner = currentUser != null && currentUser.getUsername() != null && currentUser.getUsername().equals(comment.getAuthor().getUsername());
+        boolean isOwner = currentUser != null && currentUser.getUsername() != null && currentUser.getUsername().equals(comment.getAuthor());
         boolean isAdmin = currentUser != null && currentUser.isAdmin();
 
         holder.deleteButton.setVisibility((isOwner || isAdmin) ? View.VISIBLE : View.GONE);
@@ -71,14 +73,19 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
             Comment commentToDelete = comments.get(adapterPosition);
 
-            if (deleteListener != null)
-            {
-                deleteListener.onDeleteComment(commentToDelete, adapterPosition);
-            }
+            new MaterialAlertDialogBuilder(holder.itemView.getContext(), R.style.CustomDeleteDialog)
+                    .setTitle("Delete comment?")
+                    .setMessage("This action cannot be undone.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        if (deleteListener != null) {
+                            deleteListener.onDeleteComment(commentToDelete, adapterPosition);
+                        }
 
-            removeComment(adapterPosition);
+                        removeComment(adapterPosition);
+                    })
+                    .show();
         });
-
     }
 
     @Override

@@ -28,14 +28,13 @@
             app:layout_constraintVertical_bias="0">
 
             <ImageButton
-                android:id="@+id/settings_icon"
+                android:id="@+id/settings_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
                 android:layout_margin="5dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:contentDescription="@string/setting_button_description"
                 android:src="@drawable/settings_icon"
                 app:tint="@color/olive" />
 

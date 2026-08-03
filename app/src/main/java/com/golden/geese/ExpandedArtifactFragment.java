@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.bumptech.glide.Glide;
 import com.golden.geese.model.FirebaseArtifactRepository;
 import com.golden.geese.model.RepositoryCallback;
@@ -35,7 +36,11 @@ public class ExpandedArtifactFragment extends Fragment {
     private List<Comment> comments = new ArrayList<>();
     private User currentUser;
     private Artifact artifact;
-
+    private TextView artifactName;
+    private TextView descriptionText;
+    private TextView categoryText;
+    private TextView materialsText;
+    private TextView dynastyText;
     private ImageButton likeButton;
     private TextView likesCounter;
     private ImageButton saveButton;
@@ -74,6 +79,9 @@ public class ExpandedArtifactFragment extends Fragment {
         ImageView artifactImage = view.findViewById(R.id.image_placeholder);
         TextView descriptionText = view.findViewById(R.id.description_text);
         TextView readMoreText = view.findViewById(R.id.read_more_text);
+        TextView categoryText = view.findViewById(R.id.category_text);
+        TextView materialsText = view.findViewById(R.id.materials_text);
+        TextView dynastyText = view.findViewById(R.id.dynasty_text);
         likesCounter = view.findViewById(R.id.likes_counter);
         commentsCounter = view.findViewById(R.id.comments_counter);
 
@@ -120,6 +128,7 @@ public class ExpandedArtifactFragment extends Fragment {
         addButton.setOnClickListener(clickedView -> showAddCommentDialog());
 
         ImageButton editButton = view.findViewById(R.id.edit_button);
+        editButton.setOnClickListener(clickedView -> showEditArtifactDialog());
         editButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
         ImageButton removeButton = view.findViewById(R.id.remove_button);
@@ -160,11 +169,44 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
+    private void showAddCommentDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_comment, null);
+
+        EditText commentInput = dialogView.findViewById(R.id.comment_input);
+
+        AlertDialog dialog =
+                new MaterialAlertDialogBuilder(
+                        requireContext(),
+                        R.style.CustomDeleteDialog
+                )
+                        .setTitle(R.string.add_comment)
+                        .setView(dialogView)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.post, null)
+                        .create();
+
+        dialog.setOnShowListener(unused -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    .setOnClickListener(buttonView -> {
+                        String commentText = commentInput.getText().toString().trim();
+
+                        if (commentText.isEmpty()) {
+                            commentInput.setError("Comment cannot be empty");
+                            return;
+                        }
+                        addComment(commentText);
+
+                        dialog.dismiss();
+                    });
+        });
+
+        dialog.show();
+    }
+
     private void toggleLike() {
         if (currentUser == null || currentUser.getUid() == null) {
             return;
         }
-
         String uid = currentUser.getUid();
         RepositoryCallback<Void> callback = new RepositoryCallback<Void>() {
             @Override
@@ -184,6 +226,32 @@ public class ExpandedArtifactFragment extends Fragment {
         } else {
             repository.likeArtifact(artifact.getLotNum(), uid, callback);
         }
+    }
+
+    private void showEditArtifactDialog() {
+        EditArtifactDialogFragment dialog =
+                new EditArtifactDialogFragment();
+
+        dialog.setArtifact(artifact, updatedArtifact -> {
+            artifactName.setText(updatedArtifact.getName());
+            descriptionText.setText(updatedArtifact.getDescription());
+            categoryText.setText(updatedArtifact.getCategory());
+            dynastyText.setText(updatedArtifact.getDynasty());
+
+            String[] materials = updatedArtifact.getMaterials();
+            materialsText.setText(materials == null ? "" : String.join(", ", materials));
+        });
+
+        dialog.show(getParentFragmentManager(), "EditArtifactDialog");
+    }
+
+    private void confirmDeleteArtifact() {
+        new MaterialAlertDialogBuilder(requireContext(), R.style.CustomDeleteDialog)
+                .setTitle("Delete artifact?")
+                .setMessage("Are you sure you want to delete this artifact? This action cannot be undone.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete", (dialog, which) -> deleteArtifact())
+                .show();
     }
 
     private void loadSaveState() {
@@ -251,25 +319,25 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
-    private void showAddCommentDialog() {
-        if (currentUser == null || artifact == null) {
-            return;
-        }
-
-        EditText input = new EditText(requireContext());
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Add Comment")
-                .setView(input)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    String text = input.getText().toString().trim();
-                    if (!text.isEmpty()) {
-                        addComment(text);
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
-    }
+//    private void showAddCommentDialog() {
+//        if (currentUser == null || artifact == null) {
+//            return;
+//        }
+//
+//        EditText input = new EditText(requireContext());
+//
+//        new AlertDialog.Builder(requireContext())
+//                .setTitle("Add Comment")
+//                .setView(input)
+//                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+//                    String text = input.getText().toString().trim();
+//                    if (!text.isEmpty()) {
+//                        addComment(text);
+//                    }
+//                })
+//                .setNegativeButton(android.R.string.cancel, null)
+//                .show();
+//    }
 
     private void addComment(String text) {
         Comment comment = new Comment(currentUser, text);
@@ -302,14 +370,14 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
-    private void confirmDeleteArtifact() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Delete Artifact")
-                .setMessage("Are you sure you want to delete this artifact? This cannot be undone.")
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> deleteArtifact())
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
-    }
+//    private void confirmDeleteArtifact() {
+//        new AlertDialog.Builder(requireContext())
+//                .setTitle("Delete Artifact")
+//                .setMessage("Are you sure you want to delete this artifact? This cannot be undone.")
+//                .setPositiveButton(android.R.string.ok, (dialog, which) -> deleteArtifact())
+//                .setNegativeButton(android.R.string.cancel, null)
+//                .show();
+//    }
 
     private void deleteArtifact() {
         repository.deleteArtifact(artifact.getLotNum(), new RepositoryCallback<Void>() {
