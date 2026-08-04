@@ -138,7 +138,11 @@ public class BrowseFragment extends Fragment {
                 setUpGrid();
             }
         });
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         setUpGrid();
     }
 

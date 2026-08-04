@@ -77,6 +77,11 @@ public class SignUpPresenter {
     }
 
     private void signup() {
+        if (isBlank(username) || isBlank(email)) {
+            view.showError("Sign-up details are incomplete. Please start again.");
+            return;
+        }
+
         view.showLoading();
 
         repo.signUp(email, username, password, new AuthCallBack() {
@@ -92,6 +97,10 @@ public class SignUpPresenter {
                 view.showError(message);
             }
         });
+    }
+
+    private boolean isBlank (String value) {
+        return value == null || value.trim().isEmpty();
     }
 
     public void onDestroy (AuthView caller) {

@@ -46,6 +46,13 @@ public class FirebaseUserProfileRepository implements UserProfileRepository {
     }
 
     @Override
+    public void updateUsername(String uid, String username, RepositoryCallback<Void> callback) {
+        usersRef.child(uid).child("username").setValue(username)
+                .addOnSuccessListener(unused -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    @Override
     public void getUsername(String uid, RepositoryCallback<String> callback) {
         usersRef.child(uid).child("username")
                 .addListenerForSingleValueEvent(new ValueEventListener() {

@@ -6,4 +6,6 @@ public interface UserProfileRepository {
     void isAdmin(String uid, RepositoryCallback<Boolean> callback);
 
     void getUsername(String uid, RepositoryCallback<String> callback);
+
+    void updateUsername(String uid, String username, RepositoryCallback<Void> callback);
 }

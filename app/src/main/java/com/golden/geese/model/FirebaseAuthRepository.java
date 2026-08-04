@@ -84,7 +84,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                                         public void onSuccess(Void result) {
                                             RegularUser user = new RegularUser();
                                             user.setUid(firebaseUser.getUid());
-                                            user.setUsername(username);
+                                            user.setUsername(username != null && !username.isEmpty() ? username : email);
                                             user.setEmail(email);
                                             callback.onSuccess(user);
                                         }

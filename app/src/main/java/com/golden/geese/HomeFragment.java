@@ -64,6 +64,20 @@ public class HomeFragment extends Fragment {
         addButton.setOnClickListener(clickedView -> showAddArtifactDialog());
         addButton.setVisibility(canManage ? View.VISIBLE : View.GONE);
 
+        displayViewAllButton.setOnClickListener(v -> loadFragment(new BrowseFragment()));
+
+        artifactsViewAllButton.setOnClickListener(v -> {
+            loadFragment(new BrowseFragment());
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadArtifacts();
+    }
+
+    private void loadArtifacts() {
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
             @Override
             public void onSuccess(List<Artifact> artifacts) {
@@ -78,12 +92,6 @@ public class HomeFragment extends Fragment {
             public void onError(String message) {
                 showError("Could not load artifacts", message);
             }
-        });
-
-        displayViewAllButton.setOnClickListener(v -> loadFragment(new BrowseFragment()));
-
-        artifactsViewAllButton.setOnClickListener(v -> {
-            loadFragment(new BrowseFragment());
         });
     }
 
@@ -167,9 +175,7 @@ public class HomeFragment extends Fragment {
     private void showAddArtifactDialog() {
         AddArtifactDialogFragment dialog = new AddArtifactDialogFragment();
 
-        dialog.setOnArtifactSavedListener(newArtifact -> {
-            loadFragment(new HomeFragment());
-        });
+        dialog.setOnArtifactSavedListener(newArtifact -> loadArtifacts());
 
         dialog.show(getParentFragmentManager(), "AddArtifactDialog");
     }

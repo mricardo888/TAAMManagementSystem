@@ -30,6 +30,7 @@ public class ProfileFragment extends Fragment {
     private RecyclerView likedArtifactsRV;
     private RecyclerView savedArtifactsRV;
     private ImageButton settingsButton;
+    private TextView profileName;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,9 +58,15 @@ public class ProfileFragment extends Fragment {
             loadFragment(new UserSettingsFragment());
         });
 
+        profileName = view.findViewById(R.id.profile_name);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         User currentUser = SessionManager.getInstance().getCurrentUser();
         if (currentUser != null) {
-            TextView profileName = view.findViewById(R.id.profile_name);
             profileName.setText(currentUser.getUsername());
         }
 

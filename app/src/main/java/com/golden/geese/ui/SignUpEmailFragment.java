@@ -86,6 +86,5 @@ public class SignUpEmailFragment extends Fragment implements AuthView {
     public void onDestroyView() {
         super.onDestroyView();
         presenter.onDestroy(this);
-        presenter.completeProcess();
     }
 }

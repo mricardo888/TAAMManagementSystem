@@ -22,7 +22,9 @@ import com.golden.geese.SessionManager;
 import com.golden.geese.User;
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.model.FirebaseAuthRepository;
+import com.golden.geese.model.FirebaseUserProfileRepository;
 import com.golden.geese.model.RepositoryCallback;
+import com.golden.geese.model.UserProfileRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,6 +34,7 @@ import java.util.Objects;
 public class UserSettingsFragment extends Fragment {
 
     private final AuthRepository authRepository = new FirebaseAuthRepository();
+    private final UserProfileRepository userProfileRepository = new FirebaseUserProfileRepository();
 
     private TextInputEditText settingsNameInput;
     private TextInputEditText settingsEmailInput;
@@ -84,11 +87,12 @@ public class UserSettingsFragment extends Fragment {
         settingsLogoutButton = view.findViewById(R.id.settingsLogoutButton);
         ImageButton settingsBackButton = view.findViewById(R.id.settingsBackButton);
 
-        // TODO: load real username once profile data is exposed through a repository
-        settingsNameInput.setText("Jane Doe");
-
         User currentUser = SessionManager.getInstance().getCurrentUser();
+        settingsNameInput.setText(currentUser == null ? "" : currentUser.getUsername());
         settingsEmailInput.setText(currentUser == null ? "" : currentUser.getEmail());
+
+        originalName = settingsNameInput.getText().toString();
+        originalEmail = settingsEmailInput.getText().toString();
 
         settingsBackButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         settingsEditButton.setOnClickListener(v -> enterEditMode());
@@ -159,6 +163,7 @@ public class UserSettingsFragment extends Fragment {
         String newPassword = Objects.requireNonNull(settingsNewPasswordInput.getText()).toString();
         String confirmNewPassword = Objects.requireNonNull(settingsConfirmNewPasswordInput.getText()).toString();
 
+        boolean nameChanged = !newName.equals(originalName);
         boolean emailChanged = !newEmail.equals(originalEmail);
         boolean changingPassword = !newPassword.isEmpty() || !confirmNewPassword.isEmpty();
 
@@ -175,25 +180,72 @@ public class UserSettingsFragment extends Fragment {
         settingsNewPasswordInputLayout.setError(null);
         settingsConfirmNewPasswordInputLayout.setError(null);
 
-        if (!emailChanged && !changingPassword) {
+        if (!nameChanged && !emailChanged && !changingPassword) {
             exitEditMode();
             return;
         }
 
-        if (currentPassword.isEmpty()) {
+        boolean needsReauthentication = emailChanged || changingPassword;
+        if (needsReauthentication && currentPassword.isEmpty()) {
             settingsCurrentPasswordInputLayout.setError("Enter your current password to confirm these changes");
             return;
         }
         settingsCurrentPasswordInputLayout.setError(null);
 
         settingsSaveButton.setEnabled(false);
-        authRepository.reauthenticate(currentPassword, new RepositoryCallback<Void>() {
+
+        Runnable applyAuthenticatedChanges = () -> {
+            if (!needsReauthentication) {
+                settingsSaveButton.setEnabled(true);
+                Toast.makeText(requireContext(), "Username updated", Toast.LENGTH_SHORT).show();
+                exitEditMode();
+                return;
+            }
+
+            authRepository.reauthenticate(currentPassword, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    applyAccountChanges(emailChanged, newEmail, changingPassword, newPassword);
+                }
+
+                @Override
+                public void onError(String message) {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    settingsSaveButton.setEnabled(true);
+                    settingsCurrentPasswordInputLayout.setError("Current password is incorrect");
+                }
+            });
+        };
+
+        if (nameChanged) {
+            saveUsername(newName, applyAuthenticatedChanges);
+        } else {
+            applyAuthenticatedChanges.run();
+        }
+    }
+
+    private void saveUsername(String newName, Runnable onSaved) {
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null || currentUser.getUid() == null) {
+            settingsSaveButton.setEnabled(true);
+            settingsNameInputLayout.setError("You are not signed in");
+            return;
+        }
+
+        userProfileRepository.updateUsername(currentUser.getUid(), newName, new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 if (!isAdded()) {
                     return;
                 }
-                applyAccountChanges(emailChanged, newEmail, changingPassword, newPassword);
+                currentUser.setUsername(newName);
+                originalName = newName;
+                onSaved.run();
             }
 
             @Override
@@ -202,7 +254,7 @@ public class UserSettingsFragment extends Fragment {
                     return;
                 }
                 settingsSaveButton.setEnabled(true);
-                settingsCurrentPasswordInputLayout.setError("Current password is incorrect");
+                settingsNameInputLayout.setError(message == null ? "Could not update username" : message);
             }
         });
     }

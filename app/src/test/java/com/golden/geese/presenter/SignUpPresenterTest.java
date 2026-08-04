@@ -156,6 +156,28 @@ public class SignUpPresenterTest {
     }
 
     @Test
+    public void validatePassword_withMissingUsername_doesNotSignUp() {
+        presenter.setEmail("test@example.com");
+
+        presenter.validatePassword("password123", "password123");
+
+        verify(view, times(1)).showError("Sign-up details are incomplete. Please start again.");
+        verify(view, never()).showLoading();
+        verify(repo, never()).signUp(anyString(), anyString(), anyString(), any(AuthCallBack.class));
+    }
+
+    @Test
+    public void validatePassword_withMissingEmail_doesNotSignUp() {
+        presenter.setUsername("goldenGoose");
+
+        presenter.validatePassword("password123", "password123");
+
+        verify(view, times(1)).showError("Sign-up details are incomplete. Please start again.");
+        verify(view, never()).showLoading();
+        verify(repo, never()).signUp(anyString(), anyString(), anyString(), any(AuthCallBack.class));
+    }
+
+    @Test
     public void validatePassword_afterViewCleared_isNoOp() {
         presenter.onDestroy(view);
 
