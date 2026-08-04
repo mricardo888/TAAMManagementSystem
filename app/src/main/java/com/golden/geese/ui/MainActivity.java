@@ -11,6 +11,7 @@ import com.golden.geese.R;
 import com.golden.geese.SessionManager;
 import com.golden.geese.User;
 
+import com.golden.geese.model.AuthCallBack;
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.model.FirebaseAuthRepository;
 
@@ -26,23 +27,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         authRepository = new FirebaseAuthRepository();
-        User currentUser = authRepository.getCurrentUser();
-        if (currentUser != null) {
-            SessionManager.getInstance().setCurrentUser(currentUser);
-        }
-
-        if (savedInstanceState == null) {
-            if (userIsLoggedIn()) {
-                loadFragment(new HomeFragment());
-            } else {
-                loadFragment(new WelcomeFragment());
+        authRepository.getCurrentUser(new AuthCallBack() {
+            @Override
+            public void onSuccess(User user) {
+                SessionManager.getInstance().setCurrentUser(user);
+                if (savedInstanceState == null) {
+                    loadFragment(new HomeFragment());
+                }
             }
-        }
 
-    }
-
-    private boolean userIsLoggedIn () {
-        return SessionManager.getInstance().isLoggedIn();
+            @Override
+            public void onError(String msg) {
+                if (savedInstanceState == null) {
+                    loadFragment(new WelcomeFragment());
+                }
+            }
+        });
     }
 
     private void loadFragment(Fragment fragment) {

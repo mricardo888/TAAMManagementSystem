@@ -44,4 +44,20 @@ public class FirebaseUserProfileRepository implements UserProfileRepository {
                     }
                 });
     }
+
+    @Override
+    public void getUsername(String uid, RepositoryCallback<String> callback) {
+        usersRef.child(uid).child("username")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        callback.onSuccess(snapshot.getValue(String.class));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onError(error.getMessage());
+                    }
+                });
+    }
 }
