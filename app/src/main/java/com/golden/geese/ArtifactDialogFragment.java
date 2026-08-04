@@ -234,8 +234,8 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
 
         Glide.with(this)
                 .load(artifact.getImage())
-                .placeholder(R.drawable.expanded_artifact_placeholder)
-                .error(R.drawable.expanded_artifact_placeholder)
+                .placeholder(R.drawable.empty)
+                .error(R.drawable.empty)
                 .into(imagePreview);
     }
 

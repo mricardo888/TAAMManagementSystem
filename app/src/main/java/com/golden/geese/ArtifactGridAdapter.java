@@ -45,8 +45,8 @@ public class ArtifactGridAdapter extends RecyclerView.Adapter<ArtifactGridAdapte
 
         Glide.with(holder.itemView)
                 .load(artifact.getImage())
-                .placeholder(R.drawable.ic_launcher_background)
-                .error(R.drawable.ic_launcher_background)
+                .placeholder(R.drawable.empty)
+                .error(R.drawable.empty)
                 .into(holder.ivGridImage);
 
         holder.itemView.setOnClickListener(v -> {
