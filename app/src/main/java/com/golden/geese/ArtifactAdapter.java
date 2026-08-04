@@ -48,8 +48,8 @@ public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.Artifa
 
         Glide.with(holder.itemView)
                 .load(artifact.getImage())
-                .placeholder(R.drawable.ic_launcher_background)
-                .error(R.drawable.ic_launcher_background)
+                .placeholder(R.drawable.empty)
+                .error(R.drawable.empty)
                 .into(holder.ivImage);
 
         holder.itemView.setOnClickListener(v -> {
