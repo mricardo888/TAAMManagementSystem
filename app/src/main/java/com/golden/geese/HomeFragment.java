@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.golden.geese.databinding.FragmentHomeBinding;
 import com.golden.geese.model.ArtifactRepository;
@@ -75,12 +76,11 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onError(String message) {
+                showError("Could not load artifacts", message);
             }
         });
 
-        displayViewAllButton.setOnClickListener(v -> {
-
-        });
+        displayViewAllButton.setOnClickListener(v -> loadFragment(new BrowseFragment()));
 
         artifactsViewAllButton.setOnClickListener(v -> {
             loadFragment(new BrowseFragment());
@@ -179,5 +179,13 @@ public class HomeFragment extends Fragment {
         transaction.replace(R.id.main_fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void showError(String what, String reason) {
+        if (!isAdded()) {
+            return;
+        }
+        String detail = (reason == null || reason.trim().isEmpty()) ? "" : ": " + reason;
+        Toast.makeText(requireContext(), what + detail, Toast.LENGTH_SHORT).show();
     }
 }

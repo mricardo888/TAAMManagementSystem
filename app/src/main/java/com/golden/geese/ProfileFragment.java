@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -90,6 +91,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onError(String message) {
+                showError("Could not load artifacts", message);
             }
         });
     }
@@ -107,6 +109,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onError(String message) {
+                showError("Could not load your liked artifacts", message);
             }
         });
     }
@@ -124,6 +127,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onError(String message) {
+                showError("Could not load your saved artifacts", message);
             }
         });
     }
@@ -136,5 +140,13 @@ public class ProfileFragment extends Fragment {
             }
         }
         return filtered;
+    }
+
+    private void showError(String what, String reason) {
+        if (!isAdded()) {
+            return;
+        }
+        String detail = (reason == null || reason.trim().isEmpty()) ? "" : ": " + reason;
+        Toast.makeText(requireContext(), what + detail, Toast.LENGTH_SHORT).show();
     }
 }

@@ -62,4 +62,30 @@
         <item name="android:textColor">@color/olive</item>
     </style>
 
+    <style name="ExpandedDetailRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:baselineAligned">true</item>
+        <item name="android:paddingVertical">2dp</item>
+    </style>
+
+    <style name="ExpandedDetailLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/idiqlat_regular</item>
+        <item name="android:textColor">@color/olive</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ExpandedDetailValue">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:fontFamily">@font/idiqlat_extralight</item>
+        <item name="android:textColor">@color/olive</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>

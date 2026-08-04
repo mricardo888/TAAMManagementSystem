@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,13 +33,17 @@ import java.util.stream.Collectors;
 public class BrowseFragment extends Fragment {
     private static final int PAGE_SIZE_ALL = -1;
 
+    private static final String SORT_NAME_ASC = "Name (A-Z)";
+    private static final String SORT_NAME_DESC = "Name (Z-A)";
+
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
     private RecyclerView rvArtifactGrid;
+    private TextView pageTracker;
     private int paginationStartIndex = 0;
     private int numArtifacts = 0;
     private int currentPageSize = 12;
     private int pageNumber = 1;
-    private String sortMethod = "Name(A-Z)";
+    private String sortMethod = SORT_NAME_ASC;
     private String currentSearch = "";
 
     @Override
@@ -59,7 +64,7 @@ public class BrowseFragment extends Fragment {
         MaterialButton pageSizeButton = view.findViewById(R.id.btn_page_size);
         MaterialButton backPageButton = view.findViewById(R.id.btn_page_back);
         MaterialButton nextPageButton = view.findViewById(R.id.btn_page_next);
-        TextView pageTracker = view.findViewById(R.id.tv_page_number);
+        pageTracker = view.findViewById(R.id.tv_page_number);
 
         rvArtifactGrid.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
@@ -76,18 +81,14 @@ public class BrowseFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 currentSearch = charSequence.toString().toLowerCase();
-                paginationStartIndex = 0;
-                pageNumber = 1;
-                pageTracker.setText("Page " + pageNumber);
-                setUpGrid();
+                resetGrid();
             }
         });
 
         sortButton.setOnClickListener(v -> {
             PopupMenu sortPopUp = new PopupMenu(requireContext(), v);
-            sortPopUp.getMenu().add("Name (A-Z)");
-            sortPopUp.getMenu().add("Name (Z-A)");
-            //sortPopUp.getMenu().add("Dynasty/Time Period");
+            sortPopUp.getMenu().add(SORT_NAME_ASC);
+            sortPopUp.getMenu().add(SORT_NAME_DESC);
 
             sortPopUp.setOnMenuItemClickListener(item -> {
                 sortMethod = item.getTitle().toString();
@@ -114,10 +115,7 @@ public class BrowseFragment extends Fragment {
                         .putInt(getString(R.string.saved_pagination_key), chosenPageSize)
                         .apply();
 
-                paginationStartIndex = 0;
-                pageNumber = 1;
-                pageTracker.setText("Page " + pageNumber);
-                setUpGrid();
+                resetGrid();
                 return true;
             });
             pageSizePopup.show();
@@ -158,6 +156,7 @@ public class BrowseFragment extends Fragment {
 
             @Override
             public void onError(String message) {
+                showError("Could not load artifacts", message);
             }
         });
     }
@@ -167,14 +166,15 @@ public class BrowseFragment extends Fragment {
         currentPageSize = (rawPageSize == PAGE_SIZE_ALL) ? Math.max(artifacts.size(), 1) : rawPageSize;
 
         switch (sortMethod) {
-            case "Name(A-Z)":
+            case SORT_NAME_ASC:
                 artifacts.sort((a1, a2) -> a1.getName().compareToIgnoreCase(a2.getName()));
                 break;
-            case "Name(Z-A)":
+            case SORT_NAME_DESC:
                 artifacts.sort((a1, a2) -> a2.getName().compareToIgnoreCase(a1.getName()));
                 break;
         }
 
+        paginationStartIndex = Math.min(paginationStartIndex, Math.max(artifacts.size() - 1, 0));
         int endIndex = Math.min(paginationStartIndex + currentPageSize, artifacts.size());
         List<Artifact> artifactsToLoad = artifacts.subList(paginationStartIndex, endIndex);
         ArtifactGridAdapter gridAdapter = new ArtifactGridAdapter(artifactsToLoad,
@@ -191,9 +191,18 @@ public class BrowseFragment extends Fragment {
     }
 
     private void resetGrid() {
-        int paginationStartIndex = 0;
-        int pageNumber = 1;
+        paginationStartIndex = 0;
+        pageNumber = 1;
+        pageTracker.setText("Page " + pageNumber);
         setUpGrid();
+    }
+
+    private void showError(String what, String reason) {
+        if (!isAdded()) {
+            return;
+        }
+        String detail = (reason == null || reason.trim().isEmpty()) ? "" : ": " + reason;
+        Toast.makeText(requireContext(), what + detail, Toast.LENGTH_SHORT).show();
     }
 
     private List<Artifact> filterArtifactsBySubstring(List<Artifact> artifacts) {

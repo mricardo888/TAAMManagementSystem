@@ -24,7 +24,11 @@ public class Artifact implements Likeable, Serializable {
     private String material;
     private String dynasty;
     private String origin;
-    private double[] dimensions;
+    /**
+     * Length, width and height in cm. Held as a List rather than a double[] because Firebase's
+     * CustomClassMapper refuses to serialize or deserialize Java arrays.
+     */
+    private List<Double> dimensions;
     private String conditionReport;
     private String location;
     private String acqMethod;
@@ -51,7 +55,7 @@ public class Artifact implements Likeable, Serializable {
         material = "";
         dynasty = "";
         origin = "";
-        dimensions = new double[3];
+        dimensions = new ArrayList<>(Arrays.asList(0.0, 0.0, 0.0));
         conditionReport = "";
         location = "";
         acqMethod = "";
@@ -103,7 +107,7 @@ public class Artifact implements Likeable, Serializable {
      * @param image
      */
     public Artifact(int lotNum, String name, String description, String category,
-                    String material, String dynasty, String origin, double[] dimensions,
+                    String material, String dynasty, String origin, List<Double> dimensions,
                     String conditionReport, String location, String acqMethod, String provenance,
                     int accessionNum, String notes, String image){
         this(lotNum, name, description, category, material, dynasty);
@@ -178,11 +182,11 @@ public class Artifact implements Likeable, Serializable {
         this.origin = origin;
     }
 
-    public double[] getDimensions() {
+    public List<Double> getDimensions() {
         return dimensions;
     }
 
-    public void setDimensions(double[] dimensions) {
+    public void setDimensions(List<Double> dimensions) {
         this.dimensions = dimensions;
     }
 
@@ -242,10 +246,17 @@ public class Artifact implements Likeable, Serializable {
         this.image = image;
     }
 
+    /**
+     * Likes are persisted as the likedBy child list, not on the artifact record, so this
+     * in-memory count must stay out of the serialized form.
+     */
+    @Exclude
     public int getLikes() {
         return likeManager.getNumInteractions();
     }
 
+    /** Comments live under /comments/{lotNum}, so they are not part of the artifact record. */
+    @Exclude
     public List<Comment> getComments() {
         return commentManager.getInteractions();
     }
@@ -281,7 +292,7 @@ public class Artifact implements Likeable, Serializable {
                 ", material='" + material + '\'' +
                 ", dynasty='" + dynasty + '\'' +
                 ", origin='" + origin + '\'' +
-                ", dimensions=" + Arrays.toString(dimensions) +
+                ", dimensions=" + dimensions +
                 ", conditionReport='" + conditionReport + '\'' +
                 ", location='" + location + '\'' +
                 ", acqMethod='" + acqMethod + '\'' +
