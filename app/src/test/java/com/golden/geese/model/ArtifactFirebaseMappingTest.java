@@ -1,6 +1,7 @@
 package com.golden.geese.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -10,6 +11,7 @@ import com.google.firebase.database.core.utilities.encoding.CustomClassMapper;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
@@ -125,25 +127,82 @@ public class ArtifactFirebaseMappingTest {
         }
     }
 
-    /**
-     * getLikes() and getComments() are public getters with no @Exclude, so the mapper writes them
-     * as extra keys the seeded records do not have — and no setter exists to read them back.
-     * Pinning the emitted key set here so the drift is visible if those getters change.
-     */
     @Test
     @SuppressWarnings("unchecked")
-    public void writtenRecordCarriesOnlyTheFifteenModelKeys() {
+    public void writtenRecordCarriesOnlyTheModelKeys() {
         Artifact artifact = new Artifact(2, "Test", "Desc", "Ceramics", "Ceramic",
                 "Song Dynasty (960-1279 CE)");
 
         Map<String, Object> fields =
                 (Map<String, Object>) CustomClassMapper.convertToPlainJavaTypes(artifact);
 
-        assertEquals("app-written records drifted from the seeded 15-key shape",
+        assertEquals("app-written records drifted from the expected shape",
                 new TreeSet<>(Arrays.asList("lotNum", "name", "description", "category", "material",
                         "dynasty", "origin", "dimensions", "conditionReport", "location",
-                        "acqMethod", "provenance", "accessionNum", "notes", "image")),
+                        "acqMethod", "provenance", "accessionNum", "notes", "image",
+                        "likedBy", "savedBy")),
                 new TreeSet<>(fields.keySet()));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void newArtifactWritesEmptyInteractionLists() {
+        Artifact artifact = new Artifact(2, "Test", "Desc", "Ceramics", "Ceramic",
+                "Song Dynasty (960-1279 CE)");
+
+        Map<String, Object> fields =
+                (Map<String, Object>) CustomClassMapper.convertToPlainJavaTypes(artifact);
+
+        assertEquals(Collections.emptyList(), fields.get("likedBy"));
+        assertEquals(Collections.emptyList(), fields.get("savedBy"));
+    }
+
+    @Test
+    public void likedByAndSavedByDeserializeOntoTheArtifact() {
+        Map<String, Object> record = seededRecord();
+        record.put("likedBy", Arrays.asList("uid-a", "uid-b"));
+        record.put("savedBy", Collections.singletonList("uid-b"));
+
+        Artifact artifact = CustomClassMapper.convertToCustomClass(record, Artifact.class);
+
+        assertEquals(2, artifact.getLikeCount());
+        assertTrue(artifact.isLikedBy("uid-a"));
+        assertTrue(artifact.isSavedBy("uid-b"));
+        assertFalse(artifact.isSavedBy("uid-a"));
+    }
+
+    @Test
+    public void missingInteractionListsBecomeEmptyNotNull() {
+        Artifact artifact = CustomClassMapper.convertToCustomClass(seededRecord(), Artifact.class);
+
+        assertNotNull(artifact.getLikedBy());
+        assertNotNull(artifact.getSavedBy());
+        assertEquals(0, artifact.getLikeCount());
+        assertFalse(artifact.isLikedBy("uid-a"));
+    }
+
+    @Test
+    public void unknownUidIsNeverTreatedAsALike() {
+        Artifact artifact = new Artifact();
+        artifact.addLike("uid-a");
+
+        assertFalse(artifact.isLikedBy(null));
+        assertFalse(artifact.isSavedBy(null));
+    }
+
+    @Test
+    public void repeatedLikeCountsOnce() {
+        Artifact artifact = new Artifact();
+
+        artifact.addLike("uid-a");
+        artifact.addLike("uid-a");
+
+        assertEquals(1, artifact.getLikeCount());
+
+        artifact.removeLike("uid-a");
+
+        assertEquals(0, artifact.getLikeCount());
+        assertFalse(artifact.isLikedBy("uid-a"));
     }
 
     /**

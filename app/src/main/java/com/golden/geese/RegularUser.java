@@ -14,4 +14,14 @@ public class RegularUser extends User {
     public boolean isAdmin() {
         return false;
     }
+
+    @Override
+    public boolean canManageArtifacts() {
+        return false;
+    }
+
+    @Override
+    public boolean canDelete(Comment comment) {
+        return comment != null && comment.isAuthoredBy(this);
+    }
 }

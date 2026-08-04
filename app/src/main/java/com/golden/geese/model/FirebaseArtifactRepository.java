@@ -126,27 +126,6 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
     }
 
     @Override
-    public void isArtifactLikedByUser(int lotNum, String uid, RepositoryCallback<Boolean> callback) {
-        containsUid(lotNum, LIKED_BY, uid, callback);
-    }
-
-    @Override
-    public void getLikeCount(int lotNum, RepositoryCallback<Integer> callback) {
-        root.child(ARTIFACTS).child(String.valueOf(lotNum)).child(LIKED_BY)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        callback.onSuccess(readUids(snapshot).size());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        callback.onError(error.getMessage());
-                    }
-                });
-    }
-
-    @Override
     public void saveArtifact(int lotNum, String uid, RepositoryCallback<Void> callback) {
         updateUidList(lotNum, SAVED_BY, uid, true, callback);
     }
@@ -154,44 +133,6 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
     @Override
     public void unsaveArtifact(int lotNum, String uid, RepositoryCallback<Void> callback) {
         updateUidList(lotNum, SAVED_BY, uid, false, callback);
-    }
-
-    @Override
-    public void isArtifactSavedByUser(int lotNum, String uid, RepositoryCallback<Boolean> callback) {
-        containsUid(lotNum, SAVED_BY, uid, callback);
-    }
-
-    @Override
-    public void getSavedLotNumbers(String uid, RepositoryCallback<List<Integer>> callback) {
-        getLotNumbersContaining(SAVED_BY, uid, callback);
-    }
-
-    @Override
-    public void getLikedLotNumbers(String uid, RepositoryCallback<List<Integer>> callback) {
-        getLotNumbersContaining(LIKED_BY, uid, callback);
-    }
-
-    private void getLotNumbersContaining(String listName, String uid, RepositoryCallback<List<Integer>> callback) {
-        root.child(ARTIFACTS).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Integer> lotNumbers = new ArrayList<>();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    if (readUids(child.child(listName)).contains(uid)) {
-                        Integer lotNum = parseLotNum(child.getKey());
-                        if (lotNum != null) {
-                            lotNumbers.add(lotNum);
-                        }
-                    }
-                }
-                callback.onSuccess(lotNumbers);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                callback.onError(error.getMessage());
-            }
-        });
     }
 
     private void updateUidList(int lotNum, String listName, String uid, boolean present,
@@ -227,49 +168,14 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
                 });
     }
 
-    private void containsUid(int lotNum, String listName, String uid, RepositoryCallback<Boolean> callback) {
-        root.child(ARTIFACTS).child(String.valueOf(lotNum)).child(listName)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        callback.onSuccess(readUids(snapshot).contains(uid));
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        callback.onError(error.getMessage());
-                    }
-                });
-    }
-
     private List<String> readUids(MutableData data) {
         List<String> uids = new ArrayList<>();
         for (MutableData child : data.getChildren()) {
-            addIfString(child.getValue(), uids);
+            if (child.getValue() instanceof String) {
+                uids.add((String) child.getValue());
+            }
         }
         return uids;
-    }
-
-    private List<String> readUids(DataSnapshot data) {
-        List<String> uids = new ArrayList<>();
-        for (DataSnapshot child : data.getChildren()) {
-            addIfString(child.getValue(), uids);
-        }
-        return uids;
-    }
-
-    private void addIfString(Object value, List<String> uids) {
-        if (value instanceof String) {
-            uids.add((String) value);
-        }
-    }
-
-    private Integer parseLotNum(String key) {
-        try {
-            return Integer.valueOf(key);
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 
     @Override
@@ -363,9 +269,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
             comment.setTimestamp(timestamp);
         }
 
-        if (Boolean.TRUE.equals(child.child("edited").getValue(Boolean.class))) {
-            comment.editText(comment.getText());
-        }
+        comment.setEdited(Boolean.TRUE.equals(child.child("edited").getValue(Boolean.class)));
 
         return comment;
     }

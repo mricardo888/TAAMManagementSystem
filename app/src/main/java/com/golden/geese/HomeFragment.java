@@ -44,7 +44,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         currentUser = SessionManager.getInstance().getCurrentUser();
-        boolean isAdmin = currentUser != null && currentUser.isAdmin();
+        boolean canManage = currentUser != null && currentUser.canManageArtifacts();
 
         // Link views to the XML IDs
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
         // Add button function
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener(clickedView -> showAddArtifactDialog());
-        addButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+        addButton.setVisibility(canManage ? View.VISIBLE : View.GONE);
 
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
             @Override

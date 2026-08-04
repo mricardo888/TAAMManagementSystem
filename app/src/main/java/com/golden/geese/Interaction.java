@@ -24,14 +24,6 @@ public abstract class Interaction {
         this.author = author;
     }
 
-    public boolean canEdit(User user) {
-        return user.isAdmin() || author.equals(user);
-    }
-
-    public void updateTimestamp() {
-        this.timestamp = LocalDateTime.now();
-    }
-
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

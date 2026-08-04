@@ -22,6 +22,7 @@ import com.golden.geese.ui.UserSettingsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ProfileFragment extends Fragment {
     private final FirebaseArtifactRepository repository = new FirebaseArtifactRepository();
@@ -85,8 +86,8 @@ public class ProfileFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
-                loadLikedArtifacts(uid, allArtifacts);
-                loadSavedArtifacts(uid, allArtifacts);
+                likedArtifactsRV.setAdapter(adapterFor(filter(allArtifacts, a -> a.isLikedBy(uid))));
+                savedArtifactsRV.setAdapter(adapterFor(filter(allArtifacts, a -> a.isSavedBy(uid))));
             }
 
             @Override
@@ -96,46 +97,14 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void loadLikedArtifacts(String uid, List<Artifact> allArtifacts) {
-        repository.getLikedLotNumbers(uid, new RepositoryCallback<List<Integer>>() {
-            @Override
-            public void onSuccess(List<Integer> lotNumbers) {
-                if (!isAdded()) {
-                    return;
-                }
-                ArtifactAdapter adapter = new ArtifactAdapter(filterByLotNumbers(allArtifacts, lotNumbers), R.layout.item_artifact);
-                likedArtifactsRV.setAdapter(adapter);
-            }
-
-            @Override
-            public void onError(String message) {
-                showError("Could not load your liked artifacts", message);
-            }
-        });
+    private ArtifactAdapter adapterFor(List<Artifact> artifacts) {
+        return new ArtifactAdapter(artifacts, R.layout.item_artifact);
     }
 
-    private void loadSavedArtifacts(String uid, List<Artifact> allArtifacts) {
-        repository.getSavedLotNumbers(uid, new RepositoryCallback<List<Integer>>() {
-            @Override
-            public void onSuccess(List<Integer> lotNumbers) {
-                if (!isAdded()) {
-                    return;
-                }
-                ArtifactAdapter adapter = new ArtifactAdapter(filterByLotNumbers(allArtifacts, lotNumbers), R.layout.item_artifact);
-                savedArtifactsRV.setAdapter(adapter);
-            }
-
-            @Override
-            public void onError(String message) {
-                showError("Could not load your saved artifacts", message);
-            }
-        });
-    }
-
-    private List<Artifact> filterByLotNumbers(List<Artifact> allArtifacts, List<Integer> lotNumbers) {
+    private List<Artifact> filter(List<Artifact> artifacts, Predicate<Artifact> keep) {
         List<Artifact> filtered = new ArrayList<>();
-        for (Artifact artifact : allArtifacts) {
-            if (lotNumbers.contains(artifact.getLotNum())) {
+        for (Artifact artifact : artifacts) {
+            if (keep.test(artifact)) {
                 filtered.add(artifact);
             }
         }

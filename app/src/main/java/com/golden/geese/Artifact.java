@@ -16,7 +16,7 @@ import com.google.firebase.database.Exclude;
 import java.io.Serializable;
 import java.util.*;
 
-public class Artifact implements Likeable, Serializable {
+public class Artifact implements Serializable {
     private int lotNum;
     private String name;
     private String description;
@@ -36,12 +36,8 @@ public class Artifact implements Likeable, Serializable {
     private int accessionNum;
     private String notes;
     private String image;
-    private transient LikeManager likeManager;
-    private transient CommentManager commentManager;
-    private transient SaveManager saveManager;
-
-    private static int IDTracker = 0;
-
+    private List<String> likedBy;
+    private List<String> savedBy;
 
     /**
      * Primary Constructor
@@ -63,9 +59,8 @@ public class Artifact implements Likeable, Serializable {
         accessionNum = 0;
         notes = "";
         image = "";
-        likeManager = new LikeManager();
-        commentManager = new CommentManager();
-        saveManager = new SaveManager();
+        likedBy = new ArrayList<>();
+        savedBy = new ArrayList<>();
     }
 
     /**
@@ -246,36 +241,60 @@ public class Artifact implements Likeable, Serializable {
         this.image = image;
     }
 
-    /**
-     * Likes are persisted as the likedBy child list, not on the artifact record, so this
-     * in-memory count must stay out of the serialized form.
-     */
+    public List<String> getLikedBy() {
+        return likedBy;
+    }
+
+    public void setLikedBy(List<String> likedBy) {
+        this.likedBy = likedBy == null ? new ArrayList<>() : likedBy;
+    }
+
+    public List<String> getSavedBy() {
+        return savedBy;
+    }
+
+    public void setSavedBy(List<String> savedBy) {
+        this.savedBy = savedBy == null ? new ArrayList<>() : savedBy;
+    }
+
     @Exclude
-    public int getLikes() {
-        return likeManager.getNumInteractions();
-    }
-
-    /** Comments live under /comments/{lotNum}, so they are not part of the artifact record. */
-    @Exclude
-    public List<Comment> getComments() {
-        return commentManager.getInteractions();
+    public int getLikeCount() {
+        return likedBy.size();
     }
 
     @Exclude
-    public int getSaves() {
-        return saveManager.getNumInteractions();
+    public int getSaveCount() {
+        return savedBy.size();
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        likeManager = new LikeManager();
-        commentManager = new CommentManager();
-        saveManager = new SaveManager();
+    public boolean isLikedBy(String uid) {
+        return uid != null && likedBy.contains(uid);
     }
 
-    public static int getNewID() {
-        IDTracker++;
-        return IDTracker;
+    public boolean isSavedBy(String uid) {
+        return uid != null && savedBy.contains(uid);
+    }
+
+    public void addLike(String uid) {
+        addOnce(likedBy, uid);
+    }
+
+    public void removeLike(String uid) {
+        likedBy.remove(uid);
+    }
+
+    public void addSave(String uid) {
+        addOnce(savedBy, uid);
+    }
+
+    public void removeSave(String uid) {
+        savedBy.remove(uid);
+    }
+
+    private void addOnce(List<String> uids, String uid) {
+        if (uid != null && !uids.contains(uid)) {
+            uids.add(uid);
+        }
     }
 
     /**
@@ -300,6 +319,8 @@ public class Artifact implements Likeable, Serializable {
                 ", accessionNum=" + accessionNum +
                 ", notes='" + notes + '\'' +
                 ", image='" + image + '\'' +
+                ", likes=" + likedBy.size() +
+                ", saves=" + savedBy.size() +
                 '}';
     }
 

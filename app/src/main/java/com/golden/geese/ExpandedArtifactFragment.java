@@ -58,8 +58,6 @@ public class ExpandedArtifactFragment extends Fragment {
     private TextView likesCounter;
     private ImageButton saveButton;
     private TextView commentsCounter;
-    private boolean liked = false;
-    private boolean saved = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,7 +75,7 @@ public class ExpandedArtifactFragment extends Fragment {
         });
 
         currentUser = SessionManager.getInstance().getCurrentUser();
-        boolean isAdmin = currentUser != null && currentUser.isAdmin();
+        boolean canManage = currentUser != null && currentUser.canManageArtifacts();
 
         if (getArguments() != null) {
             artifact = (Artifact) getArguments().getSerializable("Artifact");
@@ -107,12 +105,30 @@ public class ExpandedArtifactFragment extends Fragment {
         likesCounter = view.findViewById(R.id.likes_counter);
         commentsCounter = view.findViewById(R.id.comments_counter);
 
+        ImageButton backButton = view.findViewById(R.id.back_button);
+        backButton.setOnClickListener(clickedView -> getParentFragmentManager().popBackStack());
+
+        likeButton = view.findViewById(R.id.like_button);
+        likeButton.setOnClickListener(clickedView -> toggleLike());
+
+        saveButton = view.findViewById(R.id.save_button);
+        saveButton.setOnClickListener(clickedView -> toggleSave());
+
+        ImageButton addButton = view.findViewById(R.id.add_button);
+        addButton.setOnClickListener(clickedView -> showAddCommentDialog());
+
+        ImageButton editButton = view.findViewById(R.id.edit_button);
+        editButton.setOnClickListener(clickedView -> showEditArtifactDialog());
+        editButton.setVisibility(canManage ? View.VISIBLE : View.GONE);
+
+        ImageButton removeButton = view.findViewById(R.id.remove_button);
+        removeButton.setOnClickListener(clickedView -> confirmDeleteArtifact());
+        removeButton.setVisibility(canManage ? View.VISIBLE : View.GONE);
+
         final boolean[] expanded = {false};
 
         if (artifact != null) {
             bindArtifact(artifact);
-            loadLikeState();
-            loadSaveState();
             loadComments();
         }
 
@@ -130,26 +146,6 @@ public class ExpandedArtifactFragment extends Fragment {
                 readMoreText.setText(R.string.read_more);
             }
         });
-
-        ImageButton backButton = view.findViewById(R.id.back_button);
-        backButton.setOnClickListener(clickedView -> getParentFragmentManager().popBackStack());
-
-        likeButton = view.findViewById(R.id.like_button);
-        likeButton.setOnClickListener(clickedView -> toggleLike());
-
-        saveButton = view.findViewById(R.id.save_button);
-        saveButton.setOnClickListener(clickedView -> toggleSave());
-
-        ImageButton addButton = view.findViewById(R.id.add_button);
-        addButton.setOnClickListener(clickedView -> showAddCommentDialog());
-
-        ImageButton editButton = view.findViewById(R.id.edit_button);
-        editButton.setOnClickListener(clickedView -> showEditArtifactDialog());
-        editButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
-
-        ImageButton removeButton = view.findViewById(R.id.remove_button);
-        removeButton.setOnClickListener(clickedView -> confirmDeleteArtifact());
-        removeButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
     }
 
     private void bindArtifact(@NonNull Artifact toShow) {
@@ -176,6 +172,9 @@ public class ExpandedArtifactFragment extends Fragment {
                 .placeholder(R.drawable.expanded_artifact_placeholder)
                 .error(R.drawable.expanded_artifact_placeholder)
                 .into(artifactImage);
+
+        renderLikeState(toShow);
+        renderSaveState(toShow);
     }
 
     private String valueOrDash(String value) {
@@ -212,39 +211,21 @@ public class ExpandedArtifactFragment extends Fragment {
         return value == Math.floor(value) ? String.valueOf(value.longValue()) : String.valueOf(value);
     }
 
-    private void loadLikeState() {
-        repository.getLikeCount(artifact.getLotNum(), new RepositoryCallback<Integer>() {
-            @Override
-            public void onSuccess(Integer count) {
-                if (isAdded()) {
-                    likesCounter.setText(String.valueOf(count));
-                }
-            }
+    private void renderLikeState(@NonNull Artifact toShow) {
+        likesCounter.setText(String.valueOf(toShow.getLikeCount()));
+        likeButton.setImageResource(toShow.isLikedBy(currentUid())
+                ? R.drawable.filled_heart_icon
+                : R.drawable.heart_icon);
+    }
 
-            @Override
-            public void onError(String message) {
-                showError("Could not load likes", message);
-            }
-        });
+    private void renderSaveState(@NonNull Artifact toShow) {
+        saveButton.setImageResource(toShow.isSavedBy(currentUid())
+                ? R.drawable.filled_bookmark_icon
+                : R.drawable.bookmark_icon);
+    }
 
-        if (currentUser == null || currentUser.getUid() == null) {
-            return;
-        }
-
-        repository.isArtifactLikedByUser(artifact.getLotNum(), currentUser.getUid(), new RepositoryCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean isLiked) {
-                if (isAdded()) {
-                    liked = isLiked;
-                    likeButton.setImageResource(liked ? R.drawable.filled_heart_icon : R.drawable.heart_icon);
-                }
-            }
-
-            @Override
-            public void onError(String message) {
-                showError("Could not load likes", message);
-            }
-        });
+    private String currentUid() {
+        return currentUser == null ? null : currentUser.getUid();
     }
 
     private void showAddCommentDialog() {
@@ -282,25 +263,33 @@ public class ExpandedArtifactFragment extends Fragment {
     }
 
     private void toggleLike() {
-        if (currentUser == null || currentUser.getUid() == null) {
+        String uid = currentUid();
+        if (uid == null) {
             return;
         }
-        String uid = currentUser.getUid();
+
+        boolean wasLiked = artifact.isLikedBy(uid);
         RepositoryCallback<Void> callback = new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                if (isAdded()) {
-                    loadLikeState();
+                if (!isAdded()) {
+                    return;
                 }
+                if (wasLiked) {
+                    artifact.removeLike(uid);
+                } else {
+                    artifact.addLike(uid);
+                }
+                renderLikeState(artifact);
             }
 
             @Override
             public void onError(String message) {
-                showError(liked ? "Could not unlike this artifact" : "Could not like this artifact", message);
+                showError(wasLiked ? "Could not unlike this artifact" : "Could not like this artifact", message);
             }
         };
 
-        if (liked) {
+        if (wasLiked) {
             repository.unlikeArtifact(artifact.getLotNum(), uid, callback);
         } else {
             repository.likeArtifact(artifact.getLotNum(), uid, callback);
@@ -328,48 +317,34 @@ public class ExpandedArtifactFragment extends Fragment {
                 .show();
     }
 
-    private void loadSaveState() {
-        if (currentUser == null || currentUser.getUid() == null) {
-            return;
-        }
-
-        repository.isArtifactSavedByUser(artifact.getLotNum(), currentUser.getUid(), new RepositoryCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean isSaved) {
-                if (isAdded()) {
-                    saved = isSaved;
-                    saveButton.setImageResource(saved ? R.drawable.filled_bookmark_icon : R.drawable.bookmark_icon);
-                }
-            }
-
-            @Override
-            public void onError(String message) {
-                showError("Could not load your saved artifacts", message);
-            }
-        });
-    }
-
     private void toggleSave() {
-        if (currentUser == null || currentUser.getUid() == null) {
+        String uid = currentUid();
+        if (uid == null) {
             return;
         }
 
-        String uid = currentUser.getUid();
+        boolean wasSaved = artifact.isSavedBy(uid);
         RepositoryCallback<Void> callback = new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                if (isAdded()) {
-                    loadSaveState();
+                if (!isAdded()) {
+                    return;
                 }
+                if (wasSaved) {
+                    artifact.removeSave(uid);
+                } else {
+                    artifact.addSave(uid);
+                }
+                renderSaveState(artifact);
             }
 
             @Override
             public void onError(String message) {
-                showError(saved ? "Could not unsave this artifact" : "Could not save this artifact", message);
+                showError(wasSaved ? "Could not unsave this artifact" : "Could not save this artifact", message);
             }
         };
 
-        if (saved) {
+        if (wasSaved) {
             repository.unsaveArtifact(artifact.getLotNum(), uid, callback);
         } else {
             repository.saveArtifact(artifact.getLotNum(), uid, callback);

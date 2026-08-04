@@ -1,21 +1,16 @@
 package com.golden.geese;
 
-import java.util.*;
+import java.util.Objects;
 
 public abstract class User {
-    private List<Artifact> likedArtifacts;
     private String uid;
     private String username;
     private String email;
     private String pfp;
-    private List<Artifact> savedArtifacts;
-
 
     public User(){
         this.username = "Anonymous User";
         this.pfp = "https://pbs.twimg.com/media/FeToVEqX0Acjv0i.png";
-        this.likedArtifacts = new ArrayList<Artifact>(0);
-        this.savedArtifacts = new ArrayList<Artifact>(0);
     }
 
     public User(String username, String pfp){
@@ -56,23 +51,6 @@ public abstract class User {
         this.pfp = pfp;
     }
 
-    public void like(Artifact artifact) {
-        likedArtifacts.add(artifact);
-    }
-
-    public void unlike(Artifact artifact) {
-        likedArtifacts.remove(artifact);
-    }
-
-    public void save(Artifact artifact) {
-        savedArtifacts.add(artifact);
-    }
-
-    public void unsave(Artifact artifact) {
-        savedArtifacts.remove(artifact);
-    }
-
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof User user)) return false;
@@ -87,12 +65,16 @@ public abstract class User {
     @Override
     public String toString() {
         return "User{" +
-                "likedArtifacts=" + likedArtifacts +
+                "uid='" + uid + '\'' +
                 ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
                 ", pfp='" + pfp + '\'' +
-                ", savedArtifacts=" + savedArtifacts +
                 '}';
     }
 
     public abstract boolean isAdmin();
+
+    public abstract boolean canManageArtifacts();
+
+    public abstract boolean canDelete(Comment comment);
 }

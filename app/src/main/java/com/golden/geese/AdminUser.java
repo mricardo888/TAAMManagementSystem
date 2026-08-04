@@ -10,14 +10,18 @@ public class AdminUser extends User {
         super(username, pfp);
     }
 
-
-
-
-
-
-
     @Override
     public boolean isAdmin() {
         return true;
+    }
+
+    @Override
+    public boolean canManageArtifacts() {
+        return true;
+    }
+
+    @Override
+    public boolean canDelete(Comment comment) {
+        return comment != null;
     }
 }

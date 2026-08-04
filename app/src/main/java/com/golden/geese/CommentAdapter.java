@@ -59,11 +59,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             holder.time.setText("");
         }
 
-        boolean isOwner = currentUser != null && currentUser.getUid() != null
-                && comment.getAuthor() != null && currentUser.getUid().equals(comment.getAuthor().getUid());
-        boolean isAdmin = currentUser != null && currentUser.isAdmin();
+        boolean canDelete = currentUser != null && currentUser.canDelete(comment);
 
-        holder.deleteButton.setVisibility((isOwner || isAdmin) ? View.VISIBLE : View.GONE);
+        holder.deleteButton.setVisibility(canDelete ? View.VISIBLE : View.GONE);
 
         holder.deleteButton.setOnClickListener(clickedView -> {
             int adapterPosition = holder.getAdapterPosition();

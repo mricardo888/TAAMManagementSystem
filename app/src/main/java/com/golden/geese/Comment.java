@@ -16,10 +16,9 @@ package com.golden.geese;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Comment extends Interaction implements Likeable {
+public class Comment extends Interaction {
     // The properties of a comment
     private String text;
-    private LikeManager likeManager;
     private boolean edited;
     private String commentId;
     private String parentId;
@@ -29,7 +28,6 @@ public class Comment extends Interaction implements Likeable {
     public Comment() {
         super();
         text = "";
-        likeManager = new LikeManager();
         edited = false;
         commentId = "";
         replies = new ArrayList<>();
@@ -38,7 +36,6 @@ public class Comment extends Interaction implements Likeable {
     public Comment(User author, String text) {
         super(author);
         this.text = text;
-        this.likeManager = new LikeManager();
         this.edited = false;
         this.commentId = "";
         this.replies = new ArrayList<>();
@@ -50,21 +47,17 @@ public class Comment extends Interaction implements Likeable {
         return text;
     }
 
-    public void setText(String text){
-        this.text = text;
-    }
-
     public void editText(String text) {
-        edited = true;
+        this.edited = true;
         this.text = text;
-    }
-
-    public int getLikeCount() {
-        return likeManager.getNumInteractions();
     }
 
     public boolean isEdited(){
         return edited;
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
     }
 
     public String getCommentId() {
@@ -89,6 +82,13 @@ public class Comment extends Interaction implements Likeable {
 
     public List<Comment> getReplies() {
         return replies;
+    }
+
+    public boolean isAuthoredBy(User user) {
+        return user != null
+                && user.getUid() != null
+                && getAuthor() != null
+                && user.getUid().equals(getAuthor().getUid());
     }
 
     @Override
