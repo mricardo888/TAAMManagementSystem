@@ -223,7 +223,8 @@ public class BrowseFragment extends Fragment {
                         || (artifact.getLocation().toLowerCase().contains(currentSearch))
                         || (artifact.getNotes().toLowerCase().contains(currentSearch))
                         || (artifact.getOrigin().toLowerCase().contains(currentSearch))
-                        || (artifact.getProvenance().toLowerCase().contains(currentSearch)))
+                        || (artifact.getProvenance().toLowerCase().contains(currentSearch))
+                        || (artifact.getMaterial().toLowerCase().contains(currentSearch)))
                 )
                 .collect(Collectors.toList());
     }
