@@ -3,8 +3,11 @@ package com.golden.geese.model;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.golden.geese.AdminUser;
 import com.golden.geese.Artifact;
 import com.golden.geese.Comment;
+import com.golden.geese.RegularUser;
+import com.golden.geese.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -13,6 +16,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -334,11 +338,8 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Comment> byId = new LinkedHashMap<>();
                         for (DataSnapshot child : snapshot.getChildren()) {
-                            Comment comment = child.getValue(Comment.class);
-                            if (comment != null && child.getKey() != null) {
-                                comment.setCommentId(child.getKey());
-                                comment.getReplies().clear();
-                                byId.put(child.getKey(), comment);
+                            if (child.getKey() != null) {
+                                byId.put(child.getKey(), parseComment(child));
                             }
                         }
                         callback.onSuccess(buildReplyTree(byId));
@@ -349,6 +350,55 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
                         callback.onError(error.getMessage());
                     }
                 });
+    }
+
+    private Comment parseComment(DataSnapshot child) {
+        String text = child.child("text").getValue(String.class);
+        Comment comment = new Comment(parseAuthor(child.child("author")), text != null ? text : "");
+        comment.setCommentId(child.getKey());
+        comment.setParentId(child.child("parentId").getValue(String.class));
+
+        LocalDateTime timestamp = parseTimestamp(child.child("timestamp"));
+        if (timestamp != null) {
+            comment.setTimestamp(timestamp);
+        }
+
+        if (Boolean.TRUE.equals(child.child("edited").getValue(Boolean.class))) {
+            comment.editText(comment.getText());
+        }
+
+        return comment;
+    }
+
+    private User parseAuthor(DataSnapshot authorSnapshot) {
+        boolean isAdmin = Boolean.TRUE.equals(authorSnapshot.child("admin").getValue(Boolean.class));
+        String username = authorSnapshot.child("username").getValue(String.class);
+        String pfp = authorSnapshot.child("pfp").getValue(String.class);
+
+        User author = isAdmin ? new AdminUser(username, pfp) : new RegularUser(username, pfp);
+        author.setUid(authorSnapshot.child("uid").getValue(String.class));
+        author.setEmail(authorSnapshot.child("email").getValue(String.class));
+        return author;
+    }
+
+    private LocalDateTime parseTimestamp(DataSnapshot timestampSnapshot) {
+        Integer year = timestampSnapshot.child("year").getValue(Integer.class);
+        Integer month = timestampSnapshot.child("monthValue").getValue(Integer.class);
+        Integer day = timestampSnapshot.child("dayOfMonth").getValue(Integer.class);
+        if (year == null || month == null || day == null) {
+            return null;
+        }
+
+        Integer hour = timestampSnapshot.child("hour").getValue(Integer.class);
+        Integer minute = timestampSnapshot.child("minute").getValue(Integer.class);
+        Integer second = timestampSnapshot.child("second").getValue(Integer.class);
+        Integer nano = timestampSnapshot.child("nano").getValue(Integer.class);
+
+        return LocalDateTime.of(year, month, day,
+                hour != null ? hour : 0,
+                minute != null ? minute : 0,
+                second != null ? second : 0,
+                nano != null ? nano : 0);
     }
 
     private List<Comment> buildReplyTree(Map<String, Comment> byId) {

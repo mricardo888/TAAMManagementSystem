@@ -28,21 +28,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         if (firebaseUser != null) {
-                            userProfileRepository.isAdmin(firebaseUser.getUid(), new RepositoryCallback<Boolean>() {
-                                @Override
-                                public void onSuccess(Boolean isAdmin) {
-                                    User user = isAdmin ? new AdminUser() : new RegularUser();
-                                    user.setUid(firebaseUser.getUid());
-                                    user.setUsername(firebaseUser.getEmail());
-                                    user.setEmail(firebaseUser.getEmail());
-                                    callback.onSuccess(user);
-                                }
-
-                                @Override
-                                public void onError(String message) {
-                                    callback.onError(message);
-                                }
-                            });
+                            loadUser(firebaseUser, callback);
                         } else {
                             callback.onError("Sign in succeeded but no user found.");
                         }
@@ -53,6 +39,36 @@ public class FirebaseAuthRepository implements AuthRepository {
                         callback.onError(errorMsg);
                     }
                 });
+    }
+
+    private void loadUser(FirebaseUser firebaseUser, AuthCallBack callback) {
+        userProfileRepository.isAdmin(firebaseUser.getUid(), new RepositoryCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean isAdmin) {
+                User user = isAdmin ? new AdminUser() : new RegularUser();
+                user.setUid(firebaseUser.getUid());
+                user.setEmail(firebaseUser.getEmail());
+
+                userProfileRepository.getUsername(firebaseUser.getUid(), new RepositoryCallback<String>() {
+                    @Override
+                    public void onSuccess(String username) {
+                        user.setUsername(username != null && !username.isEmpty() ? username : firebaseUser.getEmail());
+                        callback.onSuccess(user);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        user.setUsername(firebaseUser.getEmail());
+                        callback.onSuccess(user);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                callback.onError(message);
+            }
+        });
     }
 
     @Override
@@ -91,16 +107,13 @@ public class FirebaseAuthRepository implements AuthRepository {
     }
 
     @Override
-    public User getCurrentUser() {
+    public void getCurrentUser(AuthCallBack callback) {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser == null) {
-            return null;
+            callback.onError("No signed-in user.");
+            return;
         }
-        RegularUser user = new RegularUser();
-        user.setUid(firebaseUser.getUid());
-        user.setUsername(firebaseUser.getEmail());
-        user.setEmail(firebaseUser.getEmail());
-        return user;
+        loadUser(firebaseUser, callback);
     }
 
     @Override
