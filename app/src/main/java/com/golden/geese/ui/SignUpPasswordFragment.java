@@ -32,6 +32,7 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
     private TextInputEditText passwordInput;
     private TextInputLayout passwordConfirmationInputLayout;
     private TextInputEditText passwordConfirmationInput;
+    private Button nextButton;
 
     @Nullable
     @Override
@@ -53,7 +54,7 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
         passwordInput = view.findViewById(R.id.passwordInput);
         passwordConfirmationInput = view.findViewById(R.id.passwordConfirmationInput);
         passwordConfirmationInputLayout = view.findViewById(R.id.passwordConfirmationInputLayout);
-        Button nextButton = view.findViewById(R.id.nextButton);
+        nextButton = view.findViewById(R.id.nextButton);
         ImageButton backButton = view.findViewById(R.id.backButton);
 
         // Set the text back to original
@@ -63,6 +64,7 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
         backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         nextButton.setOnClickListener(v -> {
+            nextButton.setClickable(false);
             presenter.validatePassword(Objects.requireNonNull(passwordInput.getText()).toString(),
                     Objects.requireNonNull(passwordConfirmationInput.getText()).toString());
         });
@@ -76,6 +78,7 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
     }
     @Override
     public void showError(String message) {
+        nextButton.setClickable(true);
         passwordInputLayout.setError(message);
         passwordInput.setError(message);
         passwordConfirmationInput.setError(message);
@@ -100,4 +103,6 @@ public class SignUpPasswordFragment extends Fragment implements AuthView {
         super.onDestroyView();
         presenter.onDestroy(this);
     }
+
+
 }
