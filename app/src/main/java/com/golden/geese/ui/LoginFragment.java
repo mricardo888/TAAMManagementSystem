@@ -32,6 +32,7 @@ public class LoginFragment extends Fragment implements LoginView{
     private TextInputEditText emailInput;
     private TextInputLayout passwordLayout;
     private TextInputEditText passwordInput;
+    private Button nextButton;
 
     @Nullable
     @Override
@@ -52,7 +53,7 @@ public class LoginFragment extends Fragment implements LoginView{
         emailInput = view.findViewById(R.id.LoginEmailInput);
         passwordLayout = view.findViewById(R.id.LoginPasswordInputLayout);
         passwordInput = view.findViewById(R.id.LoginPasswordInput);
-        Button nextButton = view.findViewById(R.id.nextButton);
+        nextButton = view.findViewById(R.id.nextButton);
         ImageButton backButton = view.findViewById(R.id.backButton);
         TextView signUpButton = view.findViewById(R.id.signUpLink);
 
@@ -61,9 +62,12 @@ public class LoginFragment extends Fragment implements LoginView{
         backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         nextButton.setOnClickListener(v -> {
+            nextButton.setClickable(false);
             presenter.login(
                 Objects.requireNonNull(emailInput.getText()).toString(),
-                    Objects.requireNonNull(passwordInput.getText()).toString());});
+                    Objects.requireNonNull(passwordInput.getText()).toString());
+
+        });
 
         signUpButton.setOnClickListener(v -> {
             loadFragment(new SignUpNameFragment());
@@ -78,12 +82,14 @@ public class LoginFragment extends Fragment implements LoginView{
     }
     @Override
     public void showEmailError(String message) {
+        nextButton.setClickable(true);
         emailLayout.setError(message);
         emailInput.setError(message);
     }
 
     @Override
     public void showPasswordError(String message) {
+        nextButton.setClickable(true);
         passwordLayout.setError(message);
         passwordInput.setError(message);
     }

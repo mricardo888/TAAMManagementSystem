@@ -28,6 +28,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     private SignUpPresenter presenter;
     private TextInputLayout inputLayout;
     private TextInputEditText nameInput;
+    private Button nextButton;
 
     @Nullable
     @Override
@@ -47,7 +48,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
 
         inputLayout = view.findViewById(R.id.nameInputLayout);
         nameInput = view.findViewById(R.id.nameInput);
-        Button nextButton = view.findViewById(R.id.nextButton);
+        nextButton = view.findViewById(R.id.nextButton);
         ImageButton backButton = view.findViewById(R.id.backButton);
 
         // Set the text back to original
@@ -57,6 +58,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
         backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         nextButton.setOnClickListener(v -> {
+            nextButton.setClickable(false);
             presenter.validateName(Objects.requireNonNull(nameInput.getText()).toString());
         });
     }
@@ -69,6 +71,7 @@ public class SignUpNameFragment extends Fragment implements AuthView {
     }
     @Override
     public void showError(String message) {
+        nextButton.setClickable(true);
         inputLayout.setError(message);
         nameInput.setError(message);
     }
