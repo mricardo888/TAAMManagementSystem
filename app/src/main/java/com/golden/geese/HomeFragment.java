@@ -4,6 +4,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.golden.geese.databinding.FragmentHomeBinding;
@@ -28,6 +32,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
     private User currentUser;
+    private TextView welcomeText;
     private ViewPager2 viewPagerCarousel;
     private RecyclerView rvArtifacts;
     private ImageButton addButton;
@@ -43,14 +48,23 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.home_fragment), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
         currentUser = SessionManager.getInstance().getCurrentUser();
         boolean canManage = currentUser != null && currentUser.canManageArtifacts();
 
         // Link views to the XML IDs
+        welcomeText = view.findViewById(R.id.tv_welcome);
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
         rvArtifacts = view.findViewById(R.id.rv_artifacts);
         Button displayViewAllButton = view.findViewById(R.id.onDisplayViewAllButton);
         Button artifactsViewAllButton = view.findViewById(R.id.artifactsViewAllButton);
+
+        welcomeText.setText(getString(R.string.welcome_user) + currentUser.getUsername());
 
         rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         setupCarouselTransforms();
