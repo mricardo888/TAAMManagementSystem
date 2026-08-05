@@ -28,7 +28,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
     private User currentUser;
-    private ViewPager2 viewPagerCarousel;
+    private RecyclerView viewPagerCarousel; // changed to RecyclerView from previous ViewPager2
     private RecyclerView rvArtifacts;
     private ImageButton addButton;
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
@@ -48,12 +48,14 @@ public class HomeFragment extends Fragment {
 
         // Link views to the XML IDs
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
+        viewPagerCarousel.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
         rvArtifacts = view.findViewById(R.id.rv_artifacts);
         Button displayViewAllButton = view.findViewById(R.id.onDisplayViewAllButton);
         Button artifactsViewAllButton = view.findViewById(R.id.artifactsViewAllButton);
 
         rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        setupCarouselTransforms();
+
 
         view.findViewById(R.id.tab_profile).setOnClickListener(clickedView -> {
             loadFragment(new ProfileFragment());
@@ -103,60 +105,6 @@ public class HomeFragment extends Fragment {
     private void setupRecyclerView(List<Artifact> artifacts) {
         ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifacts, R.layout.item_artifact, this::openDetailsScreen);
         rvArtifacts.setAdapter(artifactAdapter);
-    }
-
-    private void setupCarouselTransforms() {
-        // 1. Enable peeking beyond bounds
-        viewPagerCarousel.setClipToPadding(false);
-        viewPagerCarousel.setClipChildren(false);
-        viewPagerCarousel.setOffscreenPageLimit(3);
-
-        // Remove overscroll glow effect
-        View child = viewPagerCarousel.getChildAt(0);
-        if (child != null) {
-            child.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        }
-
-        // 2. Mathematically calculate dynamic padding once layout is measured
-        viewPagerCarousel.post(() -> {
-            int containerWidth = viewPagerCarousel.getWidth();
-            int containerHeight = viewPagerCarousel.getHeight();
-
-            if (containerWidth == 0 || containerHeight == 0) return;
-
-            // Desired Aspect Ratio (Width / Height). e.g., 3:4 ratio = 0.75f
-            float targetAspectRatio = 0.75f;
-
-            // Calculate card width based on available height
-            int targetCardWidth = (int) (containerHeight * targetAspectRatio);
-
-            // Calculate side padding required to center a card of exact targetCardWidth
-            int sidePadding = (containerWidth - targetCardWidth) / 2;
-
-            if (sidePadding > 0) {
-                viewPagerCarousel.setPadding(sidePadding, 0, sidePadding, 0);
-            }
-        });
-
-        // 3. Set up Transformer for gap spacing and scaling
-        CompositePageTransformer transformer = new CompositePageTransformer();
-
-        transformer.addTransformer((page, position) -> {
-            float r = 1 - Math.abs(position);
-            float scale = 0.85f + r * 0.15f;
-
-            // Scale BOTH axes so the card shrinks proportionally
-            page.setScaleY(scale);
-            page.setScaleX(scale);
-
-            page.setAlpha(0.6f + r * 0.4f);
-
-            int overlapPx = (int) (24 * getResources().getDisplayMetrics().density);
-            page.setTranslationX(-position * overlapPx);
-            page.setTranslationZ(-Math.abs(position));
-        });
-
-        viewPagerCarousel.setPageTransformer(transformer);
     }
 
     private void openDetailsScreen(Artifact artifact) {
