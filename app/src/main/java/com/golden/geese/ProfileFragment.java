@@ -58,6 +58,14 @@ public class ProfileFragment extends Fragment {
             loadFragment(new UserSettingsFragment());
         });
 
+        view.findViewById(R.id.liked_view_all_button).setOnClickListener(v -> {
+            loadFragment(BrowseFragment.newInstance(BrowseFragment.FILTER_LIKED));
+        });
+
+        view.findViewById(R.id.saved_view_all_button).setOnClickListener(v -> {
+            loadFragment(BrowseFragment.newInstance(BrowseFragment.FILTER_SAVED));
+        });
+
         profileName = view.findViewById(R.id.profile_name);
     }
 

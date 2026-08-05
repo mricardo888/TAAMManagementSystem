@@ -36,7 +36,12 @@ public class BrowseFragment extends Fragment {
     private static final String SORT_NAME_ASC = "Name (A-Z)";
     private static final String SORT_NAME_DESC = "Name (Z-A)";
 
+    private static final String ARG_FILTER_MODE = "filterMode";
+    public static final String FILTER_LIKED = "LIKED";
+    public static final String FILTER_SAVED = "SAVED";
+
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
+    private String filterMode;
     private RecyclerView rvArtifactGrid;
     private TextView pageTracker;
     private int paginationStartIndex = 0;
@@ -45,6 +50,14 @@ public class BrowseFragment extends Fragment {
     private int pageNumber = 1;
     private String sortMethod = SORT_NAME_ASC;
     private String currentSearch = "";
+
+    public static BrowseFragment newInstance(String filterMode) {
+        BrowseFragment fragment = new BrowseFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_FILTER_MODE, filterMode);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -55,6 +68,8 @@ public class BrowseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        filterMode = getArguments() != null ? getArguments().getString(ARG_FILTER_MODE) : null;
 
         rvArtifactGrid = view.findViewById(R.id.rv_artifact_grid);
 
@@ -153,6 +168,7 @@ public class BrowseFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
+                artifacts = filterArtifactsByMode(artifacts);
                 artifacts = filterArtifactsBySubstring(artifacts);
                 numArtifacts = artifacts.size();
                 loadGrid(artifacts);
@@ -207,6 +223,22 @@ public class BrowseFragment extends Fragment {
         }
         String detail = (reason == null || reason.trim().isEmpty()) ? "" : ": " + reason;
         Toast.makeText(requireContext(), what + detail, Toast.LENGTH_SHORT).show();
+    }
+
+    private List<Artifact> filterArtifactsByMode(List<Artifact> artifacts) {
+        if (filterMode == null) {
+            return artifacts;
+        }
+
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        String uid = currentUser != null ? currentUser.getUid() : null;
+
+        if (FILTER_LIKED.equals(filterMode)) {
+            return artifacts.stream().filter(a -> a.isLikedBy(uid)).collect(Collectors.toList());
+        } else if (FILTER_SAVED.equals(filterMode)) {
+            return artifacts.stream().filter(a -> a.isSavedBy(uid)).collect(Collectors.toList());
+        }
+        return artifacts;
     }
 
     private List<Artifact> filterArtifactsBySubstring(List<Artifact> artifacts) {
