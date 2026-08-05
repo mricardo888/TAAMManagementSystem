@@ -44,6 +44,7 @@ public class LoginPresenter {
 
             @Override
             public void onError(String message) {
+                view.showEmailError(message);
                 view.showPasswordError(message);
             }
         });
