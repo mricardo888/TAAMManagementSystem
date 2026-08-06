@@ -110,12 +110,25 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
 
     @Override
     public void deleteArtifact(int lotNum, RepositoryCallback<Void> callback) {
-        Map<String, Object> deletions = new HashMap<>();
-        deletions.put(ARTIFACTS + "/" + lotNum, null);
-        deletions.put(COMMENTS + "/" + lotNum, null);
-        root.updateChildren(deletions)
-                .addOnSuccessListener(unused -> callback.onSuccess(null))
-                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+        root.child(COMMENTS).child(String.valueOf(lotNum))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Map<String, Object> deletions = new HashMap<>();
+                        deletions.put(ARTIFACTS + "/" + lotNum, null);
+                        for (DataSnapshot comment : snapshot.getChildren()) {
+                            deletions.put(COMMENTS + "/" + lotNum + "/" + comment.getKey(), null);
+                        }
+                        root.updateChildren(deletions)
+                                .addOnSuccessListener(unused -> callback.onSuccess(null))
+                                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onError(error.getMessage());
+                    }
+                });
     }
 
     @Override
