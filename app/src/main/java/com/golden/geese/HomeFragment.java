@@ -60,17 +60,16 @@ public class HomeFragment extends Fragment {
 
         // Link views to the XML IDs
         welcomeText = view.findViewById(R.id.tv_welcome);
+        welcomeText.setText(getString(R.string.welcome_user) + currentUser.getUsername());
+
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
         viewPagerCarousel.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         rvArtifacts = view.findViewById(R.id.rv_artifacts);
-        Button displayViewAllButton = view.findViewById(R.id.onDisplayViewAllButton);
-        Button artifactsViewAllButton = view.findViewById(R.id.artifactsViewAllButton);
-
-        welcomeText.setText(getString(R.string.welcome_user) + currentUser.getUsername());
-
         rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
+        Button displayViewAllButton = view.findViewById(R.id.onDisplayViewAllButton);
+        Button artifactsViewAllButton = view.findViewById(R.id.artifactsViewAllButton);
 
         view.findViewById(R.id.tab_profile).setOnClickListener(clickedView -> {
             loadFragment(new ProfileFragment());
@@ -123,7 +122,7 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        ArtifactAdapter carouselAdapter = new ArtifactAdapter(onDisplayArtifacts, R.layout.item_carousel, this::openDetailsScreen);
+        ArtifactAdapter carouselAdapter = new ArtifactAdapter(onDisplayArtifacts, R.layout.item_artifact, this::openDetailsScreen);
         viewPagerCarousel.setAdapter(carouselAdapter);
     }
     private void setupRecyclerView(List<Artifact> artifacts) {
