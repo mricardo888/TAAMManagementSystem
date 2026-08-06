@@ -31,6 +31,11 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
+/**
+ * This is the User Settings fragment. It handles getting user input, updating the UI based on inputs, validating
+ * user inputs, and making changes to the database through its own AuthRepository and UserProfileRepository.
+ */
+
 public class UserSettingsFragment extends Fragment {
 
     private final AuthRepository authRepository = new FirebaseAuthRepository();
@@ -101,6 +106,10 @@ public class UserSettingsFragment extends Fragment {
         settingsLogoutButton.setOnClickListener(v -> logout());
     }
 
+    /**
+     * Unlocks and shows the username, email, and password fields, allowing the user
+     * to make changes to their own username, email, and password.
+     */
     private void enterEditMode() {
         originalName = settingsNameInput.getText().toString();
         originalEmail = settingsEmailInput.getText().toString();
@@ -118,6 +127,10 @@ public class UserSettingsFragment extends Fragment {
         settingsEditButton.setVisibility(View.GONE);
     }
 
+    /**
+     * When user decides to not change or has changed their information, this method locks
+     * the username, email, and password fields and the input boxes until user wants to change again
+     */
     private void exitEditMode() {
         settingsNameInput.setEnabled(false);
         settingsEmailInput.setEnabled(false);
@@ -134,6 +147,9 @@ public class UserSettingsFragment extends Fragment {
         settingsEditButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Clears the password input fields when user exits information changing mode
+     */
     private void clearPasswordFields() {
         settingsCurrentPasswordInput.setText("");
         settingsNewPasswordInput.setText("");
@@ -143,6 +159,11 @@ public class UserSettingsFragment extends Fragment {
         settingsConfirmNewPasswordInputLayout.setError(null);
     }
 
+    /**
+     * Checks whether user has changed any information to their account and validates
+     * user input and checks if input matches current information needed (like current password).
+     * If inputs are valid, it will call the needed methods to update the information on the database
+     */
     private void saveChanges() {
         String newName = Objects.requireNonNull(settingsNameInput.getText()).toString().trim();
         String newEmail = Objects.requireNonNull(settingsEmailInput.getText()).toString().trim();
@@ -229,6 +250,11 @@ public class UserSettingsFragment extends Fragment {
         }
     }
 
+    /**
+     * Updates the username to the new username on the database
+     * @param newName The new username
+     * @param onSaved Callback for when username is updated
+     */
     private void saveUsername(String newName, Runnable onSaved) {
         User currentUser = SessionManager.getInstance().getCurrentUser();
         if (currentUser == null || currentUser.getUid() == null) {
@@ -259,6 +285,14 @@ public class UserSettingsFragment extends Fragment {
         });
     }
 
+    /**
+     * Changes email and password if needed, will update user if email was sucessfully changed or
+     * not
+     * @param emailChanged Boolean to check if user wants email to be changed
+     * @param newEmail The new email the user wants
+     * @param changingPassword Boolean to check if user wants to change password
+     * @param newPassword The new password the user wants
+     */
     private void applyAccountChanges(boolean emailChanged, String newEmail, boolean changingPassword, String newPassword) {
         if (!emailChanged) {
             applyPasswordChange(newPassword);
@@ -296,6 +330,10 @@ public class UserSettingsFragment extends Fragment {
         });
     }
 
+    /**
+     * Helper function to update user's password to a new password on the database
+     * @param newPassword The new password the user wants to change it to
+     */
     private void applyPasswordChange(String newPassword) {
         authRepository.updatePassword(newPassword, new RepositoryCallback<Void>() {
             @Override
@@ -319,12 +357,20 @@ public class UserSettingsFragment extends Fragment {
         });
     }
 
+    /**
+     * When user wants to cancel changing their information, sets input fields back to users
+     * name and email
+     */
     private void cancelEdit() {
         settingsNameInput.setText(originalName);
         settingsEmailInput.setText(originalEmail);
         exitEditMode();
     }
 
+    /**
+     * Logs the user out by calling signOut method from authRepository and switching screen
+     * to the welcome screen.
+     */
     private void logout() {
         authRepository.signOut();
         SessionManager.getInstance().logout();

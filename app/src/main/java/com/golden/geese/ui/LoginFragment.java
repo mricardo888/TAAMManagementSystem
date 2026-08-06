@@ -26,6 +26,14 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
+
+/**
+ * This is the login view fragment. It follows the MVP design format and has its own LoginPresenter
+ * which communicates with repo/model and authenticates user. This view fragment is responsible for
+ * getting input from the UI and passing it only to presenter and will update the UI based on the
+ * presenter logic.
+ */
+
 public class LoginFragment extends Fragment implements LoginView{
     private LoginPresenter presenter;
     private TextInputLayout emailLayout;
@@ -74,12 +82,22 @@ public class LoginFragment extends Fragment implements LoginView{
         });
     }
 
+    /**
+     * Loads a screen fragment into the fragment container
+     * @param fragment the fragment to be loaded
+     */
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
+    /**
+     * Sets error state on email input and displays error message while also
+     * setting the login button to clickable. Overridden as method is from interface
+     * @param message a human-readable description of the error
+     */
     @Override
     public void showEmailError(String message) {
         nextButton.setClickable(true);
@@ -87,6 +105,11 @@ public class LoginFragment extends Fragment implements LoginView{
         emailInput.setError(message);
     }
 
+    /**
+     * Sets error state on password input and displays error message while also
+     * setting the login button to clickable. Overridden as method is from interface
+     * @param message a human-readable description of the error
+     */
     @Override
     public void showPasswordError(String message) {
         nextButton.setClickable(true);
@@ -95,6 +118,9 @@ public class LoginFragment extends Fragment implements LoginView{
     }
 
 
+    /**
+     * Loads the home fragment, which the presenter calls once user login details are verified
+     */
     @Override
     public void goToHome() {
         getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -103,6 +129,9 @@ public class LoginFragment extends Fragment implements LoginView{
         transaction.commit();
     }
 
+    /**
+     * Called when fragment is destroyed, overridden to include unlinking fragment from presenter
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

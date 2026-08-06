@@ -15,6 +15,11 @@ import com.golden.geese.model.AuthCallBack;
 import com.golden.geese.model.AuthRepository;
 import com.golden.geese.model.FirebaseAuthRepository;
 
+/**
+ * Main Activity view to contain different screen fragments
+ *   which is connected to the repository to verify if the user is logged in in order to
+ *   display correct screen on app open.
+ *  */
 public class MainActivity extends AppCompatActivity {
 
     private AuthRepository authRepository;
@@ -45,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Loads a screen fragment into the fragment container
+     * @param fragment the fragment to be loaded
+     */
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment_container, fragment);
