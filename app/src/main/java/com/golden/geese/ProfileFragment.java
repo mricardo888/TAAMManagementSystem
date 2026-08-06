@@ -31,6 +31,8 @@ public class ProfileFragment extends Fragment {
     private RecyclerView savedArtifactsRV;
     private ImageButton settingsButton;
     private TextView profileName;
+    private TextView likesCounter;
+    private TextView commentsCounter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,6 +69,8 @@ public class ProfileFragment extends Fragment {
         });
 
         profileName = view.findViewById(R.id.profile_name);
+        likesCounter = view.findViewById(R.id.likes_counter);
+        commentsCounter = view.findViewById(R.id.comments_counter);
     }
 
     @Override
@@ -101,13 +105,38 @@ public class ProfileFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
-                likedArtifactsRV.setAdapter(adapterFor(filter(allArtifacts, a -> a.isLikedBy(uid))));
+                List<Artifact> liked = filter(allArtifacts, a -> a.isLikedBy(uid));
+                likedArtifactsRV.setAdapter(adapterFor(liked));
                 savedArtifactsRV.setAdapter(adapterFor(filter(allArtifacts, a -> a.isSavedBy(uid))));
+                likesCounter.setText(String.valueOf(liked.size()));
+
+                List<Integer> lotNums = new ArrayList<>();
+                for (Artifact artifact : allArtifacts) {
+                    lotNums.add(artifact.getLotNum());
+                }
+                loadCommentCount(lotNums, uid);
             }
 
             @Override
             public void onError(String message) {
                 showError("Could not load artifacts", message);
+            }
+        });
+    }
+
+    private void loadCommentCount(List<Integer> lotNums, String uid) {
+        repository.getCommentCountByUser(lotNums, uid, new RepositoryCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer count) {
+                if (!isAdded()) {
+                    return;
+                }
+                commentsCounter.setText(String.valueOf(count));
+            }
+
+            @Override
+            public void onError(String message) {
+                showError("Could not load comment count", message);
             }
         });
     }

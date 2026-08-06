@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepository, SaveRepository, CommentRepository {
     private static final String ARTIFACTS = "artifacts";
@@ -256,6 +258,47 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
                         callback.onError(error.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public void getCommentCountByUser(List<Integer> lotNums, String uid, RepositoryCallback<Integer> callback) {
+        if (lotNums.isEmpty()) {
+            callback.onSuccess(0);
+            return;
+        }
+
+        AtomicInteger remaining = new AtomicInteger(lotNums.size());
+        AtomicInteger total = new AtomicInteger(0);
+        AtomicBoolean failed = new AtomicBoolean(false);
+
+        for (Integer lotNum : lotNums) {
+            root.child(COMMENTS).child(String.valueOf(lotNum))
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot comment : snapshot.getChildren()) {
+                                if (uid != null && uid.equals(comment.child("author").child("uid").getValue(String.class))) {
+                                    total.incrementAndGet();
+                                }
+                            }
+                            finishOne();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            if (failed.compareAndSet(false, true)) {
+                                callback.onError(error.getMessage());
+                            }
+                            finishOne();
+                        }
+
+                        private void finishOne() {
+                            if (remaining.decrementAndGet() == 0 && !failed.get()) {
+                                callback.onSuccess(total.get());
+                            }
+                        }
+                    });
+        }
     }
 
     private Comment parseComment(DataSnapshot child) {

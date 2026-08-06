@@ -12,4 +12,6 @@ public interface CommentRepository {
     void deleteComment(int lotNum, String commentId, RepositoryCallback<Void> callback);
 
     void getComments(int lotNum, RepositoryCallback<List<Comment>> callback);
+
+    void getCommentCountByUser(List<Integer> lotNums, String uid, RepositoryCallback<Integer> callback);
 }
