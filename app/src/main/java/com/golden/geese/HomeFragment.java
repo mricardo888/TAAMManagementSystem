@@ -24,6 +24,7 @@ import com.golden.geese.model.ArtifactRepository;
 import com.golden.geese.model.FirebaseArtifactRepository;
 import com.golden.geese.model.RepositoryCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -97,11 +98,20 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    //Hard coded list of artifacts "on display"
+    private static final int[] ON_DISPLAY_INDICES = { 2, 0, 4, 15, 9, 7, 1, 8, 12 };
+
     private void setupCarousel(List<Artifact> artifacts) {
-        ArtifactAdapter carouselAdapter = new ArtifactAdapter(artifacts, R.layout.item_carousel, this::openDetailsScreen);
+        List<Artifact> onDisplayArtifacts = new ArrayList<>();
+        for (int index : ON_DISPLAY_INDICES) {
+            if (index >= 0 && index < artifacts.size()) {
+                onDisplayArtifacts.add(artifacts.get(index));
+            }
+        }
+
+        ArtifactAdapter carouselAdapter = new ArtifactAdapter(onDisplayArtifacts, R.layout.item_carousel, this::openDetailsScreen);
         viewPagerCarousel.setAdapter(carouselAdapter);
     }
-
     private void setupRecyclerView(List<Artifact> artifacts) {
         ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifacts, R.layout.item_artifact, this::openDetailsScreen);
         rvArtifacts.setAdapter(artifactAdapter);
