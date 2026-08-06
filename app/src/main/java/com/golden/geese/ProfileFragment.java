@@ -40,8 +40,8 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstnaceState) {
-        super.onViewCreated(view, savedInstnaceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         settingsButton = view.findViewById(R.id.settings_button);
 
