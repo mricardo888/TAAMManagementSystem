@@ -60,7 +60,7 @@ public class HomeFragment extends Fragment {
 
         // Link views to the XML IDs
         welcomeText = view.findViewById(R.id.tv_welcome);
-        welcomeText.setText(getString(R.string.welcome_user) + currentUser.getUsername());
+        welcomeText.setText(getString(R.string.welcome_user) + (currentUser == null ? "" : currentUser.getUsername()));
 
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
         viewPagerCarousel.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
