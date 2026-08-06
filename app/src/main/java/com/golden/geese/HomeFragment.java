@@ -31,6 +31,9 @@ import com.golden.geese.model.RepositoryCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles the home screen.
+ */
 public class HomeFragment extends Fragment {
     private User currentUser;
     private TextView welcomeText;
@@ -45,6 +48,12 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+    /**
+     * Sets up the interactable elements of the screen.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -91,12 +100,18 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * Reloads the artifacts when the view is resumed.
+     */
     @Override
     public void onResume() {
         super.onResume();
         loadArtifacts();
     }
 
+    /**
+     * Loads all artifacts from the database and sets up the corresponding views.
+     */
     private void loadArtifacts() {
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
             @Override
@@ -114,6 +129,11 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * Sets up the on display carousel.
+     * @param artifacts list of artifacts to be displayed.
+     */
     private void setupCarousel(List<Artifact> artifacts) {
         List<Artifact> onDisplayArtifacts = new ArrayList<>();
         for (Artifact artifact : artifacts){
@@ -133,11 +153,19 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * Sets up the all artifacts recycler view.
+     * @param artifacts list of artifacts to be displayed.
+     */
     private void setupRecyclerView(List<Artifact> artifacts) {
         ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifacts, R.layout.item_artifact, this::openDetailsScreen);
         rvArtifacts.setAdapter(artifactAdapter);
     }
 
+    /**
+     * Sets up the automatic scaling of the cards based on their position.
+     */
     private void setupCarouselTransforms() {
         // This makes the entire screen a valid touch zone.
         viewPagerCarousel.setClipToPadding(false);
@@ -187,6 +215,10 @@ public class HomeFragment extends Fragment {
         viewPagerCarousel.setPageTransformer(transformer);
     }
 
+    /**
+     * Navigates to the details screen of an artifact.
+     * @param artifact artifact to be passed to the details screen.
+     */
     private void openDetailsScreen(Artifact artifact) {
         Bundle args = new Bundle();
         args.putSerializable("Artifact", artifact);
@@ -200,6 +232,9 @@ public class HomeFragment extends Fragment {
         transaction.commit();
     }
 
+    /**
+     * Displays the dialogue to add a new artifact to the admin user.
+     */
     private void showAddArtifactDialog() {
         AddArtifactDialogFragment dialog = new AddArtifactDialogFragment();
 
@@ -208,6 +243,10 @@ public class HomeFragment extends Fragment {
         dialog.show(getParentFragmentManager(), "AddArtifactDialog");
     }
 
+    /**
+     * Navigates to a new fragment screen.
+     * @param fragment the target fragment screen.
+     */
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment_container, fragment);
@@ -215,6 +254,11 @@ public class HomeFragment extends Fragment {
         transaction.commit();
     }
 
+    /**
+     * Displays an error message to the user.
+     * @param what The error itself.
+     * @param reason The reason the error happened.
+     */
     private void showError(String what, String reason) {
         if (!isAdded()) {
             return;

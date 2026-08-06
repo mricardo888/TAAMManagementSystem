@@ -12,6 +12,9 @@ import androidx.annotation.Nullable;
 import com.golden.geese.model.FirebaseArtifactRepository;
 import com.golden.geese.model.RepositoryCallback;
 
+/**
+ * Dialogue for editing an artifact after it has been created.
+ */
 public class EditArtifactDialogFragment extends ArtifactDialogFragment {
     private final FirebaseArtifactRepository repository = new FirebaseArtifactRepository();
     private Artifact artifact;
@@ -21,6 +24,10 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
         this.artifact = artifact;
     }
 
+    /**
+     * Sets lot number to not be editable when editing an artifact.
+     * @return false
+     */
     @Override
     protected boolean isLotNumberEditable() {
         return false;
@@ -70,6 +77,10 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
         });
     }
 
+    /**
+     * Updates the artifact database with the new artifact details.
+     * @param oldImageUrlToDelete a string of the old image of the artifact if a new image has been set.
+     */
     private void updateArtifact(String oldImageUrlToDelete)
     {
         repository.updateArtifact(
@@ -114,6 +125,10 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
         );
     }
 
+    /**
+     * Gets the title of the artifact editing form.
+     * @return The string "Edit Artifact"
+     */
     protected String getFormTitle() {
         return "Edit Artifact";
     }

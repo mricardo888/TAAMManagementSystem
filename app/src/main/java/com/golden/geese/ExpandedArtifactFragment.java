@@ -31,6 +31,9 @@ import com.golden.geese.storage.ImageDeleteCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles the details screen of an artifact.
+ */
 public class ExpandedArtifactFragment extends Fragment {
     private final FirebaseArtifactRepository repository = new FirebaseArtifactRepository();
 
@@ -64,6 +67,12 @@ public class ExpandedArtifactFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_expanded_view, container, false);
     }
 
+    /**
+     * Sets up all interactable elements.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -148,6 +157,10 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
+    /**
+     * Binds a specific artifacts information to the view.
+     * @param toShow
+     */
     private void bindArtifact(@NonNull Artifact toShow) {
         artifactName.setText(toShow.getName());
         descriptionText.setText(toShow.getDescription());
@@ -177,10 +190,20 @@ public class ExpandedArtifactFragment extends Fragment {
         renderSaveState(toShow);
     }
 
+    /**
+     * Determines whether a string should become a dash or stay the same based on if it is empty.
+     * @param value the string to be analyzed.
+     * @return "-" or value
+     */
     private String valueOrDash(String value) {
         return (value == null || value.trim().isEmpty()) ? getString(R.string.ea_not_recorded) : value;
     }
 
+    /**
+     * Creates a formated string based on a given list of dimensions.
+     * @param dimensions list of dimensions to be formated.
+     * @return the formated string
+     */
     private String formatDimensions(List<Double> dimensions) {
         if (dimensions == null || dimensions.size() < 3) {
             return getString(R.string.ea_not_recorded);
@@ -204,6 +227,13 @@ public class ExpandedArtifactFragment extends Fragment {
                 trimDecimal(dimensions.get(2)));
     }
 
+    /**
+     * Trims the decimal value from a decimal number. Ex:
+     * <p>8.00 -> "8"</p>
+     * <p>12.5 -> "12.5"</p>
+     * @param value number to be trimmed.
+     * @return a String of the trimmed value.
+     */
     private String trimDecimal(Double value) {
         if (value == null) {
             return "0";
@@ -211,6 +241,10 @@ public class ExpandedArtifactFragment extends Fragment {
         return value == Math.floor(value) ? String.valueOf(value.longValue()) : String.valueOf(value);
     }
 
+    /**
+     * Sets up the like button.
+     * @param toShow the artifact being shown on screen.
+     */
     private void renderLikeState(@NonNull Artifact toShow) {
         likesCounter.setText(String.valueOf(toShow.getLikeCount()));
         likeButton.setImageResource(toShow.isLikedBy(currentUid())
@@ -218,16 +252,26 @@ public class ExpandedArtifactFragment extends Fragment {
                 : R.drawable.heart_icon);
     }
 
+    /**
+     * Sets up the save button.
+     * @param toShow the artifact being shown on screen.
+     */
     private void renderSaveState(@NonNull Artifact toShow) {
         saveButton.setImageResource(toShow.isSavedBy(currentUid())
                 ? R.drawable.filled_bookmark_icon
                 : R.drawable.bookmark_icon);
     }
 
+    /**
+     * @return the Uid of the current user of the app.
+     */
     private String currentUid() {
         return currentUser == null ? null : currentUser.getUid();
     }
 
+    /**
+     * Displays and sets up the dialogue to add a comment.
+     */
     private void showAddCommentDialog() {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_comment, null);
 
@@ -262,6 +306,9 @@ public class ExpandedArtifactFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * Toggles whether the user has liked the artifact or not.
+     */
     private void toggleLike() {
         String uid = currentUid();
         if (uid == null) {
@@ -296,6 +343,9 @@ public class ExpandedArtifactFragment extends Fragment {
         }
     }
 
+    /**
+     * Displays and sets up the edit artifact dialogue.
+     */
     private void showEditArtifactDialog() {
         EditArtifactDialogFragment dialog = new EditArtifactDialogFragment();
 
@@ -308,6 +358,9 @@ public class ExpandedArtifactFragment extends Fragment {
         dialog.show(getParentFragmentManager(), "EditArtifactDialog");
     }
 
+    /**
+     * Displays the dialogue to confirm whether an artifact should be deleted.
+     */
     private void confirmDeleteArtifact() {
         new MaterialAlertDialogBuilder(requireContext(), R.style.CustomDeleteDialog)
                 .setTitle("Delete artifact?")
@@ -317,6 +370,9 @@ public class ExpandedArtifactFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Toggles whether the user has saved the artifact or not.
+     */
     private void toggleSave() {
         String uid = currentUid();
         if (uid == null) {
@@ -351,6 +407,9 @@ public class ExpandedArtifactFragment extends Fragment {
         }
     }
 
+    /**
+     * Loads all the comments on the viewed artifact from the database.
+     */
     private void loadComments() {
         repository.getComments(artifact.getLotNum(), new RepositoryCallback<List<Comment>>() {
             @Override
@@ -371,6 +430,10 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
+    /**
+     * Adds a comment to the database.
+     * @param text the text in the comment.
+     */
     private void addComment(String text) {
         Comment comment = new Comment(currentUser, text);
         repository.addComment(artifact.getLotNum(), comment, new RepositoryCallback<Void>() {
@@ -388,6 +451,11 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
+    /**
+     * Deletes a comment and updates the screen with the new set of comments.
+     * @param comment comment to be deleted
+     * @param position position of comment
+     */
     private void onDeleteComment(Comment comment, int position) {
         repository.deleteComment(artifact.getLotNum(), comment.getCommentId(), new RepositoryCallback<Void>() {
             @Override
@@ -404,6 +472,9 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
+    /**
+     * Deletes the viewed artifact from the database.
+     */
     private void deleteArtifact() {
         repository.deleteArtifact(artifact.getLotNum(), new RepositoryCallback<Void>() {
             @Override
@@ -433,6 +504,11 @@ public class ExpandedArtifactFragment extends Fragment {
         });
     }
 
+    /**
+     * Displays an error message to the user.
+     * @param what The error itself.
+     * @param reason The reason the error happened.
+     */
     private void showError(String what, String reason) {
         if (!isAdded()) {
             return;
