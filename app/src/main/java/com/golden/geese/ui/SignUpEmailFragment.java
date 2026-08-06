@@ -23,6 +23,13 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
+
+/**
+ * This is the email fragment view for the 3-step sign-up process. It contains its own signUpPresenter
+ * which handles logics and repo/model authentication. This fragment handles getting the email and
+ * input from the UI and passes it onto the presenter and will update the UI based the presenter.
+ */
+
 public class SignUpEmailFragment extends Fragment implements AuthView {
 
     private SignUpPresenter presenter;
@@ -63,12 +70,22 @@ public class SignUpEmailFragment extends Fragment implements AuthView {
                 Objects.requireNonNull(emailInput.getText()).toString());});
     }
 
+    /**
+     * Loads a screen fragment into the fragment container
+     * @param fragment the fragment to be loaded
+     */
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
+    /**
+     * Sets error state on email input and displays error message while also
+     * setting the next button to clickable. Overridden as method is from interface
+     * @param message a human-readable description of the error
+     */
     @Override
     public void showError(String message) {
         nextButton.setClickable(true);
@@ -76,16 +93,25 @@ public class SignUpEmailFragment extends Fragment implements AuthView {
         emailInput.setError(message);
     }
 
+    /**
+     * Shows loading state, overridden as it is from interface
+     */
     @Override
     public void showLoading() {
 
     }
 
+    /**
+     * Changes screen to next step in sign-up process, overridden as it is from interface
+     */
     @Override
     public void nextStep() {
         loadFragment(new SignUpPasswordFragment());
     }
 
+    /**
+     * Called when fragment is destroyed, overridden to include unlinking fragment from presenter
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
