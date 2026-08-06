@@ -142,7 +142,17 @@ public class ProfileFragment extends Fragment {
     }
 
     private ArtifactAdapter adapterFor(List<Artifact> artifacts) {
-        return new ArtifactAdapter(artifacts, R.layout.item_artifact);
+        return new ArtifactAdapter(artifacts, R.layout.item_artifact, this::openDetailsScreen);
+    }
+
+    private void openDetailsScreen(Artifact artifact) {
+        Bundle args = new Bundle();
+        args.putSerializable("Artifact", artifact);
+
+        ExpandedArtifactFragment fragment = new ExpandedArtifactFragment();
+        fragment.setArguments(args);
+
+        loadFragment(fragment);
     }
 
     private List<Artifact> filter(List<Artifact> artifacts, Predicate<Artifact> keep) {
