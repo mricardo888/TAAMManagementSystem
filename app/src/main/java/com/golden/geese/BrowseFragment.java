@@ -39,6 +39,7 @@ public class BrowseFragment extends Fragment {
     private static final String ARG_FILTER_MODE = "filterMode";
     public static final String FILTER_LIKED = "LIKED";
     public static final String FILTER_SAVED = "SAVED";
+    public static final String FILTER_ON_DISPLAY = "ON_DISPLAY";
 
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
     private String filterMode;
@@ -228,6 +229,10 @@ public class BrowseFragment extends Fragment {
     private List<Artifact> filterArtifactsByMode(List<Artifact> artifacts) {
         if (filterMode == null) {
             return artifacts;
+        }
+
+        if (FILTER_ON_DISPLAY.equals(filterMode)) {
+            return artifacts.stream().filter(Artifact::isOnDisplay).collect(Collectors.toList());
         }
 
         User currentUser = SessionManager.getInstance().getCurrentUser();

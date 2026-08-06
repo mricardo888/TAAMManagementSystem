@@ -53,6 +53,14 @@
                     android:textAllCaps="false"
                     android:textColor="@color/olive" />
 
+                <CheckBox
+                    android:id="@+id/cb_on_display"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Currently On Display"
+                    android:layout_marginTop="12dp"
+                    android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/artifact_lot_number"
                     android:layout_width="match_parent"

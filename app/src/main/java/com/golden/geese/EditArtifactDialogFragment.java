@@ -3,6 +3,7 @@ package com.golden.geese;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,12 +33,19 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
         Button cancelButton = view.findViewById(R.id.cancel_button);
         Button saveButton = view.findViewById(R.id.save_button);
 
+        CheckBox onDisplayCheckbox = view.findViewById(R.id.cb_on_display);
+
         if (artifact == null) {
             dismiss();
             return;
         }
 
         fillFields(artifact);
+
+        // Load the current "On Display" status from the artifact
+        if (onDisplayCheckbox != null) {
+            onDisplayCheckbox.setChecked(artifact.isOnDisplay());
+        }
 
         cancelButton.setOnClickListener(clickedView -> dismiss());
         saveButton.setOnClickListener(clickedView -> {
@@ -46,6 +54,11 @@ public class EditArtifactDialogFragment extends ArtifactDialogFragment {
             }
 
             saveInputs(artifact);
+
+            // Save the CheckBox state to the artifact
+            if (onDisplayCheckbox != null) {
+                artifact.setOnDisplay(onDisplayCheckbox.isChecked());
+            }
 
             String previousImageUrl = artifact.getImage();
             boolean replacingImage = selectedImageUri != null;

@@ -100,6 +100,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         fields.put("accessionNum", artifact.getAccessionNum());
         fields.put("notes", artifact.getNotes());
         fields.put("image", artifact.getImage());
+        fields.put("onDisplay", artifact.isOnDisplay());
 
         root.child(ARTIFACTS).child(String.valueOf(artifact.getLotNum()))
                 .updateChildren(fields)

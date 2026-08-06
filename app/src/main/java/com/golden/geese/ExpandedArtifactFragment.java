@@ -169,8 +169,8 @@ public class ExpandedArtifactFragment extends Fragment {
 
         Glide.with(this)
                 .load(toShow.getImage())
-                .placeholder(R.drawable.expanded_artifact_placeholder)
-                .error(R.drawable.expanded_artifact_placeholder)
+                .placeholder(R.drawable.empty)
+                .error(R.drawable.empty)
                 .into(artifactImage);
 
         renderLikeState(toShow);

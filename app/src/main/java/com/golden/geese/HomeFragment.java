@@ -34,7 +34,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     private User currentUser;
     private TextView welcomeText;
-    private RecyclerView viewPagerCarousel; // changed to RecyclerView from previous ViewPager2
+    private ViewPager2 viewPagerCarousel;
     private RecyclerView rvArtifacts;
     private ImageButton addButton;
     private final ArtifactRepository artifactRepository = new FirebaseArtifactRepository();
@@ -63,13 +63,15 @@ public class HomeFragment extends Fragment {
         welcomeText.setText(getString(R.string.welcome_user) + (currentUser == null ? "" : currentUser.getUsername()));
 
         viewPagerCarousel = view.findViewById(R.id.viewPager_carousel);
-        viewPagerCarousel.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         rvArtifacts = view.findViewById(R.id.rv_artifacts);
         rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         Button displayViewAllButton = view.findViewById(R.id.onDisplayViewAllButton);
         Button artifactsViewAllButton = view.findViewById(R.id.artifactsViewAllButton);
+
+        rvArtifacts.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        setupCarouselTransforms();
 
         view.findViewById(R.id.tab_profile).setOnClickListener(clickedView -> {
             loadFragment(new ProfileFragment());
@@ -80,7 +82,9 @@ public class HomeFragment extends Fragment {
         addButton.setOnClickListener(clickedView -> showAddArtifactDialog());
         addButton.setVisibility(canManage ? View.VISIBLE : View.GONE);
 
-        displayViewAllButton.setOnClickListener(v -> loadFragment(new BrowseFragment()));
+        displayViewAllButton.setOnClickListener(v -> {
+            loadFragment(BrowseFragment.newInstance(BrowseFragment.FILTER_ON_DISPLAY));
+        });
 
         artifactsViewAllButton.setOnClickListener(v -> {
             loadFragment(new BrowseFragment());
@@ -110,24 +114,77 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-    //Hard coded list of artifacts "on display"
-    private static final int[] ON_DISPLAY_INDICES = { 2, 0, 4, 15, 9, 7, 1, 8, 12 };
-
     private void setupCarousel(List<Artifact> artifacts) {
         List<Artifact> onDisplayArtifacts = new ArrayList<>();
-        for (int index : ON_DISPLAY_INDICES) {
-            if (index >= 0 && index < artifacts.size()) {
-                onDisplayArtifacts.add(artifacts.get(index));
+        for (Artifact artifact : artifacts){
+            if(artifact.isOnDisplay()){
+                onDisplayArtifacts.add(artifact);
             }
         }
 
-        ArtifactAdapter carouselAdapter = new ArtifactAdapter(onDisplayArtifacts, R.layout.item_artifact, this::openDetailsScreen);
+        ArtifactAdapter carouselAdapter = new ArtifactAdapter(onDisplayArtifacts, R.layout.item_carousel, this::openDetailsScreen);
         viewPagerCarousel.setAdapter(carouselAdapter);
+
+        viewPagerCarousel.post(() -> {
+            if (!viewPagerCarousel.isFakeDragging()) {
+                viewPagerCarousel.beginFakeDrag();
+                viewPagerCarousel.fakeDragBy(0f); // 0 pixel drag
+                viewPagerCarousel.endFakeDrag();
+            }
+        });
     }
     private void setupRecyclerView(List<Artifact> artifacts) {
         ArtifactAdapter artifactAdapter = new ArtifactAdapter(artifacts, R.layout.item_artifact, this::openDetailsScreen);
         rvArtifacts.setAdapter(artifactAdapter);
+    }
+
+    private void setupCarouselTransforms() {
+        // This makes the entire screen a valid touch zone.
+        viewPagerCarousel.setClipToPadding(false);
+        viewPagerCarousel.setClipChildren(false);
+        viewPagerCarousel.setPadding(0, 0, 0, 0);
+        viewPagerCarousel.setOffscreenPageLimit(3);
+
+        View child = viewPagerCarousel.getChildAt(0);
+        if (child instanceof RecyclerView) {
+            child.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            child.setPadding(0, 0, 0, 0);
+
+        }
+
+        CompositePageTransformer transformer = new CompositePageTransformer();
+        transformer.addTransformer((page, position) -> {
+
+            float centerScale = 0.75f; // Center card takes up 75% of the screen width
+            float sideScale = 0.60f;   // Side cards take up 60% of the screen width
+
+            float r = 1 - Math.abs(position);
+            r = Math.max(0, Math.min(1, r)); // Clamp between 0 and 1
+
+            float scale = sideScale + r * (centerScale - sideScale);
+            page.setScaleY(scale);
+            page.setScaleX(scale);
+            page.setAlpha(0.35f + r * 0.65f);
+
+            float pageW = page.getWidth();
+            float emptySpaceGap = (pageW * (1 - centerScale) / 2f) + (pageW * (1 - sideScale) / 2f);
+
+            // add desired 80dp overlap effect
+            int overlapPx = (int) (80 * page.getResources().getDisplayMetrics().density);
+
+            float shiftOffset = emptySpaceGap + overlapPx;
+            page.setTranslationX(-position * shiftOffset);
+
+            float zIndex = 100f - (Math.abs(position) * 100f);
+            page.setTranslationZ(zIndex);
+
+            // Explicitly override the native MaterialCardView elevation shadow
+            if (page instanceof com.google.android.material.card.MaterialCardView) {
+                ((com.google.android.material.card.MaterialCardView) page).setCardElevation(Math.max(1f, zIndex));
+            }
+        });
+
+        viewPagerCarousel.setPageTransformer(transformer);
     }
 
     private void openDetailsScreen(Artifact artifact) {

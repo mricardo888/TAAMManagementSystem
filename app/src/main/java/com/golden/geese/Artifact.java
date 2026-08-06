@@ -38,6 +38,7 @@ public class Artifact implements Serializable {
     private String image;
     private List<String> likedBy;
     private List<String> savedBy;
+    private boolean onDisplay;
 
     /**
      * Primary Constructor
@@ -61,6 +62,7 @@ public class Artifact implements Serializable {
         image = "";
         likedBy = new ArrayList<>();
         savedBy = new ArrayList<>();
+        onDisplay = false;
     }
 
     /**
@@ -100,11 +102,12 @@ public class Artifact implements Serializable {
      * @param accessionNum
      * @param notes
      * @param image
+     * @param onDisplay
      */
     public Artifact(int lotNum, String name, String description, String category,
                     String material, String dynasty, String origin, List<Double> dimensions,
                     String conditionReport, String location, String acqMethod, String provenance,
-                    int accessionNum, String notes, String image){
+                    int accessionNum, String notes, String image, boolean onDisplay){
         this(lotNum, name, description, category, material, dynasty);
         this.origin = origin;
         this.dimensions = dimensions;
@@ -115,6 +118,7 @@ public class Artifact implements Serializable {
         this.accessionNum = accessionNum;
         this.notes = notes;
         this.image = image;
+        this.onDisplay = onDisplay;
     }
 
     /**
@@ -125,54 +129,106 @@ public class Artifact implements Serializable {
         return lotNum;
     }
 
+    /**
+     * Setter for the lot number
+     * @param lotNum - the lot number integer set to
+     */
     public void setLotNum(int lotNum) {
         this.lotNum = lotNum;
     }
 
+    /**
+     * Getter for the name
+     * @return - the name String
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Setter for the name
+     * @param name - the name String to set
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Getter for the description
+     * @return - the description String
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Setter for the description
+     * @param description - the description String to set
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Getter for the category
+     * @return - the category String
+     */
     public String getCategory() {
         return category;
     }
 
+    /**
+     * Setter for the category
+     * @param category - the category String to set
+     */
     public void setCategory(String category) {
         this.category = category;
     }
 
+    /**
+     * Getter for the material
+     * @return - the material String
+     */
     public String getMaterial() {
         return material;
     }
 
+    /**
+     * Setter for the material
+     * @param material - the material String to set
+     */
     public void setMaterial(String material) {
         this.material = material;
     }
 
+    /**
+     * Getter for the dynasty
+     * @return - the dynasty String
+     */
     public String getDynasty() {
         return dynasty;
     }
 
+    /**
+     * Setter for the dynasty
+     * @param dynasty - the dynasty String to set
+     */
     public void setDynasty(String dynasty) {
         this.dynasty = dynasty;
     }
 
+    /**
+     * Getter for the origin
+     * @return - the origin String of the artifact
+     */
     public String getOrigin() {
         return origin;
     }
 
+    /**
+     * Setter for the origin
+     * @param origin - the origin String to set
+     */
     public void setOrigin(String origin) {
         this.origin = origin;
     }
@@ -239,6 +295,14 @@ public class Artifact implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public boolean isOnDisplay() {
+        return onDisplay;
+    }
+
+    public void setOnDisplay(boolean onDisplay) {
+        this.onDisplay = onDisplay;
     }
 
     public List<String> getLikedBy() {
@@ -321,6 +385,7 @@ public class Artifact implements Serializable {
                 ", image='" + image + '\'' +
                 ", likes=" + likedBy.size() +
                 ", saves=" + savedBy.size() +
+                ", onDisplay=" + onDisplay +
                 '}';
     }
 
