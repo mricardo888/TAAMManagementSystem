@@ -11,9 +11,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
+/** UserProfileRepository backed by the Firebase Realtime Database /users node */
 public class FirebaseUserProfileRepository implements UserProfileRepository {
     private final DatabaseReference usersRef;
 
+    /** Binds to the /users node of the default FirebaseDatabase instance */
     public FirebaseUserProfileRepository() {
         usersRef = FirebaseDatabase.getInstance().getReference("users");
     }
