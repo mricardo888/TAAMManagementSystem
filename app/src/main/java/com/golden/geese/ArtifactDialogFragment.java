@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -51,6 +52,7 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
     protected EditText accessionNumberInput;
     protected EditText notesInput;
     protected ImageView imagePreview;
+    protected CheckBox onDisplayCheckbox;
     protected Uri selectedImageUri;
 
     private ArtifactImageUploader imageUploader;
@@ -105,6 +107,7 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         accessionNumberInput = view.findViewById(R.id.artifact_accession_number);
         notesInput = view.findViewById(R.id.artifact_notes);
         imagePreview = view.findViewById(R.id.edit_image_preview);
+        onDisplayCheckbox = view.findViewById(R.id.cb_on_display);
         Button changeImageButton = view.findViewById(R.id.change_image_button);
 
         formTitle.setText(getFormTitle());
@@ -224,6 +227,9 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         provenanceInput.setText(artifact.getProvenance());
         accessionNumberInput.setText(String.valueOf(artifact.getAccessionNum()));
         notesInput.setText(artifact.getNotes());
+        if (onDisplayCheckbox != null) {
+            onDisplayCheckbox.setChecked(artifact.isOnDisplay());
+        }
 
         List<Double> dimensions = artifact.getDimensions();
         if (dimensions != null && dimensions.size() == 3) {
@@ -266,6 +272,10 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
                 parseDoubleOrZero(dimensionWidthInput.getText().toString().trim()),
                 parseDoubleOrZero(dimensionHeightInput.getText().toString().trim())
         ));
+
+        if (onDisplayCheckbox != null) {
+            artifact.setOnDisplay(onDisplayCheckbox.isChecked());
+        }
     }
 
     private int parseIntOrZero(String value) {
