@@ -1,3 +1,17 @@
+/*
+ * ArtifactDialogFragment
+ * Daniel Wang
+ *
+ * Superclass for add and edit
+ *
+ * This code is provided as part of the coursework for CSCB07H3
+ * at the University of Toronto.
+ *
+ * Unauthorized reproduction, distribution, or sharing of this code is strictly
+ * prohibited and constitutes a violation of the University of
+ * Toronto Code of Behaviour on Academic Matters.
+ *
+ */
 package com.golden.geese;
 
 import android.app.Dialog;
@@ -79,12 +93,30 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
                 }
             });
 
+    /**
+     * onCreateView
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return - View object
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.dialog_artifact_form, container, false);
     }
 
+    /**
+     * onViewCreated
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -129,6 +161,11 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         ));
     }
 
+    /**
+     * setupSpinner
+     * @param spinner - Spinner object
+     * @param arrayResId - integer
+     */
     private void setupSpinner(Spinner spinner, int arrayResId) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 requireContext(), arrayResId, android.R.layout.simple_spinner_item);
@@ -143,6 +180,10 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         return true;
     }
 
+    /**
+     * validateFields
+     * @return - boolean variable
+     */
     protected boolean validateFields() {
         String lotNumberText = lotNumberInput.getText().toString().trim();
         String name = nameInput.getText().toString().trim();
@@ -201,6 +242,9 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         return valid;
     }
 
+    /**
+     * focusInvalidField
+     */
     private void focusInvalidField() {
         if (lotNumberInput.getError() != null) {
             lotNumberInput.requestFocus();
@@ -211,6 +255,10 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * fillFields
+     * @param artifact - Artifact object
+     */
     protected void fillFields(@NonNull Artifact artifact)
     {
         lotNumberInput.setText(String.valueOf(artifact.getLotNum()));
@@ -245,6 +293,11 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
                 .into(imagePreview);
     }
 
+    /**
+     * setSpinnerSelection
+     * @param spinner - Spinner object
+     * @param value - String
+     */
     private void setSpinnerSelection(Spinner spinner, String value) {
         @SuppressWarnings("unchecked")
         ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
@@ -252,6 +305,10 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         spinner.setSelection(Math.max(position, 0));
     }
 
+    /**
+     * saveInputs
+     * @param artifact - Artifact being set
+     */
     protected void saveInputs(@NonNull Artifact artifact) {
         artifact.setName(nameInput.getText().toString().trim());
         artifact.setDescription(descriptionInput.getText().toString().trim());
@@ -278,6 +335,11 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * parseIntOrZero
+     * @param value - a String
+     * @return - parses the string and 0 otherwise
+     */
     private int parseIntOrZero(String value) {
         try {
             return value.isEmpty() ? 0 : Integer.parseInt(value);
@@ -286,6 +348,11 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * parseDoubleOrZero
+     * @param value - String
+     * @return - parses the string and 0 otherwise
+     */
     private double parseDoubleOrZero(String value) {
         try {
             return value.isEmpty() ? 0.0 : Double.parseDouble(value);
@@ -294,6 +361,10 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * getLotNumberValue - get the lot number
+     * @return - an integer lot number
+     */
     protected int getLotNumberValue() {
         return Integer.parseInt(lotNumberInput.getText().toString().trim());
     }
@@ -331,18 +402,33 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * deleteCloudImage
+     * @param imageUrl - String link for the image
+     */
     protected void deleteCloudImage(String imageUrl) {
         imageUploader.deleteArtifactImage(imageUrl, new ImageDeleteCallback() {
+            /**
+             * onSuccess
+             */
             @Override
             public void onSuccess() {
             }
 
+            /**
+             * onError
+             * @param errorMessage - String errorMessage being displayed
+             */
             @Override
             public void onError(String errorMessage) {
             }
         });
     }
 
+    /**
+     * notifyArtifactSaved
+     * @param artifact - Artifact object
+     */
     protected void notifyArtifactSaved(@NonNull Artifact artifact) {
         if (savedListener != null)
         {
@@ -350,6 +436,9 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * onStart
+     */
     @Override
     public void onStart()
     {
@@ -379,5 +468,9 @@ public abstract class ArtifactDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * getFormTitle - abstract method
+     * @return - String title
+     */
     protected abstract String getFormTitle();
 }

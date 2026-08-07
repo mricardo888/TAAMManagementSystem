@@ -1,3 +1,16 @@
+/*
+ * ArtifactAdapter
+ * Ali Al-Baiti
+ * Adapter class for Artifacts
+ *
+ * This code is provided as part of the coursework for CSCB07H3
+ * at the University of Toronto.
+ *
+ * Unauthorized reproduction, distribution, or sharing of this code is strictly
+ * prohibited and constitutes a violation of the University of
+ * Toronto Code of Behaviour on Academic Matters.
+ *
+ */
 package com.golden.geese;
 
 import android.net.Uri;
@@ -22,16 +35,35 @@ public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.Artifa
     private int layoutId;
     private OnArtifactClickListener clickListener;
 
+    /**
+     * Primary Constructor
+     * @param artifactList - type List<Artifact>
+     * @param layoutId - integer ID
+     */
     public ArtifactAdapter(List<Artifact> artifactList, int layoutId) {
         this(artifactList, layoutId, null);
     }
 
+    /**
+     * Secondary Constructor
+     * @param artifactList - type List<Artifact>
+     * @param layoutId - integer ID
+     * @param clickListener - OnArtifactClickListener
+     */
     public ArtifactAdapter(List<Artifact> artifactList, int layoutId, OnArtifactClickListener clickListener) {
         this.artifactList = artifactList;
         this.layoutId = layoutId;
         this.clickListener = clickListener;
     }
 
+    /**
+     * onCreateViewHolder
+     * @param parent The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param viewType The view type of the new View.
+     *
+     * @return - object type ArtifactViewHolder
+     */
     @NonNull
     @Override
     public ArtifactViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,6 +72,12 @@ public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.Artifa
         return new ArtifactViewHolder(view);
     }
 
+    /**
+     * onBindViewHolder
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull ArtifactViewHolder holder, int position) {
         Artifact artifact = artifactList.get(position);
@@ -59,6 +97,10 @@ public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.Artifa
         });
     }
 
+    /**
+     * getItemCount
+     * @return - integer size of artifactList
+     */
     @Override
     public int getItemCount() {
         return artifactList == null ? 0 : artifactList.size();
@@ -68,6 +110,10 @@ public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.Artifa
         ImageView ivImage;
         TextView tvName;
 
+        /**
+         * Primary Constructor
+         * @param itemView - type View
+         */
         public ArtifactViewHolder(@NonNull View itemView) {
             super(itemView);
             // Ensure these IDs match exactly what is in your item_artifact.xml

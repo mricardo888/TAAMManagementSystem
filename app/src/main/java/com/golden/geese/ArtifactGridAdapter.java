@@ -1,3 +1,16 @@
+/*
+ * ArtifactGridAdapter
+ * Ali Al-Baiti
+ * Adapter for the Artifact Grid
+ *
+ * This code is provided as part of the coursework for CSCB07H3
+ * at the University of Toronto.
+ *
+ * Unauthorized reproduction, distribution, or sharing of this code is strictly
+ * prohibited and constitutes a violation of the University of
+ * Toronto Code of Behaviour on Academic Matters.
+ *
+ */
 package com.golden.geese;
 
 import android.view.LayoutInflater;
@@ -21,16 +34,33 @@ public class ArtifactGridAdapter extends RecyclerView.Adapter<ArtifactGridAdapte
         void onGridItemClick(Artifact artifact);
     }
 
+    /**
+     * Primary Constructor
+     * @param artifactList - the List of artifacts
+     * @param listener - OnGridItemClickListener
+     */
     public ArtifactGridAdapter(List<Artifact> artifactList, OnGridItemClickListener listener) {
         this.artifactList = artifactList;
         this.listener = listener;
     }
 
+    /**
+     * updateData
+     * @param newArtifactList - new List of Artifacts
+     */
     public void updateData(List<Artifact> newArtifactList) {
         this.artifactList = newArtifactList;
         notifyDataSetChanged();
     }
 
+    /**
+     * onCreateViewHolder
+     * @param parent The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param viewType The view type of the new View.
+     *
+     * @return - GridViewHolder object
+     */
     @NonNull
     @Override
     public GridViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,6 +69,12 @@ public class ArtifactGridAdapter extends RecyclerView.Adapter<ArtifactGridAdapte
         return new GridViewHolder(view);
     }
 
+    /**
+     * onBindViewHolder
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull GridViewHolder holder, int position) {
         Artifact artifact = artifactList.get(position);
@@ -56,6 +92,10 @@ public class ArtifactGridAdapter extends RecyclerView.Adapter<ArtifactGridAdapte
         });
     }
 
+    /**
+     * getItemCount
+     * @return - integer size of the artifactList
+     */
     @Override
     public int getItemCount() {
         return artifactList == null ? 0 : artifactList.size();
@@ -64,6 +104,10 @@ public class ArtifactGridAdapter extends RecyclerView.Adapter<ArtifactGridAdapte
     static class GridViewHolder extends RecyclerView.ViewHolder {
         ImageView ivGridImage;
 
+        /**
+         * GridViewHolder
+         * @param itemView - View item
+         */
         public GridViewHolder(@NonNull View itemView) {
             super(itemView);
             ivGridImage = itemView.findViewById(R.id.iv_grid_image);

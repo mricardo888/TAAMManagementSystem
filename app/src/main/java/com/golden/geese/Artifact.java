@@ -1,6 +1,5 @@
-package com.golden.geese;/*
+/*
  * Artifact
- * Version 1.0
  * Bob Zhao July 14, 2026
  *
  * This code is provided as part of the coursework for CSCB07H3
@@ -11,12 +10,15 @@ package com.golden.geese;/*
  * Toronto Code of Behaviour on Academic Matters.
  *
  */
+package com.golden.geese;
+
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
 import java.util.*;
 
 public class Artifact implements Serializable {
+    // Fields for an artifact
     private int lotNum;
     private String name;
     private String description;
@@ -305,56 +307,111 @@ public class Artifact implements Serializable {
         this.onDisplay = onDisplay;
     }
 
+    /**
+     * Getter for LikedBy
+     * @return - a List of strings of the users who have liked
+     */
     public List<String> getLikedBy() {
         return likedBy;
     }
 
+    /**
+     * Setter for Likedby
+     * @param likedBy - set a list of strings as users who have liked it
+     */
     public void setLikedBy(List<String> likedBy) {
         this.likedBy = likedBy == null ? new ArrayList<>() : likedBy;
     }
 
+    /**
+     * Getter for SavedBy
+     * @return - a List of strings of the users who have saved
+     */
     public List<String> getSavedBy() {
         return savedBy;
     }
 
+    /**
+     * Setter for SavedBy
+     * @param savedBy - set a list of strings as users who have liked it
+     */
     public void setSavedBy(List<String> savedBy) {
         this.savedBy = savedBy == null ? new ArrayList<>() : savedBy;
     }
 
+    /**
+     * GetLikeCount - get the number of likes
+     * @return - integer size of likedBy
+     */
     @Exclude
     public int getLikeCount() {
         return likedBy.size();
     }
 
+    /**
+     * GetSaveCount - get the number of saves
+     * @return - integer size of savedBy
+     */
     @Exclude
     public int getSaveCount() {
         return savedBy.size();
     }
 
+    /**
+     * isLikedBy
+     * @param uid - userID String
+     * @return - True if the user has liked
+     */
     public boolean isLikedBy(String uid) {
         return uid != null && likedBy.contains(uid);
     }
 
+    /**
+     * IsSavedBy
+     * @param uid - userID String
+     * @return - True if the user has saved
+     */
     public boolean isSavedBy(String uid) {
         return uid != null && savedBy.contains(uid);
     }
 
+    /**
+     * addLike
+     * @param uid - String userID
+     */
     public void addLike(String uid) {
         addOnce(likedBy, uid);
     }
 
+    /**
+     * removeLike
+     * @param uid - String userID
+     */
     public void removeLike(String uid) {
         likedBy.remove(uid);
     }
 
+    /**
+     * addSave
+     * @param uid - String userID
+     */
     public void addSave(String uid) {
         addOnce(savedBy, uid);
     }
 
+    /**
+     * removeSave
+     * @param uid - String userID
+     */
     public void removeSave(String uid) {
         savedBy.remove(uid);
     }
 
+    /**
+     * addOnce - makes sure to add the ID, if it isn't already in the List
+     * @param uids - List of userIDs
+     * @param uid - particular userID
+     */
     private void addOnce(List<String> uids, String uid) {
         if (uid != null && !uids.contains(uid)) {
             uids.add(uid);
