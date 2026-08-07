@@ -8,14 +8,17 @@ import com.golden.geese.AdminUser;
 import com.golden.geese.RegularUser;
 import com.golden.geese.User;
 
+/** AuthRepository backed by Firebase Authentication and a UserProfileRepository */
 public class FirebaseAuthRepository implements AuthRepository {
     private final FirebaseAuth mAuth;
     private final UserProfileRepository userProfileRepository;
 
+    /** Uses the default FirebaseAuth instance and a Firebase-backed profile repository */
     public FirebaseAuthRepository() {
         this(FirebaseAuth.getInstance(), new FirebaseUserProfileRepository());
     }
 
+    /** Allows injecting the auth and profile dependencies, e.g. for testing */
     public FirebaseAuthRepository(FirebaseAuth mAuth, UserProfileRepository userProfileRepository) {
         this.mAuth = mAuth;
         this.userProfileRepository = userProfileRepository;
@@ -41,6 +44,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                 });
     }
 
+    /** Builds a User of the correct subtype for a Firebase user, filling in profile fields */
     private void loadUser(FirebaseUser firebaseUser, AuthCallBack callback) {
         userProfileRepository.isAdmin(firebaseUser.getUid(), new RepositoryCallback<Boolean>() {
             @Override

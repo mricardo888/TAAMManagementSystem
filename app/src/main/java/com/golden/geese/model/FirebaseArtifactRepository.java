@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Firebase Realtime Database backed implementation combining artifact CRUD, likes, saves, and
+ * comment-thread management for the /artifacts and /comments nodes
+ */
 public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepository, SaveRepository, CommentRepository {
     private static final String ARTIFACTS = "artifacts";
     private static final String COMMENTS = "comments";
@@ -33,6 +37,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
 
     private final DatabaseReference root;
 
+    /** Binds to the root of the default FirebaseDatabase instance */
     public FirebaseArtifactRepository() {
         root = FirebaseDatabase.getInstance().getReference();
     }
@@ -151,6 +156,10 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         updateUidList(lotNum, SAVED_BY, uid, false, callback);
     }
 
+    /**
+     * Adds or removes a uid from the given per-artifact list (likedBy/savedBy) via a Firebase
+     * transaction, so concurrent updates from other users don't clobber each other
+     */
     private void updateUidList(int lotNum, String listName, String uid, boolean present,
                                RepositoryCallback<Void> callback) {
         root.child(ARTIFACTS).child(String.valueOf(lotNum)).child(listName)
@@ -184,6 +193,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
                 });
     }
 
+    /** Reads the current String children of a likedBy/savedBy transaction node as a mutable list */
     private List<String> readUids(MutableData data) {
         List<String> uids = new ArrayList<>();
         for (MutableData child : data.getChildren()) {
@@ -208,6 +218,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         writeComment(lotNum, parentCommentId, reply, callback);
     }
 
+    /** Pushes a new comment (top-level or reply) onto an artifact's thread and assigns its generated id */
     private void writeComment(int lotNum, String parentId, Comment comment, RepositoryCallback<Void> callback) {
         comment.setParentId(parentId);
         DatabaseReference commentRef = root.child(COMMENTS).child(String.valueOf(lotNum)).push();
@@ -239,6 +250,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         });
     }
 
+    /** Recursively collects a comment and every reply nested beneath it into the deletions map */
     private void collectSubtree(DataSnapshot thread, String commentId, Map<String, Object> deletions) {
         deletions.put(commentId, null);
         for (DataSnapshot child : thread.getChildren()) {
@@ -315,6 +327,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         }
     }
 
+    /** Deserializes a single comment node into a Comment object, including its author and timestamp */
     private Comment parseComment(DataSnapshot child) {
         String text = child.child("text").getValue(String.class);
         Comment comment = new Comment(parseAuthor(child.child("author")), text != null ? text : "");
@@ -331,6 +344,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         return comment;
     }
 
+    /** Deserializes a comment's author node into the correct User subtype */
     private User parseAuthor(DataSnapshot authorSnapshot) {
         boolean isAdmin = Boolean.TRUE.equals(authorSnapshot.child("admin").getValue(Boolean.class));
         String username = authorSnapshot.child("username").getValue(String.class);
@@ -342,6 +356,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
         return author;
     }
 
+    /** Reconstructs a LocalDateTime from its serialized field-by-field snapshot, or null if incomplete */
     private LocalDateTime parseTimestamp(DataSnapshot timestampSnapshot) {
         Integer year = timestampSnapshot.child("year").getValue(Integer.class);
         Integer month = timestampSnapshot.child("monthValue").getValue(Integer.class);
@@ -362,6 +377,7 @@ public class FirebaseArtifactRepository implements ArtifactRepository, LikeRepos
                 nano != null ? nano : 0);
     }
 
+    /** Nests each reply under its parent comment, returning only the top-level comments as roots */
     private List<Comment> buildReplyTree(Map<String, Comment> byId) {
         List<Comment> roots = new ArrayList<>();
         for (Comment comment : byId.values()) {

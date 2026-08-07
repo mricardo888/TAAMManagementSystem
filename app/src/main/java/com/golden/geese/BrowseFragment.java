@@ -30,6 +30,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Handles the Browse screen.
+ * <p>Allows for substring searching and sorting artifacts</p>
+ */
 public class BrowseFragment extends Fragment {
     private static final int PAGE_SIZE_ALL = -1;
 
@@ -52,6 +56,15 @@ public class BrowseFragment extends Fragment {
     private String sortMethod = SORT_NAME_ASC;
     private String currentSearch = "";
 
+    /**
+     * Initializes a new instance of the class with a filterMode to specify which artfacts are seen.
+     * Possible modes:
+     * "LIKED"
+     * "SAVED"
+     * "ON_DISPLAY"
+     * @param filterMode
+     * @return An instance of BrowseFragment with a specified mode.
+     */
     public static BrowseFragment newInstance(String filterMode) {
         BrowseFragment fragment = new BrowseFragment();
         Bundle args = new Bundle();
@@ -66,6 +79,12 @@ public class BrowseFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_browse, container, false);
     }
 
+    /**
+     * Sets up the interactable elements of the screen.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -162,6 +181,9 @@ public class BrowseFragment extends Fragment {
         setUpGrid();
     }
 
+    /**
+     * Accesses the artifact database, filters the artifacts, and loads the grid of artifacts.
+     */
     private void setUpGrid() {
         artifactRepository.getAllArtifacts(new RepositoryCallback<List<Artifact>>() {
             @Override
@@ -182,6 +204,11 @@ public class BrowseFragment extends Fragment {
         });
     }
 
+    /**
+     * Takes a list of artifacts to load into the grid.
+     * Number of artifacts per page can be set using the shared preferences. Key: R.string.saved_pagination_key
+     * @param artifacts
+     */
     private void loadGrid(List<Artifact> artifacts) {
         int rawPageSize = readPageSizePreference();
         currentPageSize = (rawPageSize == PAGE_SIZE_ALL) ? Math.max(artifacts.size(), 1) : rawPageSize;
@@ -204,6 +231,9 @@ public class BrowseFragment extends Fragment {
         rvArtifactGrid.setAdapter(gridAdapter);
     }
 
+    /**
+     * @return Pagination saved in shared preferences or 12 if not found.
+     */
     private int readPageSizePreference() {
         SharedPreferences sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE);
         int defaultPagination = 12;
@@ -211,6 +241,9 @@ public class BrowseFragment extends Fragment {
         return sharedPref.getInt(savedPaginationKey, defaultPagination);
     }
 
+    /**
+     * Resets the grid back to its start state.
+     */
     private void resetGrid() {
         paginationStartIndex = 0;
         pageNumber = 1;
@@ -218,6 +251,11 @@ public class BrowseFragment extends Fragment {
         setUpGrid();
     }
 
+    /**
+     * Displays an error message to the user.
+     * @param what The error itself.
+     * @param reason The reason the error happened.
+     */
     private void showError(String what, String reason) {
         if (!isAdded()) {
             return;
@@ -226,6 +264,11 @@ public class BrowseFragment extends Fragment {
         Toast.makeText(requireContext(), what + detail, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Filters a list of artifacts by filterMode.
+     * @param artifacts list of artifacts to be filtered.
+     * @return list of artifacts that has been filtered.
+     */
     private List<Artifact> filterArtifactsByMode(List<Artifact> artifacts) {
         if (filterMode == null) {
             return artifacts;
@@ -246,6 +289,11 @@ public class BrowseFragment extends Fragment {
         return artifacts;
     }
 
+    /**
+     * Filters a list of artifacts by currentSearch using a substring filter of all the artifact's string fields.
+     * @param artifacts the list of artifacts to be filtered.
+     * @return a new list of artifacts that has been filtered.
+     */
     private List<Artifact> filterArtifactsBySubstring(List<Artifact> artifacts) {
         if(currentSearch == null || currentSearch.isEmpty()) { return artifacts; }
 
@@ -266,6 +314,10 @@ public class BrowseFragment extends Fragment {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Navigates to the expanded details screen.
+     * @param artifact the artifact to be viewed.
+     */
     private void openDetailsScreen(Artifact artifact) {
         Bundle args = new Bundle();
         args.putSerializable("Artifact", artifact);

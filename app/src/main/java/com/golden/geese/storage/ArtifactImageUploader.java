@@ -22,6 +22,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * Uploads and deletes artifact images stored in a Supabase storage bucket.
+ * Reads image data from a content {@link Uri}, sends it via HTTP using
+ * OkHttp, and reports results back on the main thread through
+ */
 public class ArtifactImageUploader {
     private static final int MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
 
@@ -32,6 +37,13 @@ public class ArtifactImageUploader {
     private final OkHttpClient httpClient;
     private final Handler mainHandler;
 
+    /**
+     * Creates an uploader configured from the app's Supabase credentials
+     * defined in {@code strings.xml}.
+     *
+     * @param context any context; the application context is retained to
+     *                avoid leaking the passed-in context
+     */
     public ArtifactImageUploader(Context context) {
         this.appContext = context.getApplicationContext();
         this.supabaseUrl = context.getString(com.golden.geese.R.string.supabase_url).trim();
@@ -43,6 +55,12 @@ public class ArtifactImageUploader {
         this.mainHandler = mainLooper == null ? null : new Handler(mainLooper);
     }
 
+    /**
+     * Runs the given action on the main thread, or immediately on the
+     * calling thread if no main-thread {@link Handler} is available.
+     *
+     * @param action the action to run
+     */
     private void runOnMainThread(Runnable action) {
         if (mainHandler == null) {
             action.run();
@@ -51,6 +69,17 @@ public class ArtifactImageUploader {
         }
     }
 
+    /**
+     * Validates and uploads an artifact image to Supabase storage under a
+     * path derived from the given lot number, then reports the resulting
+     * public URL (or an error) via {@code callback}.
+     *
+     * @param imageUri  the content URI of the image to upload
+     * @param lotNumber the artifact's lot number, used to namespace the
+     *                  stored file path
+     * @param callback  receives the uploaded image's public URL on
+     *                  success, or an error message on failure
+     */
     public void uploadArtifactImage(Uri imageUri, String lotNumber, ImageUploadCallback callback) {
         // Validate configuration
         if (!isConfigurationValid()) {
@@ -87,6 +116,18 @@ public class ArtifactImageUploader {
         performUpload(filePath, mimeType, imageBytes, callback);
     }
 
+    /**
+     * Sends the given image bytes to Supabase storage at {@code filePath}
+     * and reports the resulting public URL, or an error, via
+     * {@code callback}.
+     *
+     * @param filePath   the destination path within the storage bucket
+     * @param mimeType   the image's MIME type, used as the request body's
+     *                   content type
+     * @param imageBytes the raw image data to upload
+     * @param callback   receives the uploaded image's public URL on
+     *                   success, or an error message on failure
+     */
     private void performUpload(String filePath, String mimeType, byte[] imageBytes, ImageUploadCallback callback) {
         HttpUrl uploadUrl = buildStorageUrl("storage/v1/object", filePath);
         if (uploadUrl == null) {
@@ -128,6 +169,13 @@ public class ArtifactImageUploader {
         });
     }
 
+    /**
+     * Deletes the artifact image at the given public URL from Supabase
+     * storage, then reports success or an error via {@code callback}.
+     *
+     * @param imageUrl the public URL of the image to delete
+     * @param callback receives success or an error message
+     */
     public void deleteArtifactImage(String imageUrl, ImageDeleteCallback callback) {
         if (isBlank(imageUrl)) {
             callback.onSuccess();
@@ -174,6 +222,14 @@ public class ArtifactImageUploader {
         });
     }
 
+    /**
+     * Extracts the storage-relative file path from a Supabase public image
+     * URL, by locating this uploader's bucket segment within the URL.
+     *
+     * @param imageUrl the public URL to parse
+     * @return the file path within the bucket, or {@code null} if the
+     *         expected bucket marker isn't found in the URL
+     */
     private String extractFilePathFromPublicUrl(String imageUrl) {
         String marker = "/storage/v1/object/public/" + bucketName + "/";
         int index = imageUrl.indexOf(marker);
@@ -183,14 +239,34 @@ public class ArtifactImageUploader {
         return imageUrl.substring(index + marker.length());
     }
 
+    /**
+     * Reports a successful deletion to {@code callback} on the main thread.
+     *
+     * @param callback the callback to notify
+     */
     private void postDeleteSuccess(ImageDeleteCallback callback) {
         runOnMainThread(callback::onSuccess);
     }
 
+    /**
+     * Reports a deletion failure to {@code callback} on the main thread.
+     *
+     * @param callback the callback to notify
+     * @param message  a human-readable error message
+     */
     private void postDeleteError(ImageDeleteCallback callback, String message) {
         runOnMainThread(() -> callback.onError(message));
     }
 
+    /**
+     * Reads the full contents of the image at {@code imageUri} into a byte
+     * array, enforcing {@link #MAX_IMAGE_BYTES} as an upper size limit.
+     *
+     * @param imageUri the content URI of the image to read
+     * @return the image's raw bytes
+     * @throws IOException if the stream can't be opened, reading fails, or
+     *                      the image exceeds the 10MB size limit
+     */
     private byte[] readImageBytes(Uri imageUri) throws IOException {
         ContentResolver resolver = appContext.getContentResolver();
         try (InputStream inputStream = resolver.openInputStream(imageUri);
@@ -210,11 +286,31 @@ public class ArtifactImageUploader {
         }
     }
 
+    /**
+     * Builds the storage path an artifact image should be uploaded to,
+     * namespaced by lot number and timestamped to avoid filename
+     * collisions. Characters in the lot number outside
+     * [A-Za-z0-9_-] are replaced with underscores.
+     *
+     * @param lotNumber the artifact's lot number
+     * @param extension the file extension to use, without a leading dot
+     * @return the storage-relative file path
+     */
     private String buildFilePath(String lotNumber, String extension) {
         String safeLotNumber = lotNumber.replaceAll("[^A-Za-z0-9_-]", "_");
         return "artifacts/" + safeLotNumber + "/" + System.currentTimeMillis() + "." + extension;
     }
 
+    /**
+     * Builds a full Supabase storage URL by combining the configured base
+     * URL, the given storage API path, this uploader's bucket name, and
+     * the target file path.
+     *
+     * @param storagePath the Supabase storage API path segment (e.g.
+     *                    {@code "storage/v1/object"})
+     * @param filePath    the file path within the bucket
+     * @return the resulting URL, or null if invalid
+     */
     private HttpUrl buildStorageUrl(String storagePath, String filePath) {
         HttpUrl baseUrl = HttpUrl.parse(supabaseUrl);
         if (baseUrl == null) {
@@ -227,27 +323,65 @@ public class ArtifactImageUploader {
                 .build();
     }
 
+    /**
+     * Resolves the file extension associated with a MIME type.
+     *
+     * @param mimeType the MIME type to resolve
+     * @return the corresponding file extension, or {@code null} if
+     *         {@code mimeType} is {@code null} or has no known extension
+     */
     private String getImageExtension(String mimeType) {
         if (mimeType == null) return null;
         return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
     }
 
+    /**
+     * Checks whether a MIME type represents an image.
+     *
+     * @param mimeType the MIME type to check
+     * @return {@code true} if non-null and starts with {@code "image/"}
+     */
     private boolean isValidImageMimeType(String mimeType) {
         return mimeType != null && mimeType.startsWith("image/");
     }
 
+    /**
+     * Checks if this uploader has all the Supabase configuration
+     * values (URL, anon key, bucket name) it needs to make requests.
+     *
+     * @return {@code true} if none of the required configuration values
+     *         are blank
+     */
     private boolean isConfigurationValid() {
         return !isBlank(supabaseUrl) && !isBlank(supabaseAnonKey) && !isBlank(bucketName);
     }
 
+    /**
+     * Reports a successful upload to {@code callback} on the main thread.
+     *
+     * @param callback the callback to notify
+     * @param imageUrl the uploaded image's public URL
+     */
     private void postSuccess(ImageUploadCallback callback, String imageUrl) {
         runOnMainThread(() -> callback.onSuccess(imageUrl));
     }
 
+    /**
+     * Reports an upload failure to {@code callback} on the main thread.
+     *
+     * @param callback the callback to notify
+     * @param message  a human-readable error message
+     */
     private void postError(ImageUploadCallback callback, String message) {
         runOnMainThread(() -> callback.onError(message));
     }
 
+    /**
+     * Checks whether a value is {@code null} or contains only whitespace.
+     *
+     * @param value the value to check
+     * @return {@code true} if the value is {@code null} or blank
+     */
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
     }

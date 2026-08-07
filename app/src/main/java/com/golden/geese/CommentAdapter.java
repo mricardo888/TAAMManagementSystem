@@ -15,16 +15,38 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Connects a list of {@link Comment} objects to a comments
+ * {@link RecyclerView}. The adapter displays each comment's author,
+ * body, timestamp, profile picture, and delete button if user is
+ * the author or an admin.
+ */
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
     private List<Comment> comments;
     private User currentUser;
     private OnCommentDeleteListener deleteListener;
 
+    /**
+     * Receives comment deletion events from the adapter.
+     */
     public interface OnCommentDeleteListener
     {
+        /**
+         * Called when the user confirms that a comment should be deleted.
+         *
+         * @param comment the comment selected for deletion
+         * @param position the comment's current position in the adapter
+         */
         void onDeleteComment(Comment comment, int position);
     }
 
+    /**
+     * Creates an adapter for displaying comments.
+     *
+     * @param comments the list of comments to display
+     * @param currentUser the user currently signed in
+     * @param deleteListener the callback invoked when a comment is deleted
+     */
     public CommentAdapter(List<Comment> comments, User currentUser, OnCommentDeleteListener deleteListener)
     {
         this.comments = comments;
@@ -32,6 +54,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         this.deleteListener = deleteListener;
     }
 
+    /**
+     * Creates a view holder for a comment item.
+     *
+     * @param parent the parent view group that will contain the item
+     * @param viewType the type of item view being created
+     * @return a new {@link CommentViewHolder}
+     */
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -41,6 +70,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         return new CommentViewHolder(view);
     }
 
+    /**
+     * Displays the comment data associated with the supplied adapter position.
+     *
+     * @param holder the view holder being updated
+     * @param position the position of the comment in the adapter
+     */
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.CommentViewHolder holder, int position) {
         Comment comment = comments.get(position);
@@ -87,11 +122,22 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         });
     }
 
+    /**
+     * Returns the number of comments currently displayed.
+     *
+     * @return the number of comments, or {@code 0} when the list is
+     *         {@code null}
+     */
     @Override
     public int getItemCount() {
         return comments == null ? 0 : comments.size();
     }
 
+    /**
+     * Removes a comment from the adapter at the specified position.
+     *
+     * @param position the adapter position of the comment to remove
+     */
     public void removeComment(int position)
     {
         if (comments == null)
@@ -108,6 +154,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         notifyItemRemoved(position);
     }
 
+    /**
+     * Adds a comment to the end of the adapter's comment list.
+     *
+     * @param comment the comment to add
+     */
     public void addComment(Comment comment) {
         if (comment == null)
         {
@@ -118,6 +169,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         notifyItemInserted(comments.size() - 1);
     }
 
+    /**
+     * Stores references to the views used to display one comment.
+     */
     static class CommentViewHolder extends RecyclerView.ViewHolder {
         private ImageView profileImage;
         private TextView username;
@@ -125,6 +179,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         private TextView time;
         private ImageButton deleteButton;
 
+        /**
+         * Creates a view holder and finds the views inside the comment layout.
+         *
+         * @param itemView the inflated comment item view
+         */
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
 
